@@ -2,50 +2,36 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Architect Cloud | Web Optimization Portal</title>
+    <title>Architect v8.0 | Universal Requirement Bridge</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="app">
         <header>
             <h1>PC <span class="highlight">Architect</span></h1>
-            <p class="subtitle">Cloud-Based Hardware Bridging</p>
-            <div id="saved-alert" class="hidden">
-                <span>Profile: <strong id="saved-model-name"></strong></span>
-                <button class="btn-text" onclick="clearProfile()">Forget PC</button>
-            </div>
+            <p class="subtitle">Hardware-to-Software Optimization Bridge</p>
         </header>
 
         <section id="step-1" class="view active">
-            <h3>1. Identify Hardware</h3>
+            <h3>1. Identify Your PC</h3>
             <div class="choice-grid">
-                <button class="choice-card" onclick="startScan()">Auto-Scan Browser</button>
+                <button class="choice-card" onclick="startScan()">Auto-Scan Hardware</button>
                 <button class="choice-card" onclick="showManualForm()">Manual Spec Entry</button>
             </div>
             <div id="manual-form" class="hidden mt-1">
-                <input type="number" id="m-ram" placeholder="RAM (GB)">
-                <input type="number" id="m-vram" placeholder="VRAM (GB)">
-                <button class="btn-primary w-full" onclick="saveManualSpec()">Lock Hardware Profile</button>
+                <input type="number" id="m-ram" placeholder="Your RAM (GB)">
+                <input type="number" id="m-vram" placeholder="Your VRAM (GB)">
+                <button class="btn-primary w-full" onclick="saveManualSpec()">Lock PC Profile</button>
             </div>
         </section>
 
         <section id="step-2" class="view">
-            <h3>2. Link Platform Catalog</h3>
-            <div class="platform-row">
-                <button class="plat-btn steam" onclick="linkPlatform('Steam')">Link Steam</button>
-                <button class="plat-btn epic" onclick="linkPlatform('Epic')">Link Epic</button>
-            </div>
+            <h3>2. Game Requirement Profile</h3>
+            <p class="small">Enter the "Minimum Requirements" from the game's store page.</p>
             
-            <div id="catalog-zone" class="hidden">
-                <input type="text" id="game-search" placeholder="Search your library..." onkeyup="searchGames()">
-                <div id="game-results" class="results-grid"></div>
-            </div>
-        </section>
-
-        <section id="step-3" class="view">
-            <div class="selected-game-banner">
-                <h2 id="target-game-name">Game Name</h2>
-                <span id="target-game-req">Requirements: High</span>
+            <div class="split-form">
+                <input type="number" id="g-ram" placeholder="Required RAM (GB)">
+                <input type="number" id="g-vram" placeholder="Required VRAM (GB)">
             </div>
 
             <div class="strategy-zone">
@@ -58,16 +44,26 @@
                 </div>
             </div>
 
+            <button class="btn-primary" onclick="processComparison()">Analyze Software Gap</button>
+        </section>
+
+        <section id="step-3" class="view">
             <div id="readability-card" class="readability-box">
                 <span id="read-status">Readability Check</span>
             </div>
 
             <div class="vram-monitor">
+                <div class="monitor-labels"><span>System Stress</span><span id="stress-pct">0%</span></div>
                 <div class="bar-bg"><div id="vram-fill" class="bar-fill"></div></div>
             </div>
 
-            <button class="btn-download" onclick="downloadConfig()">Generate Optimization File</button>
-            <button class="btn-text" onclick="location.reload()">Back to Catalog</button>
+            <div class="diagnostic-card">
+                <p>Calculated Resolution Scale: <span id="scale-val" class="highlight">--</span></p>
+                <p>Strategy: <span id="strat-desc">Analyzing...</span></p>
+            </div>
+
+            <button class="btn-download" onclick="downloadConfig()">Download Optimization Bridge</button>
+            <button class="btn-text" onclick="location.reload()">Reset Bridge</button>
         </section>
     </div>
     <script src="script.js"></script>
