@@ -1,133 +1,115 @@
-let sys = { name: "", ram: 0, vram: 0, storage: 0 };
-let game = { ram: 0, vram: 0, storage: 0 };
+// Simulated Game Catalog from Linked Store Platforms
+const gameDatabase = [
+    { name: "Cyberpunk 2077", reqVram: 6, reqRam: 12 },
+    { name: "Elden Ring", reqVram: 4, reqRam: 12 },
+    { name: "Modern Warfare III", reqVram: 8, reqRam: 16 },
+    { name: "Fortnite", reqVram: 2, reqRam: 8 }
+];
+
+let sys = { ram: 0, vram: 0 };
+let selectedGame = null;
 let currentMode = 'quality';
 let fpsTarget = 30;
 
-// Persistence: Load profile on startup
+// Persistence
 window.onload = () => {
-    const saved = localStorage.getItem('architect_profile');
+    const saved = localStorage.getItem('pc_arch_sys');
     if (saved) {
-        const data = JSON.parse(saved);
+        sys = JSON.parse(saved);
         document.getElementById('saved-alert').classList.remove('hidden');
-        document.getElementById('saved-model-name').innerText = data.name;
-        sys = data;
+        document.getElementById('saved-model-name').innerText = "Personal PC Profile";
     }
 };
 
 function startScan() {
     sys.ram = navigator.deviceMemory || 8;
-    sys.vram = sys.ram * 0.25; 
-    sys.name = "Auto-Scanned PC";
-    transition(1, 2);
-    document.getElementById('m-ram').value = sys.ram;
-    document.getElementById('m-vram').value = sys.vram;
+    sys.vram = sys.ram * 0.25; // Integrated GPU logic
+    saveAndNext();
 }
 
-function showManualForm() { transition(1, 2); }
+function showManualForm() { document.getElementById('manual-form').classList.remove('hidden'); }
 
-function useSavedProfile() {
-    document.getElementById('m-name').value = sys.name;
-    document.getElementById('m-ram').value = sys.ram;
-    document.getElementById('m-vram').value = sys.vram;
-    document.getElementById('m-storage').value = sys.storage;
+function saveManualSpec() {
+    sys.ram = parseFloat(document.getElementById('m-ram').value);
+    sys.vram = parseFloat(document.getElementById('m-vram').value);
+    saveAndNext();
+}
+
+function saveAndNext() {
+    localStorage.setItem('pc_arch_sys', JSON.stringify(sys));
     transition(1, 2);
+}
+
+function linkPlatform(plat) {
+    document.getElementById('catalog-zone').classList.remove('hidden');
+    searchGames(); // Show all initially
+}
+
+function searchGames() {
+    const term = document.getElementById('game-search').value.toLowerCase();
+    const results = document.getElementById('game-results');
+    results.innerHTML = '';
+    
+    gameDatabase.filter(g => g.name.toLowerCase().includes(term)).forEach(game => {
+        const div = document.createElement('div');
+        div.className = 'game-item';
+        div.innerText = game.name;
+        div.onclick = () => selectGame(game);
+        results.appendChild(div);
+    });
+}
+
+function selectGame(game) {
+    selectedGame = game;
+    document.getElementById('target-game-name').innerText = game.name;
+    document.getElementById('target-game-req').innerText = `Min Requirements: ${game.reqVram}GB VRAM`;
+    calculateBridge();
+    transition(2, 3);
 }
 
 function updateFPS(val) { 
     document.getElementById('fps-val').innerText = val; 
-    fpsTarget = parseInt(val); 
+    fpsTarget = val; 
+    calculateBridge();
 }
 
 function setMode(mode) {
     currentMode = mode;
     document.getElementById('mode-quality').classList.toggle('active', mode === 'quality');
     document.getElementById('mode-perf').classList.toggle('active', mode === 'perf');
+    calculateBridge();
 }
 
-function processComparison() {
-    // Collect System Data
-    sys.name = document.getElementById('m-name').value || "Default PC";
-    sys.ram = parseFloat(document.getElementById('m-ram').value) || 0;
-    sys.vram = parseFloat(document.getElementById('m-vram').value) || 0;
-    sys.storage = parseFloat(document.getElementById('m-storage').value) || 0;
-
-    // Collect Game Data
-    game.ram = parseFloat(document.getElementById('g-ram').value) || 16;
-    game.vram = parseFloat(document.getElementById('g-vram').value) || 6;
-    game.storage = parseFloat(document.getElementById('g-storage').value) || 100;
-
-    if (document.getElementById('save-consent').checked) {
-        localStorage.setItem('architect_profile', JSON.stringify(sys));
-    }
-
-    calculateStrategy();
-    transition(2, 3);
-}
-
-function calculateStrategy() {
-    const hardwarePower = sys.vram / game.vram;
-    const modeMultiplier = currentMode === 'perf' ? 0.75 : 1.1;
+function calculateBridge() {
+    if (!selectedGame) return;
+    
+    const vramPower = sys.vram / selectedGame.reqVram;
+    const modeMult = currentMode === 'perf' ? 0.7 : 1.1;
     const fpsWeight = 30 / fpsTarget;
 
-    let finalScale = (hardwarePower * fpsWeight * modeMultiplier).toFixed(2);
-    finalScale = Math.max(0.25, Math.min(1.0, finalScale));
-    
-    renderResults(finalScale);
-}
+    let scale = (vramPower * modeMult * fpsWeight).toFixed(2);
+    scale = Math.max(0.25, Math.min(1.0, scale));
 
-function renderResults(scale) {
-    // 1. Comparison Bars
-    const chart = document.getElementById('comparison-chart');
-    chart.innerHTML = '';
-    const metrics = [
-        { label: 'RAM', user: sys.ram, req: game.ram },
-        { label: 'VRAM', user: sys.vram, req: game.vram },
-        { label: 'Disk', user: sys.storage, req: game.storage }
-    ];
-
-    metrics.forEach(m => {
-        const pct = Math.min(100, (m.user / m.req) * 100);
-        const color = pct < 50 ? 'var(--red)' : (pct < 100 ? 'var(--amber)' : 'var(--green)');
-        chart.innerHTML += `<div class="comp-row"><div class="comp-label"><span>${m.label}</span><span>${m.user}/${m.req}GB</span></div>
-            <div class="comp-bar-container"><div class="comp-bar-fill" style="width:${pct}%; background:${color}"></div></div></div>`;
-    });
-
-    // 2. Readability Check
-    const readCard = document.getElementById('readability-card');
-    const readStatus = document.getElementById('read-status');
-    const readAdvice = document.getElementById('read-advice');
-    readCard.classList.remove('read-clear', 'read-fuzzy', 'read-critical');
-
-    if (scale >= 0.75) {
-        readCard.classList.add('read-clear');
-        readStatus.innerText = "Clear & Legible";
-        readAdvice.innerText = "Text will render at native quality.";
-    } else if (scale >= 0.45) {
-        readCard.classList.add('read-fuzzy');
-        readStatus.innerText = "Moderate Blur";
-        readAdvice.innerText = "UI may shimmer. Consider 'Clarity' mode if text is too small.";
+    // Update UI
+    document.getElementById('vram-fill').style.width = Math.min(100, (1 - vramPower) * 100) + "%";
+    const status = document.getElementById('read-status');
+    if (scale < 0.45) {
+        status.innerText = "Critical Blur: HUD might be unreadable";
+        status.style.color = "#ef4444";
     } else {
-        readCard.classList.add('read-critical');
-        readStatus.innerText = "High Legibility Risk";
-        readAdvice.innerText = "WARNING: Text may be unreadable. Lower FPS target to increase scale.";
+        status.innerText = "Legible: UI is clear";
+        status.style.color = "#10b981";
     }
-
-    // 3. Status Output
-    document.getElementById('vram-fill').style.width = Math.min(100, (1 - (sys.vram/game.vram))*100) + "%";
-    document.getElementById('vram-fill').style.background = scale < 0.4 ? 'var(--red)' : 'var(--amber)';
-    document.getElementById('scale-value').innerText = Math.round(scale * 100) + "% Resolution";
-    document.getElementById('stability').innerText = fpsTarget + " FPS Strategy";
-
-    window.lastScale = scale;
+    window.finalScale = scale;
 }
 
 function downloadConfig() {
-    const config = `[Architect_v7]\nScale=${window.lastScale}\nFPS_Target=${fpsTarget}\nVRAM_Limit_MB=${sys.vram*1024}\nPriority=${currentMode}`;
-    const blob = new Blob([config], { type: 'text/plain' });
+    const content = `[Architect_Bridge]\nGame=${selectedGame.name}\nResolutionScale=${window.finalScale}\nFPS_Lock=${fpsTarget}\nMode=${currentMode}`;
+    const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = "Adaptive_Settings.ini";
+    a.download = `${selectedGame.name.replace(/\s/g, '_')}_Optimize.ini`;
     a.click();
 }
 
@@ -137,6 +119,6 @@ function transition(from, to) {
 }
 
 function clearProfile() {
-    localStorage.removeItem('architect_profile');
+    localStorage.removeItem('pc_arch_sys');
     location.reload();
 }
