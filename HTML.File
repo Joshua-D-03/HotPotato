@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PC Architect v7.0 | Adaptive Diagnostic Engine</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>PC <span class="highlight">Architect</span></h1>
+            <div id="saved-alert" class="hidden">
+                <p>✨ Profile: <span id="saved-model-name"></span></p>
+                <div class="header-actions">
+                    <button class="btn-small" onclick="useSavedProfile()">Load</button>
+                    <button class="btn-text" onclick="clearProfile()">Clear</button>
+                </div>
+            </div>
+        </header>
+
+        <section id="step-1" class="view active">
+            <h3>1. Identify Your System</h3>
+            <p class="view-desc">We need to know your hardware to calculate the performance gap.</p>
+            <div class="choice-grid">
+                <button class="choice-card" onclick="startScan()">
+                    <span class="icon">🔍</span>
+                    <strong>Auto-Scan</strong>
+                    <p>Browser Hardware API</p>
+                </button>
+                <button class="choice-card" onclick="showManualForm()">
+                    <span class="icon">⌨️</span>
+                    <strong>Manual Entry</strong>
+                    <p>Input Specs Manually</p>
+                </button>
+            </div>
+        </section>
+
+        <section id="step-2" class="view">
+            <div class="split-form">
+                <div class="form-section">
+                    <h4>Your System</h4>
+                    <input type="text" id="m-name" placeholder="PC Profile Name">
+                    <input type="number" id="m-ram" placeholder="System RAM (GB)">
+                    <input type="number" id="m-vram" placeholder="Video VRAM (GB)">
+                    <input type="number" id="m-storage" placeholder="Free Storage (GB)">
+                    <label class="save-check">
+                        <input type="checkbox" id="save-consent" checked> Remember this PC?
+                    </label>
+                </div>
+                <div class="form-section highlight-border">
+                    <h4>Target Game</h4>
+                    <p class="small">Enter game's minimum requirements.</p>
+                    <input type="number" id="g-ram" placeholder="Req. RAM (GB)">
+                    <input type="number" id="g-vram" placeholder="Req. VRAM (GB)">
+                    <input type="number" id="g-storage" placeholder="Install Size (GB)">
+                </div>
+            </div>
+
+            <div class="strategy-zone">
+                <h4>2. Optimization Strategy</h4>
+                <div class="slider-group">
+                    <label>Target Frame Rate: <span id="fps-val" class="highlight">30</span> FPS</label>
+                    <input type="range" id="fps-target" min="20" max="60" value="30" oninput="updateFPS(this.value)">
+                </div>
+                <div class="toggle-group">
+                    <button id="mode-quality" class="toggle-btn active" onclick="setMode('quality')">Prioritize Clarity</button>
+                    <button id="mode-perf" class="toggle-btn" onclick="setMode('perf')">Prioritize Speed</button>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="processComparison()">Analyze & Calibrate</button>
+        </section>
+
+        <section id="step-3" class="view">
+            <h3>Diagnostic Strategy Report</h3>
+            
+            <div id="readability-card" class="readability-box">
+                <div class="read-icon">👁️</div>
+                <div class="read-text">
+                    <strong>Readability Status:</strong>
+                    <span id="read-status">Evaluating...</span>
+                    <p id="read-advice" class="small"></p>
+                </div>
+            </div>
+
+            <div id="comparison-chart"></div>
+
+            <div class="vram-monitor">
+                <div class="monitor-labels"><span>VRAM Resource Pressure</span><span id="vram-pct">0%</span></div>
+                <div class="bar-bg"><div id="vram-fill" class="bar-fill"></div></div>
+            </div>
+
+            <div id="storage-report" class="alert-box"></div>
+
+            <div class="diagnostic-card">
+                <p>Internal Scaling Factor: <span id="scale-value" class="highlight">--</span></p>
+                <p>Projected Stability: <span id="stability" class="highlight">--</span></p>
+            </div>
+
+            <button class="btn-download" onclick="downloadConfig()">Download Optimization Pack</button>
+            <button class="btn-text" onclick="location.reload()">Start New Analysis</button>
+        </section>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
