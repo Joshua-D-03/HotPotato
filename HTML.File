@@ -2,69 +2,81 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Architect v8.0 | Universal Requirement Bridge</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameShrink | Game Optimization Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="app">
+    <div class="container">
         <header>
-            <h1>PC <span class="highlight">Architect</span></h1>
-            <p class="subtitle">Hardware-to-Software Optimization Bridge</p>
+            <h1>Game<span>Shrink</span></h1>
+            <button id="steam-connect" class="btn-steam">Connect Steam Account</button>
         </header>
 
-        <section id="step-1" class="view active">
-            <h3>1. Identify Your PC</h3>
-            <div class="choice-grid">
-                <button class="choice-card" onclick="startScan()">Auto-Scan Hardware</button>
-                <button class="choice-card" onclick="showManualForm()">Manual Spec Entry</button>
-            </div>
-            <div id="manual-form" class="hidden mt-1">
-                <input type="number" id="m-ram" placeholder="Your RAM (GB)">
-                <input type="number" id="m-vram" placeholder="Your VRAM (GB)">
-                <button class="btn-primary w-full" onclick="saveManualSpec()">Lock PC Profile</button>
-            </div>
-        </section>
+        <main class="dashboard">
+            <section class="panel specs-panel">
+                <h3>System Specifications</h3>
+                <form id="specs-form">
+                    <div class="input-group">
+                        <label>RAM (GB)</label>
+                        <input type="number" id="ram-input" placeholder="e.g. 8">
+                    </div>
+                    <div class="input-group">
+                        <label>VRAM (GB)</label>
+                        <input type="number" id="vram-input" placeholder="e.g. 2">
+                    </div>
+                    <div class="input-group">
+                        <label>Available Storage (GB)</label>
+                        <input type="number" id="storage-input" placeholder="e.g. 50">
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="remember-me">
+                        <label for="remember-me">Remember this PC</label>
+                    </div>
+                </form>
+            </section>
 
-        <section id="step-2" class="view">
-            <h3>2. Game Requirement Profile</h3>
-            <p class="small">Enter the "Minimum Requirements" from the game's store page.</p>
-            
-            <div class="split-form">
-                <input type="number" id="g-ram" placeholder="Required RAM (GB)">
-                <input type="number" id="g-vram" placeholder="Required VRAM (GB)">
-            </div>
-
-            <div class="strategy-zone">
-                <label>Target Frame Rate: <span id="fps-val" class="highlight">30</span> FPS</label>
-                <input type="range" id="fps-target" min="20" max="60" value="30" oninput="updateFPS(this.value)">
-                
-                <div class="toggle-group">
-                    <button id="mode-quality" class="toggle-btn active" onclick="setMode('quality')">Clarity</button>
-                    <button id="mode-perf" class="toggle-btn" onclick="setMode('perf')">Performance</button>
+            <section class="panel catalog-panel">
+                <h3>Your Steam Library</h3>
+                <div id="game-list" class="game-grid">
+                    <p class="placeholder-text">Connect Steam to see games...</p>
                 </div>
-            </div>
+            </section>
 
-            <button class="btn-primary" onclick="processComparison()">Analyze Software Gap</button>
-        </section>
+            <section class="panel controls-panel">
+                <h3>Optimization Settings</h3>
+                
+                <div class="slider-container">
+                    <div class="slider-labels">
+                        <span>Max Performance</span>
+                        <span>Max Quality</span>
+                    </div>
+                    <input type="range" id="quality-slider" min="0" max="100" value="50">
+                    <p id="target-fps">Target: 60 FPS</p>
+                </div>
 
-        <section id="step-3" class="view">
-            <div id="readability-card" class="readability-box">
-                <span id="read-status">Readability Check</span>
-            </div>
+                <div class="status-monitors">
+                    <div id="vram-monitor" class="monitor">
+                        <span class="label">VRAM Usage:</span>
+                        <span class="value">0GB / 0GB</span>
+                        <div class="warning-msg" id="vram-warning">⚠️ Exceeds Physical Limit!</div>
+                    </div>
+                    
+                    <div id="storage-estimator" class="monitor">
+                        <span class="label">Est. Install Size:</span>
+                        <span class="value">--</span>
+                        <div class="warning-msg" id="storage-warning">⚠️ Insufficient Space!</div>
+                    </div>
 
-            <div class="vram-monitor">
-                <div class="monitor-labels"><span>System Stress</span><span id="stress-pct">0%</span></div>
-                <div class="bar-bg"><div id="vram-fill" class="bar-fill"></div></div>
-            </div>
+                    <div id="readability-check" class="monitor">
+                        <span class="label">UI Readability:</span>
+                        <span class="value" id="readability-status">Optimal</span>
+                    </div>
+                </div>
 
-            <div class="diagnostic-card">
-                <p>Calculated Resolution Scale: <span id="scale-val" class="highlight">--</span></p>
-                <p>Strategy: <span id="strat-desc">Analyzing...</span></p>
-            </div>
-
-            <button class="btn-download" onclick="downloadConfig()">Download Optimization Bridge</button>
-            <button class="btn-text" onclick="location.reload()">Reset Bridge</button>
-        </section>
+                <button id="optimize-btn" class="btn-primary" disabled>Optimize & Download</button>
+            </section>
+        </main>
     </div>
     <script src="script.js"></script>
 </body>
