@@ -1,0 +1,140 @@
+/**
+ * GameShrink Universal Bridge Engine
+ * Handles local PC interaction and NTFS compression mapping.
+ */
+
+let socket = null;
+let isConnected = false;
+let selectedGame = null;
+
+// Mock Game Database (This would be populated by your Steam Sync)
+const mockGames = [
+    { id: 1, name: "Cyberpunk 2077", size: 70, vram: 6 },
+    { id: 2, name: "Elden Ring", size: 60, vram: 4 },
+    { id: 3, name: "Modern Warfare III", size: 200, vram: 8 }
+];
+
+// NTFS Compression Mapping
+const algorithms = {
+    1: { name: "LZX (Maximum Shrink)", cmd: "/EXE:LZX", ratio: 0.55 },
+    2: { name: "XPRESS8K (Balanced)", cmd: "/EXE:XPRESS8K", ratio: 0.75 },
+    3: { name: "XPRESS4K (Fastest)", cmd: "/EXE:XPRESS4K", ratio: 0.85 }
+};
+
+// 1. WebSocket Bridge Connection
+function initBridge() {
+    socket = new WebSocket('ws://localhost:9999');
+
+    socket.onopen = () => {
+        isConnected = true;
+        updateUIStatus(true);
+        console.log("Connected to GameShrink Desktop Client");
+    };
+
+    socket.onclose = () => {
+        isConnected = false;
+        updateUIStatus(false);
+        setTimeout(initBridge, 5000); // Auto-reconnect
+    };
+
+    socket.onmessage = (msg) => {
+        const data = JSON.parse(msg.data);
+        if (data.type === 'STATUS') console.log("Local Update:", data.message);
+    };
+}
+
+function updateUIStatus(connected) {
+    const badge = document.getElementById('bridge-status');
+    const statusText = document.getElementById('status-text');
+    const loader = document.getElementById('bridge-loader');
+    const btn = document.getElementById('optimize-btn');
+
+    if (connected) {
+        badge.className = 'status-badge connected';
+        statusText.innerText = 'Connected';
+        loader.style.display = 'none';
+        btn.disabled = false;
+    } else {
+        badge.className = 'status-badge disconnected';
+        statusText.innerText = 'Disconnected';
+        loader.style.display = 'block';
+        btn.disabled = true;
+    }
+}
+
+// 2. Steam Library Sync
+document.getElementById('sync-btn').addEventListener('click', () => {
+    const list = document.getElementById('game-list');
+    list.innerHTML = '';
+    
+    mockGames.forEach(game => {
+        const card = document.createElement('div');
+        card.className = 'game-card';
+        card.innerText = `${game.name} (${game.size} GB)`;
+        card.onclick = () => {
+            document.querySelectorAll('.game-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            selectedGame = game;
+            calculateOptimization();
+        };
+        list.appendChild(card);
+    });
+});
+
+// 3. Mathematical Optimization Logic
+function calculateOptimization() {
+    if (!selectedGame) return;
+
+    const userVram = parseFloat(document.getElementById('vram-input').value);
+    const userStorage = parseFloat(document.getElementById('storage-input').value);
+    const algoIndex = document.getElementById('quality-slider').value;
+    const algo = algorithms[algoIndex];
+
+    // Update Slider Labels
+    document.getElementById('algo-name').innerText = algo.name;
+
+    // Estimate Savings (NTFS Transparent Compression)
+    const estSize = (selectedGame.size * algo.ratio).toFixed(1);
+    const estVram = (selectedGame.vram * (0.4 + (algoIndex * 0.2))).toFixed(1);
+
+    // Update UI Monitors
+    document.getElementById('storage-val').innerText = `${estSize} GB`;
+    document.getElementById('vram-val').innerText = `${estVram} / ${userVram} GB`;
+
+    // VRAM Bar & Warnings
+    const vramPct = Math.min((estVram / userVram) * 100, 100);
+    const vramBar = document.getElementById('vram-bar');
+    vramBar.style.width = vramPct + "%";
+    vramBar.style.backgroundColor = vramPct > 90 ? "#f85149" : "#58a6ff";
+    
+    document.getElementById('vram-warning').style.display = estVram > userVram ? 'block' : 'none';
+    document.getElementById('storage-warning').style.display = estSize > userStorage ? 'block' : 'none';
+
+    // Readability Check
+    const readTag = document.getElementById('readability-status');
+    if (algoIndex == 1) { // High compression often implies lower res textures
+        readTag.innerText = "Low Clarity";
+        readTag.style.background = "#d29922";
+    } else {
+        readTag.innerText = "Optimal";
+        readTag.style.background = "#3fb950";
+    }
+}
+
+// 4. Send Command to Local Machine
+document.getElementById('optimize-btn').addEventListener('click', () => {
+    if (!isConnected || !selectedGame) return;
+
+    const cmd = {
+        action: "COMPRESS",
+        targetPath: `C:/Steam/steamapps/common/${selectedGame.name}`,
+        method: algorithms[document.getElementById('quality-slider').value].cmd
+    };
+
+    socket.send(JSON.stringify(cmd));
+    alert("Compression command sent to Local Bridge!");
+});
+
+// Initialize
+initBridge();
+document.getElementById('quality-slider').addEventListener('input', calculateOptimization);
