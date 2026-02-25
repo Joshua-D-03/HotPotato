@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hot Potato | Game Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="nexus-app">
+        <aside class="nexus-sidebar">
+            <div class="brand">🥔 HOT<span>POTATO</span></div>
+            <nav>
+                <button onclick="showView('optimizer')" id="nav-opt" class="nav-item active">
+                    <span class="icon">⚙️</span> OPTIMIZE
+                </button>
+                <button onclick="showView('library')" id="nav-lib" class="nav-item">
+                    <span class="icon">📚</span> LIBRARY
+                </button>
+            </nav>
+            <div class="sidebar-footer">v1.0.4-Stable</div>
+        </aside>
+
+        <main class="nexus-main">
+            <section id="optimizer" class="view-content">
+                <div class="view-header">
+                    <h2>Engine Configuration</h2>
+                    <p>Downscale assets to meet your hardware profile.</p>
+                </div>
+
+                <div class="config-grid">
+                    <div class="nexus-card">
+                        <h3>1. Hardware Targets</h3>
+                        <div class="input-group">
+                            <label>RAM (GB) <input type="number" id="ramInput" placeholder="16"></label>
+                            <label>VRAM (GB) <input type="number" id="vramInput" placeholder="8"></label>
+                        </div>
+                        <div class="nexus-checkbox">
+                            <input type="checkbox" id="saveSpecs"> <span>Remember Computer Profile</span>
+                        </div>
+                    </div>
+
+                    <div class="nexus-card">
+                        <div class="flex-row">
+                            <h3>2. Optimization Strength</h3>
+                            <span id="strengthLabel" class="status-tag">Balanced</span>
+                        </div>
+                        <input type="range" id="optSlider" min="1" max="100" value="50">
+                        <div id="readabilityWarn" class="alert-box hidden">
+                            ⚠️ <strong>READABILITY ALERT:</strong> Textures may be too blurry for UI menus.
+                        </div>
+                    </div>
+
+                    <div class="drop-zone" id="dropArea">
+                        <div class="dz-inner">
+                            <span class="dz-icon">📁</span>
+                            <p>Drag & Drop Game Folder</p>
+                            <small>Supports .ZIP, .PAK, and Root Folders</small>
+                        </div>
+                    </div>
+
+                    <button id="startBtn" class="btn-nexus-main">TOSS THE POTATO</button>
+                </div>
+            </section>
+
+            <section id="library" class="view-content hidden">
+                <div class="view-header">
+                    <h2>Managed Games</h2>
+                    <p>Launch or revert your optimized titles.</p>
+                </div>
+                <div id="gameGrid" class="nexus-grid">
+                    </div>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
