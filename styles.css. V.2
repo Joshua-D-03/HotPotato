@@ -1,0 +1,84 @@
+:root {
+    --bg-dark: #1a1a1a;
+    --sidebar-dark: #111111;
+    --card-dark: #242424;
+    --nexus-orange: #da8100;
+    --border: #3d3d3d;
+    --text-muted: #a0a0a0;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: #eee;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.nexus-app { display: flex; height: 100%; }
+
+/* Sidebar */
+.nexus-sidebar {
+    width: 240px;
+    background: var(--sidebar-dark);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+}
+
+.brand { padding: 25px; font-weight: bold; font-size: 1.2rem; border-bottom: 1px solid var(--border); }
+.brand span { color: var(--nexus-orange); }
+
+.nav-item {
+    width: 100%;
+    padding: 15px 25px;
+    background: none;
+    border: none;
+    color: #ccc;
+    text-align: left;
+    cursor: pointer;
+    font-weight: bold;
+    border-left: 4px solid transparent;
+}
+
+.nav-item.active {
+    background: rgba(218, 129, 0, 0.1);
+    color: var(--nexus-orange);
+    border-left-color: var(--nexus-orange);
+}
+
+/* Main Content */
+.nexus-main { flex: 1; padding: 40px; overflow-y: auto; }
+.view-header { margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
+.view-header h2 { margin: 0; }
+.view-header p { color: var(--text-muted); margin: 5px 0 0; }
+
+.nexus-card { background: var(--card-dark); padding: 20px; border: 1px solid var(--border); margin-bottom: 20px; }
+.input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0; }
+input[type="number"] { background: #111; border: 1px solid var(--border); color: #fff; padding: 10px; }
+
+.drop-zone {
+    border: 2px dashed var(--border);
+    padding: 50px;
+    text-align: center;
+    background: rgba(0,0,0,0.2);
+    margin-bottom: 25px;
+}
+
+.btn-nexus-main {
+    background: var(--nexus-orange);
+    color: #fff;
+    border: none;
+    padding: 18px;
+    width: 100%;
+    font-weight: 900;
+    cursor: pointer;
+    letter-spacing: 1px;
+}
+
+.alert-box { background: #4b1a1a; border: 1px solid #ff4d4d; color: #ffbaba; padding: 12px; margin-top: 15px; }
+
+/* Grid Layout */
+.nexus-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+.hidden { display: none; }
