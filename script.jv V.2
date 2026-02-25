@@ -1,0 +1,79 @@
+// Note: Requires Electron IPC for actual file handling
+document.addEventListener('DOMContentLoaded', () => {
+    const slider = document.getElementById('optSlider');
+    const label = document.getElementById('strengthLabel');
+    const warn = document.getElementById('readabilityWarn');
+    const startBtn = document.getElementById('startBtn');
+
+    // 1. Persistence: Restore specs from previous sessions
+    if (localStorage.getItem('hp_ram')) {
+        document.getElementById('ramInput').value = localStorage.getItem('hp_ram');
+        document.getElementById('saveSpecs').checked = true;
+    }
+
+    // 2. Optimization Slider Monitor
+    slider.addEventListener('input', (e) => {
+        const val = e.target.value;
+        label.innerText = val < 35 ? "Performance" : val > 65 ? "Quality" : "Balanced";
+        
+        // Readability Guardrail
+        if (val < 25) warn.classList.remove('hidden');
+        else warn.classList.add('hidden');
+    });
+
+    // 3. Start Optimization
+    startBtn.addEventListener('click', () => {
+        if (document.getElementById('saveSpecs').checked) {
+            localStorage.setItem('hp_ram', document.getElementById('ramInput').value);
+        }
+        
+        startBtn.innerText = "SCRUBBING ASSETS...";
+        startBtn.disabled = true;
+
+        // In a real Electron build, you'd trigger your Sharp/Node.js scripts here
+        setTimeout(() => {
+            alert("Success: Assets optimized for low-end hardware.");
+            showView('library');
+            renderLibrary();
+        }, 2000);
+    });
+});
+
+// Navigation Controller
+function showView(viewId) {
+    document.querySelectorAll('.view-content').forEach(v => v.classList.add('hidden'));
+    document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+    
+    document.getElementById(viewId).classList.remove('hidden');
+    const activeNavId = viewId === 'optimizer' ? 'nav-opt' : 'nav-lib';
+    document.getElementById(activeNavId).classList.add('active');
+}
+
+// Library Card Rendering
+function renderLibrary() {
+    const grid = document.getElementById('gameGrid');
+    const library = JSON.parse(localStorage.getItem('hp_library')) || [
+        { id: 1, name: "Cyberpunk 2077", savings: "65%", oldSize: "70GB", newSize: "24.5GB" },
+        { id: 2, name: "Starfield", savings: "50%", oldSize: "120GB", newSize: "60GB" }
+    ];
+
+    grid.innerHTML = library.map(game => `
+        <div class="nexus-card card-hover">
+            <h4 style="color: var(--nexus-orange); margin: 0 0 10px 0;">${game.name}</h4>
+            <div style="font-size: 0.85rem; line-height: 1.6;">
+                <div style="display:flex; justify-content:space-between;">
+                    <span style="color:#888;">Storage Reduction</span>
+                    <span style="color:#4caf50; font-weight:bold;">-${game.savings}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                    <span style="color:#888;">Optimized Size</span>
+                    <span>${game.newSize}</span>
+                </div>
+            </div>
+            <div style="margin-top:15px; display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <button class="btn-nexus-main" style="padding:8px; font-size:0.7rem;">LAUNCH</button>
+                <button class="btn-nexus-main" style="padding:8px; font-size:0.7rem; background:#3d3d3d;">REVERT</button>
+            </div>
+        </div>
+    `).join('');
+}
