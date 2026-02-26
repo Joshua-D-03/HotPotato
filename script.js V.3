@@ -1,0 +1,51 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const slider = document.getElementById('optSlider');
+    const label = document.getElementById('strengthLabel');
+    const warn = document.getElementById('readabilityWarn');
+    const startBtn = document.getElementById('startBtn');
+    const gameGrid = document.getElementById('gameGrid');
+    const emptyState = document.getElementById('emptyState');
+
+    // 1. Dynamic Slider Feedback
+    slider.addEventListener('input', (e) => {
+        const val = e.target.value;
+        label.innerText = val < 35 ? "MAX PERFORMANCE" : val > 65 ? "MAX QUALITY" : "BALANCED";
+        val < 25 ? warn.classList.remove('hidden') : warn.classList.add('hidden');
+    });
+
+    // 2. Optimization Logic
+    startBtn.addEventListener('click', () => {
+        // In a real scenario, we would grab the folder path from the Drop Zone
+        startBtn.innerText = "ELECTRIFYING ASSETS...";
+        startBtn.disabled = true;
+
+        // Simulate the Node.js / Sharp processing time
+        setTimeout(() => {
+            addGameToLibrary("User_Optimized_Game", "70GB", "18GB");
+            startBtn.innerText = "START OPTIMIZATION";
+            startBtn.disabled = false;
+            alert("Optimization Complete! The optimized files have been returned to your game directory.");
+        }, 3000);
+    });
+
+    function addGameToLibrary(name, oldSize, newSize) {
+        emptyState.classList.add('hidden');
+        
+        const card = document.createElement('div');
+        card.className = 'nexus-card';
+        card.style.borderLeft = "4px solid #da8100";
+        card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <h4 style="margin:0;">${name}</h4>
+                    <small style="color:#888;">Optimized just now</small>
+                </div>
+                <div style="text-align:right;">
+                    <div style="color:#4caf50; font-weight:bold;">${oldSize} → ${newSize}</div>
+                    <button class="btn-nexus-main" style="padding:5px 15px; margin-top:10px; width:auto; font-size:0.8rem;">LAUNCH</button>
+                </div>
+            </div>
+        `;
+        gameGrid.prepend(card);
+    }
+});
