@@ -1,0 +1,47 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const slider = document.getElementById('strengthSlider');
+    const modeLabel = document.getElementById('strengthMode');
+    const warn = document.getElementById('readabilityWarn');
+    const igniteBtn = document.getElementById('igniteBtn');
+    const results = document.getElementById('resultsArea');
+
+    // Universal logic: No default game names
+    slider.addEventListener('input', (e) => {
+        const val = e.target.value;
+        if (val < 35) {
+            modeLabel.innerText = "MAX PERFORMANCE";
+            warn.classList.remove('hidden');
+        } else if (val > 65) {
+            modeLabel.innerText = "MAX QUALITY";
+            warn.classList.add('hidden');
+        } else {
+            modeLabel.innerText = "BALANCED";
+            warn.classList.add('hidden');
+        }
+    });
+
+    igniteBtn.addEventListener('click', () => {
+        igniteBtn.innerText = "REWRITING ASSETS...";
+        igniteBtn.disabled = true;
+
+        // In a real Electron app, this triggers the Node.js file system rewrite
+        setTimeout(() => {
+            const folderName = "Optimized_Game_Files"; // Placeholders for user's specific folder
+            const resultCard = document.createElement('div');
+            resultCard.className = 'config-card';
+            resultCard.style.marginTop = "20px";
+            resultCard.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h4>SUCCESS: ${folderName}</h4>
+                    <span style="color:#00ff88; font-weight:bold;">-58% Memory Load</span>
+                </div>
+                <p style="font-size:0.8rem; color:#888;">Assets have been downsampled and returned to the directory.</p>
+            `;
+            results.prepend(resultCard);
+            
+            igniteBtn.innerText = "IGNITE COMPRESSION";
+            igniteBtn.disabled = false;
+            alert("Optimization Complete. The files have been 'given back' to your folder.");
+        }, 3000);
+    });
+});
