@@ -1,0 +1,84 @@
+:root {
+    --nexus-bg: #111111;
+    --nexus-orange: #da8100;
+    --electric-blue: #00d4ff;
+    --card-bg: #1a1a1a;
+    --border: #333333;
+}
+
+body {
+    background-color: var(--nexus-bg);
+    color: #eeeeee;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+/* Electrified Potato Header */
+.hero-header {
+    text-align: center;
+    padding: 60px 20px;
+    background: radial-gradient(circle at center, #1a1a1a 0%, #111 70%);
+}
+
+.potato-container {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 20px;
+}
+
+.rotating-potato {
+    font-size: 80px;
+    animation: rotatePotato 10s linear infinite;
+    display: inline-block;
+    filter: drop-shadow(0 0 10px var(--nexus-orange));
+}
+
+@keyframes rotatePotato {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.energy-ring {
+    position: absolute;
+    top: -10px; left: -10px; right: -10px; bottom: -10px;
+    border: 2px solid var(--electric-blue);
+    border-radius: 50%;
+    animation: pulseRing 2s ease-out infinite;
+    box-shadow: 0 0 20px var(--electric-blue);
+}
+
+@keyframes pulseRing {
+    0% { transform: scale(0.8); opacity: 1; }
+    100% { transform: scale(1.3); opacity: 0; }
+}
+
+/* Nexus Layout */
+.nexus-main { max-width: 900px; margin: 0 auto; padding: 20px; }
+.nexus-card { background: var(--card-bg); border: 1px solid var(--border); padding: 20px; margin-bottom: 20px; }
+
+.drop-zone {
+    border: 2px dashed var(--nexus-orange);
+    padding: 60px;
+    text-align: center;
+    background: rgba(218, 129, 0, 0.05);
+    margin-bottom: 30px;
+    cursor: pointer;
+}
+
+.btn-nexus-main {
+    background: var(--nexus-orange);
+    color: white;
+    border: none;
+    padding: 20px;
+    width: 100%;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.alert-box { background: #4b1a1a; color: #ffbaba; padding: 10px; border-radius: 4px; margin-top: 10px; font-size: 0.8rem; }
+.empty-msg { color: #555; text-align: center; padding: 40px; border: 1px solid #222; border-radius: 8px; }
+.hidden { display: none; }
