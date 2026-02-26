@@ -1,47 +1,57 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const slider = document.getElementById('strengthSlider');
-    const modeLabel = document.getElementById('strengthMode');
-    const warn = document.getElementById('readabilityWarn');
-    const igniteBtn = document.getElementById('igniteBtn');
-    const results = document.getElementById('resultsArea');
+    const fileInput = document.getElementById('fileInput');
+    const optimizeBtn = document.getElementById('optimizeBtn');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressFill = document.getElementById('progressFill');
+    const statusText = document.getElementById('statusText');
+    const resultArea = document.getElementById('resultArea');
 
-    // Universal logic: No default game names
-    slider.addEventListener('input', (e) => {
-        const val = e.target.value;
-        if (val < 35) {
-            modeLabel.innerText = "MAX PERFORMANCE";
-            warn.classList.remove('hidden');
-        } else if (val > 65) {
-            modeLabel.innerText = "MAX QUALITY";
-            warn.classList.add('hidden');
-        } else {
-            modeLabel.innerText = "BALANCED";
-            warn.classList.add('hidden');
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            const fileName = e.target.files[0].name;
+            alert(`Ready to optimize: ${fileName}`);
         }
     });
 
-    igniteBtn.addEventListener('click', () => {
-        igniteBtn.innerText = "REWRITING ASSETS...";
-        igniteBtn.disabled = true;
+    optimizeBtn.addEventListener('click', () => {
+        if (fileInput.files.length === 0) {
+            alert("Please select a game file first.");
+            return;
+        }
 
-        // In a real Electron app, this triggers the Node.js file system rewrite
-        setTimeout(() => {
-            const folderName = "Optimized_Game_Files"; // Placeholders for user's specific folder
-            const resultCard = document.createElement('div');
-            resultCard.className = 'config-card';
-            resultCard.style.marginTop = "20px";
-            resultCard.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h4>SUCCESS: ${folderName}</h4>
-                    <span style="color:#00ff88; font-weight:bold;">-58% Memory Load</span>
-                </div>
-                <p style="font-size:0.8rem; color:#888;">Assets have been downsampled and returned to the directory.</p>
-            `;
-            results.prepend(resultCard);
-            
-            igniteBtn.innerText = "IGNITE COMPRESSION";
-            igniteBtn.disabled = false;
-            alert("Optimization Complete. The files have been 'given back' to your folder.");
-        }, 3000);
+        // Reset UI
+        resultArea.classList.add('hidden');
+        progressContainer.classList.remove('hidden');
+        optimizeBtn.disabled = true;
+        
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += Math.random() * 15;
+            if (progress > 100) progress = 100;
+
+            progressFill.style.width = progress + "%";
+
+            // Update status messages based on universal game assets
+            if (progress < 30) statusText.innerText = "Analyzing Texture Maps...";
+            else if (progress < 60) statusText.innerText = "Downsampling Audio Streams...";
+            else if (progress < 90) statusText.innerText = "Crushing Compiled Shader Data...";
+            else statusText.innerText = "Finalizing Package...";
+
+            if (progress === 100) {
+                clearInterval(interval);
+                showResults();
+            }
+        }, 600);
     });
+
+    function showResults() {
+        progressContainer.classList.add('hidden');
+        resultArea.classList.remove('hidden');
+        optimizeBtn.disabled = false;
+
+        // Simulate savings
+        const fileSize = fileInput.files[0].size / (1024 * 1024); // MB
+        document.getElementById('oldSize').innerText = (fileSize / 1024).toFixed(2) + " GB";
+        document.getElementById('newSize').innerText = ((fileSize * 0.35) / 1024).toFixed(2) + " GB";
+    }
 });
