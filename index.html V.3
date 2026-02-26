@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hot Potato | Universal Game Optimizer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="nexus-app">
+        <header class="hero-header">
+            <div class="potato-container">
+                <div class="lightning-bolt"></div>
+                <div class="lightning-bolt"></div>
+                <div class="rotating-potato">🥔</div>
+                <div class="energy-ring"></div>
+            </div>
+            <h1>HOT<span>POTATO</span></h1>
+            <p>Universal Asset Compression Engine</p>
+        </header>
+
+        <main class="nexus-main">
+            <section id="optimizer" class="view-content">
+                <div class="drop-zone" id="dropArea">
+                    <div class="dz-inner">
+                        <span class="dz-icon">📥</span>
+                        <p>DROP GAME FOLDER HERE</p>
+                        <small>Target any installed game directory</small>
+                    </div>
+                </div>
+
+                <div class="config-grid">
+                    <div class="nexus-card">
+                        <h3>1. Performance Target</h3>
+                        <input type="range" id="optSlider" min="1" max="100" value="50">
+                        <div class="slider-meta">
+                            <span id="strengthLabel">BALANCED</span>
+                        </div>
+                        <div id="readabilityWarn" class="alert-box hidden">
+                            ⚠️ LOW READABILITY: UI text may become blurred.
+                        </div>
+                    </div>
+
+                    <div class="nexus-card">
+                        <h3>2. Hardware Profile</h3>
+                        <div class="input-group">
+                            <input type="number" id="ramInput" placeholder="Target RAM (GB)">
+                            <input type="number" id="vramInput" placeholder="Target VRAM (GB)">
+                        </div>
+                    </div>
+                </div>
+
+                <button id="startBtn" class="btn-nexus-main">START OPTIMIZATION</button>
+            </section>
+
+            <section id="library" class="view-content">
+                <div class="view-header">
+                    <h2>Processed Games</h2>
+                </div>
+                <div id="gameGrid" class="nexus-grid">
+                    <div id="emptyState" class="empty-msg">No games optimized yet. Drop a folder above to begin.</div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
