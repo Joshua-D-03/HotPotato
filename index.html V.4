@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hot Potato | Universal Asset Laboratory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="nexus-container">
+        <header class="engine-core">
+            <div class="potato-stage">
+                <div class="lightning-wrap">
+                    <div class="bolt"></div>
+                    <div class="bolt"></div>
+                </div>
+                <div class="electric-potato">🥔</div>
+                <div class="glow-ring"></div>
+            </div>
+            <h1>HOT<span>POTATO</span></h1>
+            <p class="tagline">UNIVERSAL COMPRESSION ENGINE</p>
+        </header>
+
+        <main class="lab-workspace">
+            <div class="drop-zone" id="dropZone">
+                <div class="dz-content">
+                    <span class="dz-icon">⚡</span>
+                    <p>DRAG GAME FOLDER TO OPTIMIZE</p>
+                    <small>Processes Textures, Audio, and Shaders</small>
+                </div>
+            </div>
+
+            <div class="ui-row">
+                <div class="config-card">
+                    <h3>OPTIMIZATION STRENGTH</h3>
+                    <input type="range" id="strengthSlider" min="1" max="100" value="50">
+                    <div class="slider-labels">
+                        <span>PERFORMANCE</span>
+                        <span id="strengthMode">BALANCED</span>
+                        <span>QUALITY</span>
+                    </div>
+                    <div id="readabilityWarn" class="warning-panel hidden">
+                        ⚠️ CAUTION: Textures may become unreadable.
+                    </div>
+                </div>
+
+                <div class="config-card">
+                    <h3>PC TARGET PROFILE</h3>
+                    <div class="input-row">
+                        <input type="number" id="ramTarget" placeholder="RAM (GB)">
+                        <input type="number" id="vramTarget" placeholder="VRAM (GB)">
+                    </div>
+                </div>
+            </div>
+
+            <button id="igniteBtn" class="nexus-btn">IGNITE COMPRESSION</button>
+
+            <div id="resultsArea" class="results-grid">
+                </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
