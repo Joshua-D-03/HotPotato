@@ -1,80 +1,90 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const gameInput = document.getElementById('gameInput');
+    // Hardware Inputs
+    const ramInput = document.getElementById('ramInput');
+    const cpuInput = document.getElementById('cpuInput');
+    const pcModel = document.getElementById('pcModel');
+    const suggestLabel = document.getElementById('suggestedLevel');
+    const logicText = document.getElementById('logicReasoning');
+
+    // UI Elements
+    const fileInput = document.getElementById('fileInput');
     const igniteBtn = document.getElementById('igniteBtn');
-    const slider = document.getElementById('strengthSlider');
-    const modeLabel = document.getElementById('strengthMode');
-    const warn = document.getElementById('readabilityWarn');
-    
-    let uploadedFile = null;
+    const statusLog = document.getElementById('statusLog');
+    const progressFill = document.getElementById('progressFill');
 
-    // 1. Handle File Selection
-    gameInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            uploadedFile = e.target.files[0];
-            document.getElementById('fileNameDisplay').innerText = `Selected: ${uploadedFile.name}`;
-        }
-    });
+    // 1. Hardware Logic Engine
+    const updateSuggestion = () => {
+        const ram = parseInt(ramInput.value);
+        const cpu = cpuInput.value.toLowerCase();
 
-    // 2. Strength Slider Logic
-    slider.addEventListener('input', (e) => {
-        const val = e.target.value;
-        modeLabel.innerText = val < 35 ? "Performance" : val > 65 ? "Quality" : "Balanced";
-        val < 25 ? warn.classList.remove('hidden') : warn.classList.add('hidden');
-    });
-
-    // 3. Simulated Compression & Download
-    igniteBtn.addEventListener('click', () => {
-        if (!uploadedFile) {
-            alert("Please select a game file first.");
+        if (!ram) {
+            suggestLabel.innerText = "Awaiting Data...";
             return;
         }
 
+        if (ram <= 4 || cpu.includes('celeron') || cpu.includes('m3')) {
+            suggestLabel.innerText = "EXTREME CRUSH";
+            suggestLabel.style.color = "#ff4444";
+            logicText.innerText = "Your hardware is significantly below modern gaming standards. Extreme compression required for stability.";
+        } else if (ram <= 8) {
+            suggestLabel.innerText = "AGGRESSIVE MASH";
+            suggestLabel.style.color = "#da8100";
+            logicText.innerText = "Standard mid-tier specs. Texture downscaling recommended to prevent stuttering.";
+        } else {
+            suggestLabel.innerText = "LIGHT PEEL";
+            suggestLabel.style.color = "#00ff88";
+            logicText.innerText = "Healthy RAM detected. We will only strip bloatware and unnecessary cache.";
+        }
+    };
+
+    [ramInput, cpuInput].forEach(el => el.addEventListener('input', updateSuggestion));
+
+    // 2. Optimization Sequence
+    igniteBtn.onclick = () => {
+        if (!fileInput.files[0]) return alert("Please select a game file first!");
+        
+        document.getElementById('logArea').classList.remove('hidden');
         igniteBtn.disabled = true;
-        document.getElementById('progressArea').classList.remove('hidden');
-        document.getElementById('downloadArea').classList.add('hidden');
+        
+        let messages = ["Accessing Station Profile...", "Boiling Shaders...", "Peeling Textures...", "Mashing Audio...", "Finalizing Potato Build..."];
+        let step = 0;
 
-        let progress = 0;
         const interval = setInterval(() => {
-            progress += Math.random() * 15;
-            if (progress >= 100) progress = 100;
-            
-            document.getElementById('barFill').style.width = progress + "%";
-            
-            if (progress < 40) document.getElementById('statusText').innerText = "Scrubbing textures...";
-            else if (progress < 80) document.getElementById('statusText').innerText = "Downscaling audio...";
-            else document.getElementById('statusText').innerText = "Finalizing build...";
-
-            if (progress === 100) {
+            if (step < messages.length) {
+                const msg = document.createElement('div');
+                msg.innerText = `> ${messages[step]}`;
+                statusLog.prepend(msg);
+                progressFill.style.width = ((step + 1) / messages.length) * 100 + "%";
+                step++;
+            } else {
                 clearInterval(interval);
-                showDownloadLink();
+                finishOptimization();
             }
-        }, 500);
-    });
+        }, 800);
+    };
 
-    function showDownloadLink() {
-        document.getElementById('progressArea').classList.add('hidden');
-        document.getElementById('downloadArea').classList.remove('hidden');
-        igniteBtn.disabled = false;
+    function finishOptimization() {
+        const file = fileInput.files[0];
+        document.getElementById('repName').innerText = file.name;
+        document.getElementById('repSavings').innerText = "Reduced by " + (Math.random() * 40 + 20).toFixed(1) + "%";
+        document.getElementById('successModal').classList.remove('hidden');
 
-        // Display fake optimization stats
-        const savings = Math.floor(Math.random() * 40) + 20; // 20-60%
-        const originalSizeMB = uploadedFile.size / (1024 * 1024);
-        const optimizedSizeMB = originalSizeMB * (1 - savings/100);
-
-        document.getElementById('savingsVal').innerText = `${savings}%`;
-        document.getElementById('newSizeVal').innerText = `${optimizedSizeMB.toFixed(2)} MB`;
-
-        // The Download Mechanism
-        document.getElementById('downloadBtn').onclick = () => {
-            const url = URL.createObjectURL(uploadedFile);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `optimized_${uploadedFile.name}`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            alert("Your optimized game file has been returned to you!");
-        };
+        // Simulate Download
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(file);
+        a.download = `potatofied_${file.name}`;
+        a.click();
     }
+
+    // Modal Close
+    document.getElementById('closeModal').onclick = () => {
+        document.getElementById('successModal').classList.add('hidden');
+        igniteBtn.disabled = false;
+        document.getElementById('logArea').classList.add('hidden');
+        statusLog.innerHTML = "";
+    };
+
+    // Standard Selectors
+    document.getElementById('dropZone').onclick = () => fileInput.click();
+    fileInput.onchange = (e) => document.getElementById('fileLabel').innerText = e.target.files[0].name;
 });
