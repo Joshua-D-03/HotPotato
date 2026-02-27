@@ -8,19 +8,22 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+
     <div id="authBar" class="auth-bar">
         <div id="loggedOutUI">
             <input type="email" id="authEmail" placeholder="Email">
             <input type="password" id="authPass" placeholder="Password">
-            <button id="signInBtn">Login</button>
-            <button id="signUpBtn">Sign Up</button>
-            <label class="remember-me">
-                <input type="checkbox" id="rememberMe"> Remember
-            </label>
+            <div class="auth-actions">
+                <button id="signInBtn">Login</button>
+                <button id="signUpBtn">Sign Up</button>
+                <label class="remember-me">
+                    <input type="checkbox" id="rememberMe"> Remember
+                </label>
+            </div>
         </div>
         <div id="loggedInUI" class="hidden">
             <span id="userDisplay"></span>
-            <button id="signOutBtn">Logout</button>
+            <button id="signOutBtn" class="btn-logout">Logout</button>
         </div>
     </div>
 
@@ -70,12 +73,13 @@
                 
                 <div id="progressArea" class="log-container hidden">
                     <div class="progress-info">
-                        <span id="progressStatus">Optimizing Assets...</span>
+                        <span id="progressStatus">Boiling Bloat...</span>
                         <span id="timeLeft">Est: --:--</span>
                     </div>
                     <div class="progress-bar"><div id="progressFill" class="fill"></div></div>
                     <div id="statusLog" class="status-log"></div>
                 </div>
+
                 <button id="igniteBtn" class="btn-ignite">IGNITE COMPRESSION</button>
             </section>
         </main>
@@ -83,7 +87,7 @@
 
     <div id="successModal" class="modal-overlay hidden">
         <div class="modal-box">
-            <div class="modal-header">⚡ COMPRESSION DATA</div>
+            <div class="modal-header">⚡ COMPRESSION COMPLETE</div>
             <div class="comparison-container">
                 <div class="comp-row"><span>Original Size:</span><span id="oldSize">---</span></div>
                 <div class="comp-row highlight"><span>Potatofied Size:</span><span id="newSize">---</span></div>
@@ -92,6 +96,7 @@
             <button id="closeModal" class="btn-reset">Return to Laboratory</button>
         </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
