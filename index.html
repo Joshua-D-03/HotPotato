@@ -2,80 +2,93 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Hot Potato | Universal Asset Laboratory</title>
-    <link rel="stylesheet" text="style/css" href="style.css">
+    <title>Hot Potato | Universal Asset Lab</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <header class="engine-core">
-        <div class="potato-stage">
-            <div class="lightning-wrap">
-                <div class="bolt"></div>
-                <div class="bolt"></div>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3>🖥️ STATION PROFILE</h3>
+                <p>Enter specs for custom optimization</p>
             </div>
-            <div class="electric-potato">🥔</div>
-            <div class="glow-ring"></div>
-        </div>
-        <h1>HOT<span>POTATO</span></h1>
-        <p class="tagline">Universal Video Game Compressor</p>
-        
-        <nav class="ez-nav">
-            <a href="#" class="active">Compressor</a>
-            <a href="#">Texture Peeler</a>
-            <a href="#">Sound Crusher</a>
-            <a href="#">Specs Check</a>
-        </nav>
-    </header>
-
-    <main class="lab-workspace">
-        <div class="tool-container">
-            <h2 class="tool-title">Optimize Game Assets</h2>
             
-            <div class="upload-box" id="dropZone">
-                <div class="dz-content">
-                    <span class="dz-icon">⚡</span>
-                    <p>Select game file or archive from your computer</p>
-                    <input type="file" id="gameInput" hidden>
-                    <button class="btn-browse" onclick="document.getElementById('gameInput').click()">Choose File</button>
-                    <p class="file-info" id="fileNameDisplay">No file selected</p>
+            <div class="profile-inputs">
+                <div class="field">
+                    <label>Computer Model</label>
+                    <input type="text" id="pcModel" placeholder="e.g. ThinkPad T480">
+                </div>
+                <div class="field">
+                    <label>Processor (CPU)</label>
+                    <input type="text" id="cpuModel" placeholder="e.g. Core i3-7100U">
+                </div>
+                <div class="field">
+                    <label>Total RAM (GB)</label>
+                    <input type="number" id="ramInput" placeholder="8">
+                </div>
+                <div class="field">
+                    <label>Storage Type</label>
+                    <select id="storageType">
+                        <option value="hdd">HDD (Slow)</option>
+                        <option value="ssd" selected>SSD (Fast)</option>
+                        <option value="nvme">NVMe (Extreme)</option>
+                    </select>
                 </div>
             </div>
 
-            <div class="settings-panel">
-                <div class="setting-group">
-                    <label>Optimization Strength:</label>
-                    <input type="range" id="strengthSlider" min="1" max="100" value="50">
-                    <div class="slider-labels">
-                        <span>Performance</span>
-                        <span id="strengthMode">Balanced</span>
-                        <span>Quality</span>
+            <div class="recommendation-box" id="recommendationBox">
+                <h4>POTATO SUGGESTION</h4>
+                <div id="suggestedLevel" class="level-badge">Awaiting Data...</div>
+                <p id="logicReasoning">Fill in your specs to see the ideal compression ratio.</p>
+            </div>
+        </aside>
+
+        <main class="main-lab">
+            <header class="engine-header">
+                <div class="potato-chamber">
+                    <div class="electric-potato">🥔</div>
+                    <div class="energy-ring"></div>
+                </div>
+                <h1>HOT<span>POTATO</span></h1>
+            </header>
+
+            <section class="tool-card">
+                <div class="drop-zone" id="dropZone">
+                    <input type="file" id="fileInput" hidden>
+                    <div class="dz-text">
+                        <span class="icon">📁</span>
+                        <p id="fileLabel">Drag or Select Game Folder</p>
                     </div>
                 </div>
                 
-                <div id="readabilityWarn" class="warning-panel hidden">
-                    ⚠️ Readability Warning: Textures may become blurred.
+                <div id="logArea" class="log-container hidden">
+                    <div class="progress-bar"><div id="progressFill" class="fill"></div></div>
+                    <div id="statusLog" class="status-log"></div>
                 </div>
 
-                <button id="igniteBtn" class="btn-primary">IGNITE COMPRESSION</button>
-            </div>
+                <button id="igniteBtn" class="btn-ignite">IGNITE OPTIMIZATION</button>
+            </section>
 
-            <div id="progressArea" class="progress-container hidden">
-                <p id="statusText">Analyzing file headers...</p>
-                <div class="bar-bg">
-                    <div id="barFill" class="bar-fill"></div>
+            <section class="library-container">
+                <div class="lib-header">
+                    <h3>Optimized Library</h3>
+                    <button id="clearLib" class="btn-clear">Clear All</button>
                 </div>
-            </div>
+                <div id="gameGrid" class="grid-layout"></div>
+            </section>
+        </main>
+    </div>
 
-            <div id="downloadArea" class="result-box hidden">
-                <div class="success-header">Success! Game assets optimized.</div>
-                <div class="stats">
-                    <p>Estimated Savings: <span id="savingsVal">0%</span></p>
-                    <p>New File Size: <span id="newSizeVal">0 MB</span></p>
-                </div>
-                <button id="downloadBtn" class="btn-download">Download Optimized File</button>
+    <div id="successModal" class="modal hidden">
+        <div class="modal-content">
+            <h2>⚡ Optimization Success!</h2>
+            <div class="report-stats">
+                <p>Game: <span id="repName">---</span></p>
+                <p>New Est. Size: <span id="repSavings" class="highlight">---</span></p>
             </div>
+            <button id="closeModal" class="btn-ignite">Return to Lab</button>
         </div>
-    </main>
+    </div>
 
     <script src="script.js"></script>
 </body>
