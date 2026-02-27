@@ -1,16 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
-    const fileLabel = document.getElementById('fileLabel');
     const igniteBtn = document.getElementById('igniteBtn');
-    const compLevel = document.getElementById('compLevel');
-    const ramInput = document.getElementById('ramInput');
+    const potato = document.getElementById('potato');
+    const energyRing = document.getElementById('energyRing');
     const hwLog = document.getElementById('hwLog');
-    const successModal = document.getElementById('successModal');
-
+    
     let currentFile = null;
 
-    // --- DRAG & DROP REINFORCEMENT ---
+    // --- 1. DRAG & DROP ENGINE ---
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eName => {
         window.addEventListener(eName, e => {
             e.preventDefault();
@@ -24,28 +22,28 @@ document.addEventListener('DOMContentLoaded', () => {
     dropZone.addEventListener('drop', (e) => {
         dropZone.classList.remove('active');
         const files = e.dataTransfer.files;
-        if (files.length) handleFile(files[0]);
+        if (files.length) handleSelection(files[0]);
     });
 
     dropZone.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length) handleFile(e.target.files[0]);
+        if (e.target.files.length) handleSelection(e.target.files[0]);
     });
 
-    function handleFile(file) {
+    function handleSelection(file) {
         currentFile = file;
-        fileLabel.innerHTML = `<strong>TARGET ACQUIRED:</strong><br>${file.name}`;
-        addHwLog(`File Loaded: ${file.name}`);
+        document.getElementById('fileLabel').innerHTML = `<strong>TARGET ACQUIRED:</strong><br>${file.name}`;
+        addHwLog(`Target: ${file.name} loaded.`);
     }
 
-    // --- HARDWARE BENCHMARK ---
+    // --- 2. HARDWARE LOGIC ---
     document.getElementById('runBenchmark').onclick = () => {
         addHwLog("Running CPU Stress Test...");
         const start = performance.now();
         for(let i=0; i<5000000; i++) { Math.sqrt(i); }
         const time = performance.now() - start;
         
-        const ram = parseInt(ramInput.value) || 0;
+        const ram = parseInt(document.getElementById('ramInput').value) || 0;
         addHwLog(`Latency: ${time.toFixed(2)}ms | RAM: ${ram}GB`);
 
         if (ram <= 4 || time > 120) {
@@ -61,82 +59,75 @@ document.addEventListener('DOMContentLoaded', () => {
         hwLog.prepend(p);
     }
 
-    // --- IGNITE COMPRESSION ---
+    // --- 3. IGNITE & DYNAMIC TIMER ---
     igniteBtn.onclick = () => {
-        if (!currentFile) return alert("Drag a game in first!");
+        if (!currentFile) return alert("Select a game first!");
 
-        const ram = parseInt(ramInput.value);
-        if (compLevel.value === "0.85" && ram >= 12) {
-            if(!confirm("Potato Mode is overkill for your high RAM. Continue anyway?")) return;
-        }
+        const ratio = parseFloat(document.getElementById('compLevel').value);
+        const fileSizeMB = currentFile.size / (1024 * 1024);
+        
+        // Est: 3s base + 1.5s per 100MB + complexity weight
+        let secondsLeft = Math.ceil(3 + (fileSizeMB / 100) + (ratio * 8));
+        const totalDuration = secondsLeft;
 
         document.getElementById('progressArea').classList.remove('hidden');
         igniteBtn.disabled = true;
 
-        let i = 0;
-        const steps = ["Scrubbing Assets...", "Peeling Textures...", "Boiling Shaders...", "Mashing Bloat...", "Finalizing Download..."];
-        const interval = setInterval(() => {
-            if (i < steps.length) {
-                const p = document.createElement('div');
-                p.innerText = `> ${steps[i]}`;
-                document.getElementById('statusLog').prepend(p);
-                document.getElementById('progressFill').style.width = ((i+1)/steps.length)*100 + "%";
-                i++;
-            } else {
-                clearInterval(interval);
-                finish();
+        const timerInterval = setInterval(() => {
+            secondsLeft--;
+            document.getElementById('timeLeft').innerText = `Time Left: ${secondsLeft}s`;
+            
+            const progress = ((totalDuration - secondsLeft) / totalDuration) * 100;
+            document.getElementById('progressFill').style.width = progress + "%";
+
+            // Overdrive effect at 80%
+            if (progress > 80) {
+                potato.classList.add('overdrive');
+                energyRing.style.borderColor = "#ff0000";
             }
-        }, 800);
+
+            if (secondsLeft % 2 === 0) {
+                const logs = ["Boiling Shaders...", "Mashing Textures...", "Stripping Bloat..."];
+                const p = document.createElement('div');
+                p.innerText = `> ${logs[Math.floor(Math.random()*logs.length)]}`;
+                p.style.color = "#00ff88";
+                document.getElementById('statusLog').prepend(p);
+            }
+
+            if (secondsLeft <= 0) {
+                clearInterval(timerInterval);
+                finish(ratio);
+            }
+        }, 1000);
     };
 
-    function finish() {
-        const ratio = parseFloat(compLevel.value);
-        const originalSize = currentFile.size / (1024 * 1024); // MB
+    function finish(ratio) {
+        const originalSize = currentFile.size / (1024 * 1024);
         const newSize = originalSize * (1 - ratio);
 
         document.getElementById('oldSize').innerText = originalSize.toFixed(2) + " MB";
         document.getElementById('newSize').innerText = newSize.toFixed(2) + " MB";
         document.getElementById('percentSaved').innerText = (ratio * 100).toFixed(0) + "%";
 
-        successModal.classList.remove('hidden');
-
-        // Automatic Download
+        document.getElementById('successModal').classList.remove('hidden');
+        
+        // Trigger Download
         const a = document.createElement('a');
         a.href = URL.createObjectURL(currentFile);
         a.download = `potatofied_${currentFile.name}`;
         a.click();
-        
-        saveToLibrary(currentFile.name);
     }
 
-    // --- RESET UI ---
+    // --- 4. RESET ---
     document.getElementById('closeModal').onclick = () => {
-        successModal.classList.add('hidden');
-        igniteBtn.disabled = false;
+        document.getElementById('successModal').classList.add('hidden');
         document.getElementById('progressArea').classList.add('hidden');
-        document.getElementById('statusLog').innerHTML = "";
         document.getElementById('progressFill').style.width = "0%";
+        document.getElementById('statusLog').innerHTML = "";
+        potato.classList.remove('overdrive');
+        energyRing.style.borderColor = "#00f2ff";
+        igniteBtn.disabled = false;
         currentFile = null;
-        fileLabel.innerHTML = `<strong>DRAG GAME HERE</strong><br>or click to browse`;
+        document.getElementById('fileLabel').innerHTML = `<strong>DRAG GAME HERE</strong><br>or click to browse`;
     };
-
-    function saveToLibrary(name) {
-        let lib = JSON.parse(localStorage.getItem('hp_lib')) || [];
-        lib.push({ name: name, id: Date.now() });
-        localStorage.setItem('hp_lib', JSON.stringify(lib));
-        render();
-    }
-
-    function render() {
-        const lib = JSON.parse(localStorage.getItem('hp_lib')) || [];
-        document.getElementById('gameGrid').innerHTML = lib.map(g => `
-            <div class="game-card" style="background:#222; border:1px solid #333; padding:15px; margin-top:10px; text-align:left;">
-                <h4 style="margin:0; color:var(--orange)">${g.name}</h4>
-                <p style="margin:5px 0 0; font-size:0.7rem; color:#888;">Compressed Ready</p>
-            </div>
-        `).join('');
-    }
-
-    document.getElementById('clearLib').onclick = () => { localStorage.removeItem('hp_lib'); render(); };
-    render();
 });
