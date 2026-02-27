@@ -1,133 +1,147 @@
-document.addEventListener('DOMContentLoaded', () => {
+// --- Supabase Config (Insert your keys here) ---
+const supabaseUrl = 'YOUR_SUPABASE_URL';
+const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+document.addEventListener('DOMContentLoaded', async () => {
+    // --- Auth DOM Elements ---
+    const authEmail = document.getElementById('authEmail');
+    const authPass = document.getElementById('authPass');
+    const rememberMe = document.getElementById('rememberMe');
+    const loggedOutUI = document.getElementById('loggedOutUI');
+    const loggedInUI = document.getElementById('loggedInUI');
+    const userDisplay = document.getElementById('userDisplay');
+
+    // --- Remember Me Logic ---
+    const savedEmail = localStorage.getItem('hp_remember_email');
+    if (savedEmail) {
+        authEmail.value = savedEmail;
+        rememberMe.checked = true;
+    }
+
+    // --- Check Active Session ---
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) {
+        updateAuthUI(session.user);
+    }
+
+    function updateAuthUI(user) {
+        if (user) {
+            loggedOutUI.classList.add('hidden');
+            loggedInUI.classList.remove('hidden');
+            userDisplay.innerText = user.email;
+        }
+    }
+
+    // --- Auth Actions ---
+    document.getElementById('signUpBtn').onclick = async () => {
+        const { error } = await supabaseClient.auth.signUp({ 
+            email: authEmail.value, 
+            password: authPass.value 
+        });
+        if (error) alert(error.message);
+        else alert("Verification email sent! Check your inbox.");
+    };
+
+    document.getElementById('signInBtn').onclick = async () => {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ 
+            email: authEmail.value, 
+            password: authPass.value 
+        });
+        if (error) return alert(error.message);
+
+        if (rememberMe.checked) localStorage.setItem('hp_remember_email', authEmail.value);
+        else localStorage.removeItem('hp_remember_email');
+        
+        location.reload();
+    };
+
+    document.getElementById('signOutBtn').onclick = async () => {
+        await supabaseClient.auth.signOut();
+        location.reload();
+    };
+
+    // --- Compression Engine ---
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
     const igniteBtn = document.getElementById('igniteBtn');
     const potato = document.getElementById('potato');
     const energyRing = document.getElementById('energyRing');
-    const hwLog = document.getElementById('hwLog');
-    
     let currentFile = null;
 
-    // --- 1. DRAG & DROP ENGINE ---
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eName => {
-        window.addEventListener(eName, e => {
-            e.preventDefault();
-            e.stopPropagation();
-        });
-    });
-
-    dropZone.addEventListener('dragover', () => dropZone.classList.add('active'));
-    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('active'));
+    ['dragover', 'drop'].forEach(e => window.addEventListener(e, ev => ev.preventDefault()));
 
     dropZone.addEventListener('drop', (e) => {
-        dropZone.classList.remove('active');
-        const files = e.dataTransfer.files;
-        if (files.length) handleSelection(files[0]);
+        if (e.dataTransfer.files.length) {
+            currentFile = e.dataTransfer.files[0];
+            document.getElementById('fileLabel').innerHTML = `<strong>TARGET:</strong> ${currentFile.name}`;
+        }
     });
 
     dropZone.addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length) handleSelection(e.target.files[0]);
-    });
+    fileInput.onchange = (e) => { if(e.target.files[0]) { 
+        currentFile = e.target.files[0];
+        document.getElementById('fileLabel').innerHTML = `<strong>TARGET:</strong> ${currentFile.name}`;
+    }};
 
-    function handleSelection(file) {
-        currentFile = file;
-        document.getElementById('fileLabel').innerHTML = `<strong>TARGET ACQUIRED:</strong><br>${file.name}`;
-        addHwLog(`Target: ${file.name} loaded.`);
-    }
-
-    // --- 2. HARDWARE LOGIC ---
+    // Benchmark Logic
     document.getElementById('runBenchmark').onclick = () => {
-        addHwLog("Running CPU Stress Test...");
         const start = performance.now();
-        for(let i=0; i<5000000; i++) { Math.sqrt(i); }
+        for(let i=0; i<5000000; i++) Math.sqrt(i);
         const time = performance.now() - start;
-        
         const ram = parseInt(document.getElementById('ramInput').value) || 0;
-        addHwLog(`Latency: ${time.toFixed(2)}ms | RAM: ${ram}GB`);
-
-        if (ram <= 4 || time > 120) {
-            document.getElementById('suggestedLevel').innerText = "SUGGESTION: POTATO MODE";
-        } else {
-            document.getElementById('suggestedLevel').innerText = "SUGGESTION: STANDARD";
-        }
+        
+        const log = document.getElementById('hwLog');
+        const p = document.createElement('p');
+        p.innerText = `> CPU Latency: ${time.toFixed(2)}ms | RAM: ${ram}GB`;
+        log.prepend(p);
+        
+        document.getElementById('suggestedLevel').innerText = (ram < 6) ? "SUGGESTION: POTATO" : "SUGGESTION: STANDARD";
     };
 
-    function addHwLog(msg) {
-        const p = document.createElement('p');
-        p.innerText = `> ${msg}`;
-        hwLog.prepend(p);
-    }
-
-    // --- 3. IGNITE & DYNAMIC TIMER ---
+    // Ignite Compression
     igniteBtn.onclick = () => {
-        if (!currentFile) return alert("Select a game first!");
-
-        const ratio = parseFloat(document.getElementById('compLevel').value);
-        const fileSizeMB = currentFile.size / (1024 * 1024);
+        if (!currentFile) return alert("Please select a game first!");
         
-        // Est: 3s base + 1.5s per 100MB + complexity weight
-        let secondsLeft = Math.ceil(3 + (fileSizeMB / 100) + (ratio * 8));
-        const totalDuration = secondsLeft;
-
         document.getElementById('progressArea').classList.remove('hidden');
         igniteBtn.disabled = true;
 
-        const timerInterval = setInterval(() => {
-            secondsLeft--;
-            document.getElementById('timeLeft').innerText = `Time Left: ${secondsLeft}s`;
-            
-            const progress = ((totalDuration - secondsLeft) / totalDuration) * 100;
-            document.getElementById('progressFill').style.width = progress + "%";
+        const ratio = parseFloat(document.getElementById('compLevel').value);
+        const fileSizeMB = currentFile.size / 1e6;
+        let timeLeft = Math.ceil(3 + (fileSizeMB / 100) + (ratio * 10));
+        const total = timeLeft;
 
-            // Overdrive effect at 80%
+        const interval = setInterval(() => {
+            timeLeft--;
+            const progress = ((total - timeLeft) / total) * 100;
+            document.getElementById('progressFill').style.width = progress + "%";
+            document.getElementById('timeLeft').innerText = `Est: ${timeLeft}s`;
+
             if (progress > 80) {
                 potato.classList.add('overdrive');
                 energyRing.style.borderColor = "#ff0000";
             }
 
-            if (secondsLeft % 2 === 0) {
-                const logs = ["Boiling Shaders...", "Mashing Textures...", "Stripping Bloat..."];
-                const p = document.createElement('div');
-                p.innerText = `> ${logs[Math.floor(Math.random()*logs.length)]}`;
-                p.style.color = "#00ff88";
-                document.getElementById('statusLog').prepend(p);
-            }
-
-            if (secondsLeft <= 0) {
-                clearInterval(timerInterval);
-                finish(ratio);
+            if (timeLeft <= 0) {
+                clearInterval(interval);
+                showSuccess(ratio);
             }
         }, 1000);
     };
 
-    function finish(ratio) {
-        const originalSize = currentFile.size / (1024 * 1024);
-        const newSize = originalSize * (1 - ratio);
-
-        document.getElementById('oldSize').innerText = originalSize.toFixed(2) + " MB";
-        document.getElementById('newSize').innerText = newSize.toFixed(2) + " MB";
+    function showSuccess(ratio) {
+        const oldSize = currentFile.size / 1e6;
+        document.getElementById('oldSize').innerText = oldSize.toFixed(2) + " MB";
+        document.getElementById('newSize').innerText = (oldSize * (1 - ratio)).toFixed(2) + " MB";
         document.getElementById('percentSaved').innerText = (ratio * 100).toFixed(0) + "%";
-
         document.getElementById('successModal').classList.remove('hidden');
-        
-        // Trigger Download
+
+        // Auto Download
         const a = document.createElement('a');
         a.href = URL.createObjectURL(currentFile);
         a.download = `potatofied_${currentFile.name}`;
         a.click();
     }
 
-    // --- 4. RESET ---
-    document.getElementById('closeModal').onclick = () => {
-        document.getElementById('successModal').classList.add('hidden');
-        document.getElementById('progressArea').classList.add('hidden');
-        document.getElementById('progressFill').style.width = "0%";
-        document.getElementById('statusLog').innerHTML = "";
-        potato.classList.remove('overdrive');
-        energyRing.style.borderColor = "#00f2ff";
-        igniteBtn.disabled = false;
-        currentFile = null;
-        document.getElementById('fileLabel').innerHTML = `<strong>DRAG GAME HERE</strong><br>or click to browse`;
-    };
+    document.getElementById('closeModal').onclick = () => location.reload();
 });
