@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hot Potato | Video Game Compressor</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3>🖥️ STATION PROFILE</h3>
+            </div>
+            
+            <div class="profile-inputs">
+                <div class="field">
+                    <label>RAM (GB)</label>
+                    <input type="number" id="ramInput" placeholder="8">
+                </div>
+                <div class="field">
+                    <label>Compression Level</label>
+                    <select id="compLevel">
+                        <option value="0.15">Standard Peel (15%)</option>
+                        <option value="0.45">Extreme Crush (45%)</option>
+                        <option value="0.85">POTATO MODE (85%)</option>
+                    </select>
+                </div>
+                <button id="runBenchmark" class="btn-benchmark">⚡ Run Hardware Test</button>
+            </div>
+
+            <div class="log-box">
+                <h4>OPTIMIZATION LOG</h4>
+                <div id="hwLog" class="hw-log">
+                    <p class="dim">> System Idle...</p>
+                </div>
+            </div>
+
+            <div id="suggestedLevel" class="level-badge">---</div>
+        </aside>
+
+        <main class="main-lab">
+            <header class="engine-header">
+                <div class="potato-chamber">
+                    <div id="potato" class="electric-potato">🥔</div>
+                    <div id="energyRing" class="energy-ring"></div>
+                </div>
+                <h1 class="main-title">HOT<span>POTATO</span></h1>
+                <p class="main-subheading">Video Game Compressor</p>
+            </header>
+
+            <section class="tool-card">
+                <div class="drop-zone" id="dropZone">
+                    <input type="file" id="fileInput" style="display:none;">
+                    <div class="dz-content">
+                        <span class="dz-icon">📥</span>
+                        <p id="fileLabel"><strong>DRAG GAME HERE</strong><br>or click to browse</p>
+                    </div>
+                </div>
+                
+                <div id="progressArea" class="log-container hidden">
+                    <div class="progress-info">
+                        <span id="progressStatus">Optimizing Assets...</span>
+                        <span id="timeLeft">Est: --:--</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progressFill" class="fill"></div>
+                    </div>
+                    <div id="statusLog" class="status-log"></div>
+                </div>
+
+                <button id="igniteBtn" class="btn-ignite">IGNITE COMPRESSION</button>
+            </section>
+        </main>
+    </div>
+
+    <div id="successModal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <div class="modal-header">⚡ COMPRESSION DATA</div>
+            <div class="comparison-container">
+                <div class="comp-row">
+                    <span>Original Size:</span>
+                    <span id="oldSize">---</span>
+                </div>
+                <div class="comp-row highlight">
+                    <span>Potatofied Size:</span>
+                    <span id="newSize">---</span>
+                </div>
+                <div class="savings-badge">
+                    SAVED <span id="percentSaved">0%</span> OF BLOAT
+                </div>
+            </div>
+            <button id="closeModal" class="btn-reset">Return to Laboratory</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
