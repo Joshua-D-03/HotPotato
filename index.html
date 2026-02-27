@@ -11,15 +11,10 @@
             <div class="sidebar-header">
                 <h3>🖥️ STATION PROFILE</h3>
             </div>
-            
             <div class="profile-inputs">
                 <div class="field">
                     <label>PC Model</label>
-                    <input type="text" id="pcModel" placeholder="e.g. Latitude E6410">
-                </div>
-                <div class="field">
-                    <label>CPU</label>
-                    <input type="text" id="cpuModel" placeholder="e.g. i3-330M">
+                    <input type="text" id="pcModel" placeholder="e.g. Optiplex 7010">
                 </div>
                 <div class="field">
                     <label>RAM (GB)</label>
@@ -27,14 +22,10 @@
                 </div>
                 <button id="runBenchmark" class="btn-benchmark">⚡ Run Hardware Test</button>
             </div>
-
             <div class="log-box">
                 <h4>OPTIMIZATION LOG</h4>
-                <div id="hwLog" class="hw-log">
-                    <p class="dim">> System Idle...</p>
-                </div>
+                <div id="hwLog" class="hw-log"><p class="dim">> System Idle...</p></div>
             </div>
-
             <div class="recommendation-box">
                 <h4>SUGGESTED MODE</h4>
                 <div id="suggestedLevel" class="level-badge">---</div>
@@ -75,12 +66,14 @@
         </main>
     </div>
 
-    <div id="successModal" class="modal hidden">
-        <div class="modal-content">
-            <h2>⚡ COMPRESSION COMPLETE</h2>
-            <p id="repName" style="color:var(--orange)"></p>
-            <p class="highlight">Check your Downloads folder</p>
-            <button id="closeModal" class="btn-ignite">Return to Lab</button>
+    <div id="successModal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <div class="modal-header">⚡ COMPRESSION SUCCESS</div>
+            <div class="modal-body">
+                <p id="repName" class="file-highlight"></p>
+                <p>The optimized package has been sent to your <strong>Downloads</strong> folder.</p>
+            </div>
+            <button id="closeModal" class="btn-reset">Return to Laboratory</button>
         </div>
     </div>
 
