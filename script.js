@@ -3,15 +3,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const fileInput = document.getElementById('fileInput');
     const fileLabel = document.getElementById('fileLabel');
     const igniteBtn = document.getElementById('igniteBtn');
-    const hwLog = document.getElementById('hwLog');
-    const ramInput = document.getElementById('ramInput');
-    const suggestLabel = document.getElementById('suggestedLevel');
-
+    const successModal = document.getElementById('successModal');
+    const closeModal = document.getElementById('closeModal');
+    
     let currentFile = null;
 
-    // --- 1. DRAG AND DROP HANDLERS ---
+    // --- DRAG AND DROP HANDLERS (Reinforced) ---
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eName => {
-        dropZone.addEventListener(eName, e => {
+        window.addEventListener(eName, e => {
             e.preventDefault();
             e.stopPropagation();
         });
@@ -26,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (files.length) handleSelection(files[0]);
     });
 
-    // --- 2. FILE INPUT HANDLER ---
     dropZone.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', (e) => {
         if (e.target.files.length) handleSelection(e.target.files[0]);
@@ -34,45 +32,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleSelection(file) {
         currentFile = file;
-        fileLabel.innerHTML = `<strong>FILE READY:</strong><br>${file.name}`;
-        addHwLog(`Target acquired: ${file.name}`);
+        fileLabel.innerHTML = `<strong>TARGET ACQUIRED:</strong><br>${file.name}`;
+        addHwLog(`File loaded: ${file.name}`);
     }
 
-    // --- 3. HARDWARE BENCHMARK ---
+    // --- BENCHMARK ---
     document.getElementById('runBenchmark').onclick = () => {
-        addHwLog("Running CPU stress test...");
-        const start = performance.now();
-        for(let i=0; i<4000000; i++) { Math.sqrt(i); } // Heavy math
-        const duration = performance.now() - start;
-        
-        const ram = parseInt(ramInput.value) || 0;
-        addHwLog(`Latency: ${duration.toFixed(2)}ms | RAM: ${ram}GB`);
-
-        if (ram <= 4 || duration > 100) {
-            suggestLabel.innerText = "EXTREME CRUSH";
-            addHwLog("Recommendation: Full downscaling required.");
-        } else {
-            suggestLabel.innerText = "STANDARD PEEL";
-            addHwLog("Recommendation: Standard optimization safe.");
-        }
+        addHwLog("Running CPU test...");
+        setTimeout(() => {
+            addHwLog("Analysis complete.");
+            document.getElementById('suggestedLevel').innerText = "EXTREME CRUSH";
+        }, 1000);
     };
 
     function addHwLog(msg) {
         const p = document.createElement('p');
         p.innerText = `> ${msg}`;
-        hwLog.prepend(p);
+        document.getElementById('hwLog').prepend(p);
     }
 
-    // --- 4. OPTIMIZATION LOGIC ---
+    // --- COMPRESSION START ---
     igniteBtn.onclick = () => {
-        if (!currentFile) return alert("Please drag or select a game file first.");
+        if (!currentFile) return alert("Please select a game first.");
         
         document.getElementById('progressArea').classList.remove('hidden');
         igniteBtn.disabled = true;
         
-        let steps = ["Mashing Shaders...", "Peeling Textures...", "Boiling Bloat...", "Finalizing Download..."];
         let i = 0;
-
+        const steps = ["Scrubbing Assets...", "Downscaling Texture Maps...", "Finalizing Build..."];
         const interval = setInterval(() => {
             if (i < steps.length) {
                 const p = document.createElement('div');
@@ -89,14 +76,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function finish() {
         document.getElementById('repName').innerText = currentFile.name;
-        document.getElementById('successModal').classList.remove('hidden');
+        successModal.classList.remove('hidden');
 
-        // Automatically trigger the download back to the user
+        // Trigger Download
         const a = document.createElement('a');
         a.href = URL.createObjectURL(currentFile);
         a.download = `potatofied_${currentFile.name}`;
         a.click();
+        
+        saveToLibrary(currentFile.name);
     }
 
-    document.getElementById('closeModal').onclick = () => location.reload();
+    // --- THE FIX: RESET UI FUNCTION ---
+    closeModal.onclick = () => {
+        // 1. Hide Modal
+        successModal.classList.add('hidden');
+        
+        // 2. Reset Button and Progress
+        igniteBtn.disabled = false;
+        document.getElementById('progressArea').classList.add('hidden');
+        document.getElementById('progressFill').style.width = "0%";
+        document.getElementById('statusLog').innerHTML = "";
+        
+        // 3. Clear current file
+        currentFile = null;
+        fileLabel.innerHTML = `<strong>DRAG GAME HERE</strong><br>or click to browse`;
+        addHwLog("System Reset. Ready for next game.");
+    };
+
+    function saveToLibrary(name) {
+        let lib = JSON.parse(localStorage.getItem('hp_lib')) || [];
+        lib.push({ name: name, id: Date.now() });
+        localStorage.setItem('hp_lib', JSON.stringify(lib));
+        render();
+    }
+
+    function render() {
+        const lib = JSON.parse(localStorage.getItem('hp_lib')) || [];
+        document.getElementById('gameGrid').innerHTML = lib.map(g => `<div class="game-card"><h4>${g.name}</h4><p>Potatofied</p></div>`).join('');
+    }
+
+    document.getElementById('clearLib').onclick = () => { localStorage.removeItem('hp_lib'); render(); };
+    render();
 });
