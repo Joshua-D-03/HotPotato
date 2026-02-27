@@ -8,27 +8,25 @@
 <body>
     <div class="app-container">
         <aside class="sidebar">
-            <div class="sidebar-header">
-                <h3>🖥️ STATION PROFILE</h3>
-            </div>
+            <div class="sidebar-header"><h3>🖥️ STATION PROFILE</h3></div>
             <div class="profile-inputs">
                 <div class="field">
-                    <label>PC Model</label>
-                    <input type="text" id="pcModel" placeholder="e.g. Optiplex 7010">
+                    <label>RAM (GB)</label>
+                    <input type="number" id="ramInput" placeholder="8">
                 </div>
                 <div class="field">
-                    <label>RAM (GB)</label>
-                    <input type="number" id="ramInput" placeholder="4">
+                    <label>Compression Level</label>
+                    <select id="compLevel">
+                        <option value="0.15">Standard Peel (15%)</option>
+                        <option value="0.45">Extreme Crush (45%)</option>
+                        <option value="0.85">POTATO MODE (85%)</option>
+                    </select>
                 </div>
                 <button id="runBenchmark" class="btn-benchmark">⚡ Run Hardware Test</button>
             </div>
             <div class="log-box">
                 <h4>OPTIMIZATION LOG</h4>
                 <div id="hwLog" class="hw-log"><p class="dim">> System Idle...</p></div>
-            </div>
-            <div class="recommendation-box">
-                <h4>SUGGESTED MODE</h4>
-                <div id="suggestedLevel" class="level-badge">---</div>
             </div>
         </aside>
 
@@ -49,29 +47,30 @@
                         <p id="fileLabel"><strong>DRAG GAME HERE</strong><br>or click to browse</p>
                     </div>
                 </div>
-                
                 <div id="progressArea" class="log-container hidden">
                     <div class="progress-bar"><div id="progressFill" class="fill"></div></div>
                     <div id="statusLog" class="status-log"></div>
                 </div>
-
                 <button id="igniteBtn" class="btn-ignite">IGNITE COMPRESSION</button>
             </section>
-
-            <div class="library-header">
-                <h3>Library</h3>
-                <button id="clearLib" class="btn-clear">Wipe Data</button>
-            </div>
-            <div id="gameGrid" class="grid-layout"></div>
         </main>
     </div>
 
     <div id="successModal" class="modal-overlay hidden">
         <div class="modal-box">
-            <div class="modal-header">⚡ COMPRESSION SUCCESS</div>
-            <div class="modal-body">
-                <p id="repName" class="file-highlight"></p>
-                <p>The optimized package has been sent to your <strong>Downloads</strong> folder.</p>
+            <div class="modal-header">⚡ COMPRESSION DATA</div>
+            <div class="comparison-container">
+                <div class="comp-row">
+                    <span>Original Size:</span>
+                    <span id="oldSize" class="size-val">---</span>
+                </div>
+                <div class="comp-row highlight">
+                    <span>Potatofied Size:</span>
+                    <span id="newSize" class="size-val">---</span>
+                </div>
+                <div class="savings-badge">
+                    SAVED <span id="percentSaved">0%</span> OF BLOAT
+                </div>
             </div>
             <button id="closeModal" class="btn-reset">Return to Laboratory</button>
         </div>
