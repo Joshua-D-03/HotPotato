@@ -1,50 +1,87 @@
-:root { 
-    --orange: #da8100; 
-    --cyan: #00f2ff; 
+:root {
+    --orange: #da8100;
+    --cyan: #00f2ff;
     --dark-bg: #050505;
+    --card-bg: #1a1a1a;
 }
 
-body { background: var(--dark-bg); color: #eee; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; overflow: hidden; }
+body {
+    background: var(--dark-bg);
+    color: #eee;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    margin: 0;
+    overflow: hidden;
+}
+
 .app-container { display: flex; height: 100vh; }
 
-/* Sidebar & Profile */
-.sidebar { width: 300px; background: #111; border-right: 1px solid #333; padding: 25px; display: flex; flex-direction: column; gap: 15px; }
-.field { display: flex; flex-direction: column; gap: 5px; }
-.field select, .field input { background: #1a1a1a; border: 1px solid #444; color: white; padding: 10px; border-radius: 4px; }
+/* Sidebar */
+.sidebar {
+    width: 300px;
+    background: #111;
+    border-right: 1px solid #333;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    overflow-y: auto;
+}
 
-/* Two-Tone Title Styling */
-.engine-header { margin-bottom: 30px; text-align: center; }
-.main-title { 
-    font-size: 3rem; 
-    margin: 0; 
-    color: #ffffff; /* White part */
-    font-weight: 900;
-    letter-spacing: -2px;
-    text-transform: uppercase;
+.sidebar h3 { color: #888; font-size: 0.8rem; letter-spacing: 2px; }
+
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label { font-size: 0.75rem; color: #666; font-weight: bold; }
+.field input, .field select {
+    background: #1a1a1a; border: 1px solid #444; color: white; padding: 10px; border-radius: 4px;
 }
-.main-title span { 
-    color: var(--orange); /* Orange part */
+
+.btn-benchmark {
+    background: transparent; border: 1px solid var(--cyan); color: var(--cyan);
+    padding: 10px; cursor: pointer; font-weight: bold; transition: 0.3s;
 }
-.main-subheading { 
-    color: #888; 
-    font-size: 0.9rem; 
-    text-transform: uppercase; 
-    letter-spacing: 4px; 
-    margin-top: -5px;
-}
+.btn-benchmark:hover { background: var(--cyan); color: black; }
+
+.log-box { background: #000; border: 1px solid #222; padding: 10px; flex: 1; min-height: 100px; overflow-y: auto; }
+.hw-log { font-family: monospace; font-size: 0.75rem; color: #00ff88; }
+.level-badge { font-weight: bold; font-size: 1.1rem; color: var(--orange); text-align: center; margin-top: 10px; }
+
+/* Main Lab Header */
+.main-lab { flex: 1; padding: 40px; overflow-y: auto; text-align: center; }
+
+.main-title { font-size: 3.5rem; margin: 0; color: #fff; font-weight: 900; letter-spacing: -2px; }
+.main-title span { color: var(--orange); }
+.main-subheading { color: #666; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 5px; margin-top: -5px; margin-bottom: 30px; }
 
 /* Potato Animation */
-.potato-chamber { position: relative; width: 100px; height: 100px; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; }
-.electric-potato { font-size: 50px; animation: spin 15s linear infinite; z-index: 2; }
+.potato-chamber { position: relative; width: 120px; height: 120px; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; }
+.electric-potato { font-size: 60px; animation: spin 15s linear infinite; z-index: 2; filter: drop-shadow(0 0 10px var(--orange)); }
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.energy-ring { position: absolute; width: 100px; height: 100px; border: 2px solid var(--cyan); border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.3; } 50% { transform: scale(1.15); opacity: 0.8; } }
 
-/* Main UI Components */
-.main-lab { flex: 1; padding: 40px; text-align: center; }
-.drop-zone { border: 2px dashed var(--orange); padding: 50px; cursor: pointer; background: rgba(218, 129, 0, 0.05); }
-.btn-ignite, .btn-reset { width: 100%; padding: 15px; background: var(--orange); border: none; color: white; cursor: pointer; font-weight: bold; margin-top: 10px; }
+/* Drop Zone */
+.drop-zone { 
+    border: 2px dashed var(--orange); padding: 50px; cursor: pointer; 
+    transition: 0.3s; background: rgba(218, 129, 0, 0.05); margin-bottom: 20px;
+}
+.drop-zone.active { background: rgba(0, 242, 255, 0.1); border-color: var(--cyan); }
+.dz-icon { font-size: 40px; display: block; margin-bottom: 10px; }
+
+.btn-ignite { width: 100%; padding: 20px; background: var(--orange); border: none; color: white; font-weight: bold; font-size: 1.1rem; cursor: pointer; }
+
+/* Progress & Modal */
+.log-container { background: #000; border: 1px solid #333; padding: 15px; margin-bottom: 20px; text-align: left; }
+.progress-bar { background: #222; height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 10px; }
+.fill { background: var(--cyan); height: 100%; width: 0%; transition: 0.3s; box-shadow: 0 0 10px var(--cyan); }
+.status-log { font-family: monospace; font-size: 0.8rem; color: #00ff88; height: 60px; overflow-y: hidden; }
+
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+.modal-box { background: var(--card-bg); border: 2px solid var(--orange); padding: 40px; width: 400px; text-align: center; }
+
+.comparison-container { background: #000; padding: 15px; border-radius: 4px; margin: 20px 0; }
+.comp-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; }
+.comp-row.highlight { color: var(--cyan); font-weight: bold; border-top: 1px solid #222; padding-top: 10px; }
+.savings-badge { background: var(--orange); color: white; padding: 10px; font-weight: bold; border-radius: 4px; }
+
+.btn-reset { width: 100%; padding: 15px; background: var(--orange); border: none; color: white; font-weight: bold; cursor: pointer; }
 .hidden { display: none !important; }
-
-/* Modal & Comparison */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 999; }
-.modal-box { background: #1a1a1a; padding: 30px; border: 2px solid var(--orange); width: 380px; }
-.savings-badge { background: var(--orange); color: white; padding: 10px; font-weight: bold; margin-top: 15px; border-radius: 4px; }
