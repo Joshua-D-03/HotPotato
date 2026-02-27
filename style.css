@@ -1,0 +1,111 @@
+:root {
+    --nexus-bg: #fdfdfd;
+    --nexus-orange: #da8100;
+    --electric-blue: #00d4ff;
+    --ez-blue: #0066cc;
+    --border: #ccc;
+}
+
+body {
+    background-color: var(--nexus-bg);
+    color: #333;
+    font-family: Arial, sans-serif;
+    margin: 0;
+}
+
+/* Electrified Potato Header */
+.engine-core {
+    background: #fff;
+    border-bottom: 5px solid var(--nexus-orange);
+    padding: 30px 0 0 0;
+    text-align: center;
+}
+
+.potato-stage {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.electric-potato {
+    font-size: 70px;
+    animation: rotatePotato 12s linear infinite;
+    z-index: 2;
+}
+
+@keyframes rotatePotato {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.glow-ring {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border: 3px solid var(--electric-blue);
+    border-radius: 50%;
+    box-shadow: 0 0 20px var(--electric-blue);
+    animation: pulseRing 1.5s infinite;
+}
+
+@keyframes pulseRing {
+    0% { transform: scale(0.9); opacity: 0.8; }
+    50% { transform: scale(1.1); opacity: 0.3; }
+    100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+.engine-core h1 { margin: 10px 0 0; letter-spacing: 2px; }
+.engine-core h1 span { color: var(--nexus-orange); }
+
+.ez-nav {
+    background: #eeeeee;
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.ez-nav a {
+    padding: 10px 20px;
+    text-decoration: none;
+    color: var(--ez-blue);
+    font-weight: bold;
+    border-right: 1px solid var(--border);
+}
+
+.ez-nav a.active { background: #fff; color: #333; }
+
+/* Workspace */
+.lab-workspace { max-width: 800px; margin: 30px auto; padding: 0 20px; }
+.tool-container { border: 1px solid var(--border); background: #fff; padding: 20px; }
+
+.upload-box {
+    border: 2px dashed #bbb;
+    background: #fafafa;
+    padding: 40px;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.btn-primary, .btn-download {
+    width: 100%;
+    padding: 15px;
+    background: #4caf50;
+    color: white;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-download { background: var(--ez-blue); margin-top: 15px; }
+
+.progress-container { margin: 20px 0; }
+.bar-bg { background: #eee; height: 20px; border-radius: 10px; overflow: hidden; }
+.bar-fill { background: #4caf50; width: 0%; height: 100%; transition: 0.3s; }
+
+.hidden { display: none; }
+.warning-panel { color: red; font-size: 0.8rem; margin-top: 10px; }
