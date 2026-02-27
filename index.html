@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hot Potato | Universal Asset Laboratory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="engine-core">
+        <div class="potato-stage">
+            <div class="lightning-wrap">
+                <div class="bolt"></div>
+                <div class="bolt"></div>
+            </div>
+            <div class="electric-potato">🥔</div>
+            <div class="glow-ring"></div>
+        </div>
+        <h1>HOT<span>POTATO</span></h1>
+        <p class="tagline">Universal Video Game Compressor</p>
+        
+        <nav class="ez-nav">
+            <a href="#" class="active">Compressor</a>
+            <a href="#">Texture Peeler</a>
+            <a href="#">Sound Crusher</a>
+            <a href="#">Specs Check</a>
+        </nav>
+    </header>
+
+    <main class="lab-workspace">
+        <div class="tool-container">
+            <h2 class="tool-title">Optimize Game Assets</h2>
+            
+            <div class="upload-box" id="dropZone">
+                <div class="dz-content">
+                    <span class="dz-icon">⚡</span>
+                    <p>Select game file or archive from your computer</p>
+                    <input type="file" id="gameInput" hidden>
+                    <button class="btn-browse" onclick="document.getElementById('gameInput').click()">Choose File</button>
+                    <p class="file-info" id="fileNameDisplay">No file selected</p>
+                </div>
+            </div>
+
+            <div class="settings-panel">
+                <div class="setting-group">
+                    <label>Optimization Strength:</label>
+                    <input type="range" id="strengthSlider" min="1" max="100" value="50">
+                    <div class="slider-labels">
+                        <span>Performance</span>
+                        <span id="strengthMode">Balanced</span>
+                        <span>Quality</span>
+                    </div>
+                </div>
+                
+                <div id="readabilityWarn" class="warning-panel hidden">
+                    ⚠️ Readability Warning: Textures may become blurred.
+                </div>
+
+                <button id="igniteBtn" class="btn-primary">IGNITE COMPRESSION</button>
+            </div>
+
+            <div id="progressArea" class="progress-container hidden">
+                <p id="statusText">Analyzing file headers...</p>
+                <div class="bar-bg">
+                    <div id="barFill" class="bar-fill"></div>
+                </div>
+            </div>
+
+            <div id="downloadArea" class="result-box hidden">
+                <div class="success-header">Success! Game assets optimized.</div>
+                <div class="stats">
+                    <p>Estimated Savings: <span id="savingsVal">0%</span></p>
+                    <p>New File Size: <span id="newSizeVal">0 MB</span></p>
+                </div>
+                <button id="downloadBtn" class="btn-download">Download Optimized File</button>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
