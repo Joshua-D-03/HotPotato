@@ -2,14 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hot Potato | Video Game Compressor</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app-container">
         <aside class="sidebar">
-            <div class="sidebar-header"><h3>🖥️ STATION PROFILE</h3></div>
+            <div class="sidebar-header">
+                <h3>🖥️ STATION PROFILE</h3>
+            </div>
+            
             <div class="profile-inputs">
+                <div class="field">
+                    <label>PC Model</label>
+                    <input type="text" id="pcModel" placeholder="e.g. Alienware M15">
+                </div>
                 <div class="field">
                     <label>RAM (GB)</label>
                     <input type="number" id="ramInput" placeholder="8">
@@ -24,10 +32,15 @@
                 </div>
                 <button id="runBenchmark" class="btn-benchmark">⚡ Run Hardware Test</button>
             </div>
+
             <div class="log-box">
                 <h4>OPTIMIZATION LOG</h4>
-                <div id="hwLog" class="hw-log"><p class="dim">> System Idle...</p></div>
+                <div id="hwLog" class="hw-log">
+                    <p class="dim">> System Idle...</p>
+                </div>
             </div>
+
+            <div id="suggestedLevel" class="level-badge">---</div>
         </aside>
 
         <main class="main-lab">
@@ -48,12 +61,20 @@
                         <p id="fileLabel"><strong>DRAG GAME HERE</strong><br>or click to browse</p>
                     </div>
                 </div>
+                
                 <div id="progressArea" class="log-container hidden">
                     <div class="progress-bar"><div id="progressFill" class="fill"></div></div>
                     <div id="statusLog" class="status-log"></div>
                 </div>
+
                 <button id="igniteBtn" class="btn-ignite">IGNITE COMPRESSION</button>
             </section>
+
+            <div class="library-header">
+                <h3>Optimized Library</h3>
+                <button id="clearLib" class="btn-clear">Wipe Data</button>
+            </div>
+            <div id="gameGrid" class="grid-layout"></div>
         </main>
     </div>
 
@@ -61,10 +82,19 @@
         <div class="modal-box">
             <div class="modal-header">⚡ COMPRESSION DATA</div>
             <div class="comparison-container">
-                <div class="comp-row"><span>Original Size:</span><span id="oldSize">---</span></div>
-                <div class="comp-row highlight"><span>Potatofied Size:</span><span id="newSize">---</span></div>
-                <div class="savings-badge">SAVED <span id="percentSaved">0%</span> OF BLOAT</div>
+                <div class="comp-row">
+                    <span>Original Size:</span>
+                    <span id="oldSize">---</span>
+                </div>
+                <div class="comp-row highlight">
+                    <span>Potatofied Size:</span>
+                    <span id="newSize">---</span>
+                </div>
+                <div class="savings-badge">
+                    SAVED <span id="percentSaved">0%</span> OF BLOAT
+                </div>
             </div>
+            <p style="font-size: 0.8rem; color: #888; margin-bottom: 20px;">File sent to your Downloads folder.</p>
             <button id="closeModal" class="btn-reset">Return to Laboratory</button>
         </div>
     </div>
