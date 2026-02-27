@@ -1,90 +1,102 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Hardware Inputs
-    const ramInput = document.getElementById('ramInput');
-    const cpuInput = document.getElementById('cpuInput');
-    const pcModel = document.getElementById('pcModel');
-    const suggestLabel = document.getElementById('suggestedLevel');
-    const logicText = document.getElementById('logicReasoning');
-
-    // UI Elements
+    const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
+    const fileLabel = document.getElementById('fileLabel');
     const igniteBtn = document.getElementById('igniteBtn');
-    const statusLog = document.getElementById('statusLog');
-    const progressFill = document.getElementById('progressFill');
+    const hwLog = document.getElementById('hwLog');
+    const ramInput = document.getElementById('ramInput');
+    const suggestLabel = document.getElementById('suggestedLevel');
 
-    // 1. Hardware Logic Engine
-    const updateSuggestion = () => {
-        const ram = parseInt(ramInput.value);
-        const cpu = cpuInput.value.toLowerCase();
+    let currentFile = null;
 
-        if (!ram) {
-            suggestLabel.innerText = "Awaiting Data...";
-            return;
-        }
+    // --- 1. DRAG AND DROP HANDLERS ---
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eName => {
+        dropZone.addEventListener(eName, e => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+    });
 
-        if (ram <= 4 || cpu.includes('celeron') || cpu.includes('m3')) {
+    dropZone.addEventListener('dragover', () => dropZone.classList.add('active'));
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('active'));
+
+    dropZone.addEventListener('drop', (e) => {
+        dropZone.classList.remove('active');
+        const files = e.dataTransfer.files;
+        if (files.length) handleSelection(files[0]);
+    });
+
+    // --- 2. FILE INPUT HANDLER ---
+    dropZone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length) handleSelection(e.target.files[0]);
+    });
+
+    function handleSelection(file) {
+        currentFile = file;
+        fileLabel.innerHTML = `<strong>FILE READY:</strong><br>${file.name}`;
+        addHwLog(`Target acquired: ${file.name}`);
+    }
+
+    // --- 3. HARDWARE BENCHMARK ---
+    document.getElementById('runBenchmark').onclick = () => {
+        addHwLog("Running CPU stress test...");
+        const start = performance.now();
+        for(let i=0; i<4000000; i++) { Math.sqrt(i); } // Heavy math
+        const duration = performance.now() - start;
+        
+        const ram = parseInt(ramInput.value) || 0;
+        addHwLog(`Latency: ${duration.toFixed(2)}ms | RAM: ${ram}GB`);
+
+        if (ram <= 4 || duration > 100) {
             suggestLabel.innerText = "EXTREME CRUSH";
-            suggestLabel.style.color = "#ff4444";
-            logicText.innerText = "Your hardware is significantly below modern gaming standards. Extreme compression required for stability.";
-        } else if (ram <= 8) {
-            suggestLabel.innerText = "AGGRESSIVE MASH";
-            suggestLabel.style.color = "#da8100";
-            logicText.innerText = "Standard mid-tier specs. Texture downscaling recommended to prevent stuttering.";
+            addHwLog("Recommendation: Full downscaling required.");
         } else {
-            suggestLabel.innerText = "LIGHT PEEL";
-            suggestLabel.style.color = "#00ff88";
-            logicText.innerText = "Healthy RAM detected. We will only strip bloatware and unnecessary cache.";
+            suggestLabel.innerText = "STANDARD PEEL";
+            addHwLog("Recommendation: Standard optimization safe.");
         }
     };
 
-    [ramInput, cpuInput].forEach(el => el.addEventListener('input', updateSuggestion));
+    function addHwLog(msg) {
+        const p = document.createElement('p');
+        p.innerText = `> ${msg}`;
+        hwLog.prepend(p);
+    }
 
-    // 2. Optimization Sequence
+    // --- 4. OPTIMIZATION LOGIC ---
     igniteBtn.onclick = () => {
-        if (!fileInput.files[0]) return alert("Please select a game file first!");
+        if (!currentFile) return alert("Please drag or select a game file first.");
         
-        document.getElementById('logArea').classList.remove('hidden');
+        document.getElementById('progressArea').classList.remove('hidden');
         igniteBtn.disabled = true;
         
-        let messages = ["Accessing Station Profile...", "Boiling Shaders...", "Peeling Textures...", "Mashing Audio...", "Finalizing Potato Build..."];
-        let step = 0;
+        let steps = ["Mashing Shaders...", "Peeling Textures...", "Boiling Bloat...", "Finalizing Download..."];
+        let i = 0;
 
         const interval = setInterval(() => {
-            if (step < messages.length) {
-                const msg = document.createElement('div');
-                msg.innerText = `> ${messages[step]}`;
-                statusLog.prepend(msg);
-                progressFill.style.width = ((step + 1) / messages.length) * 100 + "%";
-                step++;
+            if (i < steps.length) {
+                const p = document.createElement('div');
+                p.innerText = `> ${steps[i]}`;
+                document.getElementById('statusLog').prepend(p);
+                document.getElementById('progressFill').style.width = ((i+1)/steps.length)*100 + "%";
+                i++;
             } else {
                 clearInterval(interval);
-                finishOptimization();
+                finish();
             }
-        }, 800);
+        }, 1000);
     };
 
-    function finishOptimization() {
-        const file = fileInput.files[0];
-        document.getElementById('repName').innerText = file.name;
-        document.getElementById('repSavings').innerText = "Reduced by " + (Math.random() * 40 + 20).toFixed(1) + "%";
+    function finish() {
+        document.getElementById('repName').innerText = currentFile.name;
         document.getElementById('successModal').classList.remove('hidden');
 
-        // Simulate Download
+        // Automatically trigger the download back to the user
         const a = document.createElement('a');
-        a.href = URL.createObjectURL(file);
-        a.download = `potatofied_${file.name}`;
+        a.href = URL.createObjectURL(currentFile);
+        a.download = `potatofied_${currentFile.name}`;
         a.click();
     }
 
-    // Modal Close
-    document.getElementById('closeModal').onclick = () => {
-        document.getElementById('successModal').classList.add('hidden');
-        igniteBtn.disabled = false;
-        document.getElementById('logArea').classList.add('hidden');
-        statusLog.innerHTML = "";
-    };
-
-    // Standard Selectors
-    document.getElementById('dropZone').onclick = () => fileInput.click();
-    fileInput.onchange = (e) => document.getElementById('fileLabel').innerText = e.target.files[0].name;
+    document.getElementById('closeModal').onclick = () => location.reload();
 });
