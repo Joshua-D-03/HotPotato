@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameShrink | Game Optimization Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Game<span>Shrink</span></h1>
+            <button id="steam-connect" class="btn-steam">Connect Steam Account</button>
+        </header>
+
+        <main class="dashboard">
+            <section class="panel specs-panel">
+                <h3>System Specifications</h3>
+                <form id="specs-form">
+                    <div class="input-group">
+                        <label>RAM (GB)</label>
+                        <input type="number" id="ram-input" placeholder="e.g. 8">
+                    </div>
+                    <div class="input-group">
+                        <label>VRAM (GB)</label>
+                        <input type="number" id="vram-input" placeholder="e.g. 2">
+                    </div>
+                    <div class="input-group">
+                        <label>Available Storage (GB)</label>
+                        <input type="number" id="storage-input" placeholder="e.g. 50">
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="remember-me">
+                        <label for="remember-me">Remember this PC</label>
+                    </div>
+                </form>
+            </section>
+
+            <section class="panel catalog-panel">
+                <h3>Your Steam Library</h3>
+                <div id="game-list" class="game-grid">
+                    <p class="placeholder-text">Connect Steam to see games...</p>
+                </div>
+            </section>
+
+            <section class="panel controls-panel">
+                <h3>Optimization Settings</h3>
+                
+                <div class="slider-container">
+                    <div class="slider-labels">
+                        <span>Max Performance</span>
+                        <span>Max Quality</span>
+                    </div>
+                    <input type="range" id="quality-slider" min="0" max="100" value="50">
+                    <p id="target-fps">Target: 60 FPS</p>
+                </div>
+
+                <div class="status-monitors">
+                    <div id="vram-monitor" class="monitor">
+                        <span class="label">VRAM Usage:</span>
+                        <span class="value">0GB / 0GB</span>
+                        <div class="warning-msg" id="vram-warning">⚠️ Exceeds Physical Limit!</div>
+                    </div>
+                    
+                    <div id="storage-estimator" class="monitor">
+                        <span class="label">Est. Install Size:</span>
+                        <span class="value">--</span>
+                        <div class="warning-msg" id="storage-warning">⚠️ Insufficient Space!</div>
+                    </div>
+
+                    <div id="readability-check" class="monitor">
+                        <span class="label">UI Readability:</span>
+                        <span class="value" id="readability-status">Optimal</span>
+                    </div>
+                </div>
+
+                <button id="optimize-btn" class="btn-primary" disabled>Optimize & Download</button>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
