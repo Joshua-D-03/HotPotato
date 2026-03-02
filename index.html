@@ -2,108 +2,73 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GameShrink | Universal Optimizer & Bridge</title>
+    <title>Hot Potato | Game Manager</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">
-                <h1>Game<span>Shrink</span></h1>
-                <p>Universal Steam Optimization Engine</p>
-            </div>
-            <div id="bridge-status" class="status-badge disconnected">
-                <span class="dot"></span> Bridge: <span id="status-text">Disconnected</span>
-            </div>
-        </header>
+    <div class="nexus-app">
+        <aside class="nexus-sidebar">
+            <div class="brand">🥔 HOT<span>POTATO</span></div>
+            <nav>
+                <button onclick="showView('optimizer')" id="nav-opt" class="nav-item active">
+                    <span class="icon">⚙️</span> OPTIMIZE
+                </button>
+                <button onclick="showView('library')" id="nav-lib" class="nav-item">
+                    <span class="icon">📚</span> LIBRARY
+                </button>
+            </nav>
+            <div class="sidebar-footer">v1.0.4-Stable</div>
+        </aside>
 
-        <main class="dashboard">
-            <section class="panel side-panel">
-                <div class="section-header">
-                    <h3>1. User Profile</h3>
-                    <button id="save-specs-btn" class="btn-tiny">Save PC</button>
-                </div>
-                <div class="input-grid">
-                    <div class="input-group">
-                        <label>VRAM (GB)</label>
-                        <input type="number" id="vram-input" value="4">
-                    </div>
-                    <div class="input-group">
-                        <label>Storage Free (GB)</label>
-                        <input type="number" id="storage-input" value="100">
-                    </div>
-                    <div class="input-group">
-                        <label>RAM (GB)</label>
-                        <input type="number" id="ram-input" value="8">
-                    </div>
-                    <div class="input-group">
-                        <label>CPU Cores</label>
-                        <input type="number" id="cpu-input" value="4">
-                    </div>
+        <main class="nexus-main">
+            <section id="optimizer" class="view-content">
+                <div class="view-header">
+                    <h2>Engine Configuration</h2>
+                    <p>Downscale assets to meet your hardware profile.</p>
                 </div>
 
-                <div class="steam-auth">
-                    <h3>2. Steam Library</h3>
-                    <div class="flex-row">
-                        <input type="text" id="steam-id" placeholder="SteamID64 or Folder Path">
-                        <button id="sync-btn" class="btn-secondary">Sync</button>
+                <div class="config-grid">
+                    <div class="nexus-card">
+                        <h3>1. Hardware Targets</h3>
+                        <div class="input-group">
+                            <label>RAM (GB) <input type="number" id="ramInput" placeholder="16"></label>
+                            <label>VRAM (GB) <input type="number" id="vramInput" placeholder="8"></label>
+                        </div>
+                        <div class="nexus-checkbox">
+                            <input type="checkbox" id="saveSpecs"> <span>Remember Computer Profile</span>
+                        </div>
                     </div>
-                    <div id="game-list" class="game-grid">
-                        <p class="placeholder">Sync to view games...</p>
+
+                    <div class="nexus-card">
+                        <div class="flex-row">
+                            <h3>2. Optimization Strength</h3>
+                            <span id="strengthLabel" class="status-tag">Balanced</span>
+                        </div>
+                        <input type="range" id="optSlider" min="1" max="100" value="50">
+                        <div id="readabilityWarn" class="alert-box hidden">
+                            ⚠️ <strong>READABILITY ALERT:</strong> Textures may be too blurry for UI menus.
+                        </div>
                     </div>
+
+                    <div class="drop-zone" id="dropArea">
+                        <div class="dz-inner">
+                            <span class="dz-icon">📁</span>
+                            <p>Drag & Drop Game Folder</p>
+                            <small>Supports .ZIP, .PAK, and Root Folders</small>
+                        </div>
+                    </div>
+
+                    <button id="startBtn" class="btn-nexus-main">TOSS THE POTATO</button>
                 </div>
             </section>
 
-            <section class="panel main-panel">
-                <h3>3. Optimization Controls</h3>
-                
-                <div class="control-card">
-                    <div class="slider-header">
-                        <span id="algo-name">XPRESS8K (Balanced)</span>
-                        <span id="fps-target">Min Target: 60 FPS</span>
-                    </div>
-                    <input type="range" id="quality-slider" min="1" max="3" value="2">
-                    <div class="slider-labels">
-                        <span>Max Performance</span>
-                        <span>Max Clarity</span>
-                    </div>
+            <section id="library" class="view-content hidden">
+                <div class="view-header">
+                    <h2>Managed Games</h2>
+                    <p>Launch or revert your optimized titles.</p>
                 </div>
-
-                <div class="monitors">
-                    <div class="monitor-item">
-                        <div class="mon-meta">
-                            <label>VRAM Monitor</label>
-                            <span id="vram-val">-- / --</span>
-                        </div>
-                        <div class="progress-bg"><div id="vram-bar" class="progress-fill"></div></div>
-                        <p id="vram-warning" class="warning-text">⚠️ VRAM Overload: Game may crash!</p>
+                <div id="gameGrid" class="nexus-grid">
                     </div>
-
-                    <div class="monitor-item">
-                        <div class="mon-meta">
-                            <label>Storage Estimator</label>
-                            <span id="storage-val">--</span>
-                        </div>
-                        <p id="storage-warning" class="warning-text">⚠️ Insufficient space for optimization!</p>
-                    </div>
-
-                    <div class="monitor-item">
-                        <div class="mon-meta">
-                            <label>Readability Check</label>
-                            <span id="readability-status" class="status-tag">Optimal</span>
-                        </div>
-                        <p class="hint">Ensures UI text remains legible after downscaling.</p>
-                    </div>
-                </div>
-
-                <div class="action-zone">
-                    <div class="bridge-loader" id="bridge-loader">
-                        <div class="spinner"></div>
-                        <p>Waiting for Desktop Client...</p>
-                    </div>
-                    <button id="optimize-btn" class="btn-primary" disabled>Optimize & Install</button>
-                </div>
             </section>
         </main>
     </div>
