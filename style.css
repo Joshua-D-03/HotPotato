@@ -1,80 +1,106 @@
-:root { --orange: #da8100; --cyan: #00f2ff; --dark: #050505; --panel: #111; }
-body { background: var(--dark); color: #eee; font-family: 'Segoe UI', sans-serif; margin: 0; overflow: hidden; }
+const SB_URL = "https://adsevhtaaqerrumdjqdz.supabase.co";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkc2V2aHRhYXFlcnJ1bWRqcWR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyMDgwOTQsImV4cCI6MjA4Nzc4NDA5NH0.0OLKUChzRf9Hm0GxvH8cJ9USTiUmOdDkEAiIKlYqB7s";
+const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
-/* Navigation Styles */
-.top-nav { position: absolute; top: 25px; right: 30px; z-index: 1000; display: flex; align-items: center; gap: 12px; }
-.nav-link { font-size: 0.85rem; font-weight: 800; cursor: pointer; letter-spacing: 2px; transition: 0.3s; }
-.nav-separator { color: #444; }
-.white-to-orange { color: #fff; }
-.white-to-orange:hover { color: var(--orange); }
-.orange-to-white { color: var(--orange); }
-.orange-to-white:hover { color: #fff; }
+document.addEventListener('DOMContentLoaded', () => {
+    const sidebar = document.getElementById('sidebar');
+    const toggleSidebar = document.getElementById('toggleSidebar');
+    const potato = document.getElementById('potato');
+    const fileInput = document.getElementById('fileInput');
+    const dropZone = document.getElementById('dropZone');
+    const compSelect = document.getElementById('compLevel');
+    const warningBox = document.getElementById('warningBox');
+    let currentFile = null;
 
-/* Sidebar Layout */
-.sidebar { width: 280px; background: var(--panel); border-right: 1px solid #333; height: 100vh; transition: 0.4s; position: relative; z-index: 500; padding: 20px; box-sizing: border-box; }
-.sidebar.closed { transform: translateX(-280px); }
-.sidebar.closed .sidebar-content { opacity: 0; pointer-events: none; }
-.toggle-sidebar { position: absolute; right: -40px; top: 20px; background: #222; border: 1px solid #444; color: white; cursor: pointer; width: 40px; height: 40px; border-radius: 0 5px 5px 0; font-size: 1.1rem; }
+    // --- SIDEBAR & PAGE NAVIGATION ---
+    toggleSidebar.onclick = () => {
+        const isClosed = sidebar.classList.toggle('closed');
+        toggleSidebar.innerText = isClosed ? "▶" : "◀";
+    };
 
-.side-title { color: #555; font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 25px; border-bottom: 1px solid #222; padding-bottom: 10px; }
-.sidebar-nav { display: flex; flex-direction: column; gap: 8px; }
-.nav-item { padding: 12px; cursor: pointer; border-radius: 4px; transition: 0.2s; font-weight: bold; color: #888; font-size: 0.85rem; }
-.nav-item:hover { background: #222; color: #fff; }
-.nav-item.active { background: var(--orange); color: #fff; }
+    const navItems = document.querySelectorAll('.nav-item');
+    const pages = document.querySelectorAll('.content-page');
 
-/* Main Lab Content */
-.main-lab { flex: 1; padding: 40px; text-align: center; overflow-y: auto; height: 100vh; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; }
-.content-page { width: 100%; max-width: 800px; animation: fadeIn 0.3s ease; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    navItems.forEach(item => {
+        item.onclick = () => {
+            const targetPage = item.getAttribute('data-page');
+            
+            // Toggle Active Nav State
+            navItems.forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
 
-.page-title { font-size: 2rem; color: var(--orange); margin-bottom: 10px; }
-.placeholder-box { background: #0a0a0a; border: 1px solid #222; padding: 40px; border-radius: 8px; margin-top: 20px; color: #666; font-style: italic; }
+            // Switch Visibility
+            pages.forEach(p => p.classList.add('hidden'));
+            document.getElementById(`${targetPage}Page`).classList.remove('hidden');
+        };
+    });
 
-/* Potato Engine Styles */
-.potato-chamber { position: relative; width: 120px; height: 120px; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; }
-.electric-potato { font-size: 60px; animation: spin 15s linear infinite; display: inline-block; filter: drop-shadow(0 0 10px var(--cyan)); transition: 0.5s; }
-.compressing-potato { filter: drop-shadow(0 0 35px #ff0000) sepia(100%) saturate(600%) hue-rotate(-50deg) !important; animation: spin 0.8s linear infinite !important; transform: scale(1.2); }
-@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    // --- LABORATORY ENGINE ---
+    dropZone.onclick = () => fileInput.click();
+    fileInput.onchange = (e) => {
+        if (e.target.files[0]) {
+            currentFile = e.target.files[0];
+            document.getElementById('fileLabel').innerHTML = `<strong>LOADED:</strong><br>${currentFile.name}`;
+        }
+    };
 
-/* System Options & UI */
-.system-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 25px 0; background: #0a0a0a; padding: 25px; border-radius: 8px; border: 1px solid #222; }
-.field { display: flex; flex-direction: column; gap: 8px; text-align: left; }
-.field label { font-size: 0.75rem; color: #888; font-weight: bold; text-transform: uppercase; }
-.field input, .field select { background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 4px; font-size: 0.9rem; }
+    document.getElementById('calcBtn').onclick = () => {
+        const pcType = document.getElementById('pcType').value.trim().toLowerCase();
+        if (!currentFile || !pcType) return alert("System requires a Game File and Computer Type to calculate!");
 
-.action-row { display: flex; gap: 15px; margin-top: 20px; }
-.btn-ignite { flex: 2; padding: 22px; background: var(--orange); border: none; color: white; font-weight: 800; cursor: pointer; }
-.btn-secondary { flex: 1; background: #222; border: 1px solid #444; color: #fff; cursor: pointer; padding: 10px; font-weight: bold; }
-.warning-text { color: #ff4444; font-size: 0.8rem; font-weight: bold; margin-bottom: 15px; background: rgba(255,0,0,0.1); padding: 10px; border: 1px solid #ff4444; }
-.drop-zone { border: 2px dashed var(--orange); padding: 40px; cursor: pointer; background: rgba(218, 129, 0, 0.03); }
-.hidden { display: none !important; }
+        const fileSizeGB = currentFile.size / (1024 ** 3);
+        const focusSelect = document.getElementById('optFocus');
 
-/* Modals */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000; }
-.modal-box { background: #1a1a1a; padding: 40px; border: 2px solid var(--orange); width: 450px; text-align: center; }
-.comp-row { display: flex; justify-content: space-between; margin-bottom: 15px; }
-.comp-row.highlight { color: var(--cyan); font-weight: bold; border-top: 1px solid #333; padding-top: 15px; }
+        // Intelligent pre-selection
+        if (pcType.includes("laptop") || pcType.includes("potato")) {
+            focusSelect.value = "performance";
+            compSelect.value = (fileSizeGB > 20) ? "0.85" : "0.60";
+        } else {
+            focusSelect.value = (fileSizeGB < 15) ? "quality" : "balanced";
+            compSelect.value = (fileSizeGB > 60) ? "0.60" : "0.30";
+        }
 
-.energy-ring { position: absolute; width: 100px; height: 100px; border: 2px solid var(--cyan); border-radius: 50%; animation: pulse 2s infinite; }
-@keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.3; } 50% { transform: scale(1.15); opacity: 0.8; } }
+        warningBox.classList.toggle('hidden', parseFloat(compSelect.value) < 0.80);
+        alert("Best settings pre-applied for your configuration!");
+    };
 
-/* Formatting and Tooling */
-.field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; text-align: left; }
-.field label { font-size: 0.7rem; color: #666; font-weight: bold; text-transform: uppercase; }
-.field input, .field select { background: #000; border: 1px solid #333; color: #fff; padding: 8px; border-radius: 4px; }
-.warning-text { color: #ff4444; font-size: 0.7rem; margin-top: 5px; font-weight: bold; }
+    document.getElementById('igniteBtn').onclick = async () => {
+        if (!currentFile || !document.getElementById('pcType').value) return alert("System missing configuration data!");
+        
+        document.getElementById('progressArea').classList.remove('hidden');
+        potato.classList.add('compressing-potato');
 
-.main-lab { flex: 1; padding: 40px; text-align: center; overflow-y: auto; }
-.main-title { font-size: 3.5rem; margin: 0; font-weight: 900; letter-spacing: -2px; }
-.main-title span { color: var(--orange); }
+        let prog = 0;
+        const interval = setInterval(async () => {
+            prog += 2;
+            document.getElementById('progressFill').style.width = prog + "%";
+            if (prog >= 100) {
+                clearInterval(interval);
+                
+                const ratio = parseFloat(compSelect.value);
+                const oldSize = currentFile.size;
+                const newSize = oldSize * (1 - ratio);
 
-.drop-zone { border: 2px dashed var(--orange); padding: 50px; cursor: pointer; background: rgba(218, 129, 0, 0.05); transition: 0.3s; }
-.drop-zone:hover { background: rgba(0, 242, 255, 0.05); border-color: var(--cyan); }
-.fill { background: var(--cyan); height: 100%; width: 0%; transition: width 0.1s linear; }
-.btn-ignite { width: 100%; padding: 20px; background: var(--orange); border: none; color: white; font-weight: bold; cursor: pointer; margin-top: 20px; }
-.hidden { display: none !important; }
+                // --- SAVE TO SUPABASE ---
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (user) {
+                    await supabaseClient.from('history').insert([
+                        { user_id: user.id, game_name: currentFile.name, original_size: oldSize, ratio: ratio }
+                    ]);
+                }
 
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-.modal-box { background: #1a1a1a; padding: 40px; border: 2px solid var(--orange); width: 420px; text-align: center; }
-.comp-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.9rem; }
-.comp-row.highlight { color: var(--cyan); font-weight: bold; border-top: 1px solid #333; padding-top: 12px; }
+                const format = (b) => `${(b / (1024**2)).toFixed(2)} MB (${(b / (1024**3)).toFixed(2)} GB)`;
+                document.getElementById('oldSize').innerText = format(oldSize);
+                document.getElementById('newSize').innerText = format(newSize);
+                
+                potato.classList.remove('compressing-potato');
+                document.getElementById('successModal').classList.remove('hidden');
+            }
+        }, 50);
+    };
+
+    // --- AUTH BOILERPLATE ---
+    window.openAuth = (m) => document.getElementById('authModal').classList.remove('hidden');
+    window.closeAuth = () => document.getElementById('authModal').classList.add('hidden');
+    document.getElementById('guestBtn').onclick = async () => { await supabaseClient.auth.signInAnonymously(); location.reload(); };
+});
