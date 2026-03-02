@@ -7,35 +7,51 @@ document.addEventListener('DOMContentLoaded', async () => {
     const toggleBtn = document.getElementById('toggleSidebar');
     const potato = document.getElementById('potato');
     const navItems = document.querySelectorAll('.nav-item');
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
     let userSession = null;
 
-    // --- Auth State ---
-    const updateAuth = async () => {
+    // --- 1. USER AUTH & INTERACTION LOCKING ---
+    const checkUserStatus = async () => {
         const { data: { session } } = await supabaseClient.auth.getSession();
         userSession = session;
+        
         const gates = document.querySelectorAll('.auth-gate');
-        const forumWrap = document.getElementById('forumInputArea');
+        const forumInput = document.getElementById('forumInputArea');
 
         if (session) {
             document.getElementById('loggedOutNav').classList.add('hidden');
             document.getElementById('loggedInNav').classList.remove('hidden');
-            document.getElementById('userDisplay').innerText = (session.user.email || "GUEST").toUpperCase();
+            
+            // Get Username from metadata
+            const name = session.user.user_metadata.username || session.user.email.split('@')[0];
+            document.getElementById('userDisplay').innerText = name.toUpperCase();
+            
+            // Unlock Content
             gates.forEach(g => g.classList.add('hidden'));
-            forumWrap.classList.remove('restricted');
-            document.getElementById('forumMessage').disabled = false;
-            document.getElementById('sendBtn').disabled = false;
+            forumInput.classList.remove('disabled-content');
         } else {
             document.getElementById('loggedOutNav').classList.remove('hidden');
             document.getElementById('loggedInNav').classList.add('hidden');
+            
+            // Keep Content Locked
             gates.forEach(g => g.classList.remove('hidden'));
-            forumWrap.classList.add('restricted');
-            document.getElementById('forumMessage').disabled = true;
-            document.getElementById('sendBtn').disabled = true;
+            forumInput.classList.add('disabled-content');
         }
     };
-    await updateAuth();
+    await checkUserStatus();
 
-    // --- Sidebar & Navigation ---
+    // --- 2. THE CORE: DRAG, DROP & BROWSE ---
+    dropZone.onclick = () => fileInput.click();
+    fileInput.onchange = (e) => {
+        if (e.target.files[0]) {
+            document.getElementById('fileLabel').innerHTML = `<strong>CHAMBER LOADED:</strong><br>${e.target.files[0].name}`;
+            dropZone.style.borderColor = "var(--cyan)";
+            dropZone.style.background = "rgba(0, 242, 255, 0.05)";
+        }
+    };
+
+    // --- 3. DYNAMIC NAVIGATION ---
     toggleBtn.onclick = () => {
         const closed = sidebar.classList.toggle('closed');
         toggleBtn.innerText = closed ? "▶" : "◀";
@@ -51,33 +67,46 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
     });
 
-    // --- Forum Logic ---
-    const sendMsg = () => {
-        const inp = document.getElementById('forumMessage');
-        const feed = document.getElementById('forumFeed');
-        if (!inp.value.trim() || !userSession) return;
-        
-        const msg = document.createElement('div');
-        msg.className = 'post';
-        msg.innerHTML = `<strong>${userSession.user.email.split('@')[0]}:</strong> ${inp.value}`;
-        feed.appendChild(msg);
-        feed.scrollTop = feed.scrollHeight;
-        inp.value = "";
-    };
-    document.getElementById('sendBtn').onclick = sendMsg;
-
-    // --- Ignite Logic ---
+    // --- 4. IGNITE ANIMATION ---
     document.getElementById('igniteBtn').onclick = () => {
+        if (!fileInput.files[0]) return alert("Please load a game into the chamber first!");
+        
         potato.classList.add('compressing-potato');
         setTimeout(() => {
             potato.classList.remove('compressing-potato');
-            alert("Optimization Ignite Complete!");
+            alert("IGNITE SUCCESSFUL: Game optimized. Check History for logs.");
         }, 3000);
     };
 
-    // --- Auth Actions ---
-    window.openAuth = () => document.getElementById('authModal').classList.remove('hidden');
+    // --- 5. AUTH MODAL & USERNAME LOGIC ---
+    window.openAuth = (mode) => {
+        document.getElementById('authTitle').innerText = mode === 'signup' ? 'JOIN THE KITCHEN' : 'MEMBER LOGIN';
+        document.getElementById('usernameField').classList.toggle('hidden', mode !== 'signup');
+        document.getElementById('authModal').classList.remove('hidden');
+    };
     window.closeAuth = () => document.getElementById('authModal').classList.add('hidden');
+
+    document.getElementById('authSubmit').onclick = async () => {
+        const email = document.getElementById('authEmail').value;
+        const pass = document.getElementById('authPass').value;
+        const username = document.getElementById('authUsername').value;
+        const isSignUp = !document.getElementById('usernameField').classList.contains('hidden');
+
+        if (isSignUp) {
+            const { error } = await supabaseClient.auth.signUp({ 
+                email, 
+                password: pass, 
+                options: { data: { username: username } } 
+            });
+            if (error) alert(error.message);
+            else alert("Check your email for the verification link!");
+        } else {
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
+            if (error) alert(error.message);
+            else location.reload();
+        }
+    };
+
     document.getElementById('signOutBtn').onclick = async () => { await supabaseClient.auth.signOut(); location.reload(); };
     document.getElementById('guestBtn').onclick = async () => { await supabaseClient.auth.signInAnonymously(); location.reload(); };
 });
