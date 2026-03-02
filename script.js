@@ -7,9 +7,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const toggleBtn = document.getElementById('toggleSidebar');
     const potato = document.getElementById('potato');
     const navItems = document.querySelectorAll('.nav-item');
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
     let userSession = null;
 
-    // --- Auth Management ---
+    // --- 1. USER AUTH & PAGE ACCESS ---
     const updateUI = async () => {
         const { data: { session } } = await supabaseClient.auth.getSession();
         userSession = session;
@@ -21,55 +23,50 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('loggedInNav').classList.remove('hidden');
             const name = session.user.user_metadata.username || session.user.email.split('@')[0];
             document.getElementById('userDisplay').innerText = name.toUpperCase();
-            
-            // Unlock page interactions
             gates.forEach(g => g.classList.add('hidden'));
-            forumInput.classList.remove('disabled-content');
+            if(forumInput) forumInput.classList.remove('disabled-content');
         } else {
             document.getElementById('loggedOutNav').classList.remove('hidden');
             document.getElementById('loggedInNav').classList.add('hidden');
-            
-            // Lock page interactions
             gates.forEach(g => g.classList.remove('hidden'));
-            forumInput.classList.add('disabled-content');
+            if(forumInput) forumInput.classList.add('disabled-content');
         }
     };
     await updateUI();
 
-    // --- Community Discussion Search ---
-    document.getElementById('forumSearch').oninput = (e) => {
-        const term = e.target.value.toLowerCase();
-        document.querySelectorAll('.thread-row').forEach(row => {
-            const text = row.innerText.toLowerCase();
-            row.style.display = text.includes(term) ? 'flex' : 'none';
-        });
-    };
-
-    // --- File Drag & Drop Engine ---
-    const dz = document.getElementById('dropZone');
-    const fInp = document.getElementById('fileInput');
-    
-    dz.onclick = () => fInp.click();
-    fInp.onchange = (e) => {
+    // --- 2. ENGINE LOGIC ---
+    dropZone.onclick = () => fileInput.click();
+    fileInput.onchange = (e) => {
         if (e.target.files[0]) {
-            document.getElementById('fileLabel').innerHTML = `<strong>CHAMBER READY:</strong><br>${e.target.files[0].name}`;
-            dz.style.borderColor = "var(--cyan)";
+            document.getElementById('fileLabel').innerHTML = `<strong>CHAMBER LOADED:</strong><br>${e.target.files[0].name}`;
+            dropZone.style.borderColor = "var(--cyan)";
         }
     };
 
     document.getElementById('igniteBtn').onclick = () => {
-        if (!fInp.files[0]) return alert("Please drop a game folder into the chamber!");
+        if (!fileInput.files[0]) return alert("Chamber empty! Please load a game folder.");
+        
         potato.classList.add('compressing-potato');
         setTimeout(() => {
             potato.classList.remove('compressing-potato');
-            alert("IGNITION SUCCESSFUL: Optimization complete.");
+            const ram = document.getElementById('ramInput').value;
+            const level = document.getElementById('compLevel').options[document.getElementById('compLevel').selectedIndex].text;
+            alert(`IGNITION SUCCESS: Optimized for ${ram}GB RAM at ${level}.`);
         }, 3000);
     };
 
-    // --- Sidebar Navigation (Always Visible) ---
+    // --- 3. COMMUNITY SEARCH ---
+    document.getElementById('forumSearch').oninput = (e) => {
+        const term = e.target.value.toLowerCase();
+        document.querySelectorAll('.thread-row').forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(term) ? 'flex' : 'none';
+        });
+    };
+
+    // --- 4. NAVIGATION ---
     toggleBtn.onclick = () => {
-        const isClosed = sidebar.classList.toggle('closed');
-        toggleBtn.innerText = isClosed ? "▶" : "◀";
+        const closed = sidebar.classList.toggle('closed');
+        toggleBtn.innerText = closed ? "▶" : "◀";
     };
 
     navItems.forEach(item => {
@@ -82,7 +79,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
     });
 
-    // --- Auth Actions ---
+    // --- 5. AUTH ACTIONS ---
     window.openAuth = (m) => {
         document.getElementById('authTitle').innerText = m === 'signup' ? 'SIGN UP' : 'LOG IN';
         document.getElementById('usernameField').classList.toggle('hidden', m !== 'signup');
@@ -98,11 +95,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (isSignUp) {
             const { error } = await supabaseClient.auth.signUp({ 
-                email, 
-                password: pass, 
-                options: { data: { username } } 
+                email, password: pass, options: { data: { username } } 
             });
-            if (error) alert(error.message); else alert("Check your email for verification!");
+            if (error) alert(error.message); else alert("Check email for verification!");
         } else {
             const { error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
             if (error) alert(error.message); else location.reload();
