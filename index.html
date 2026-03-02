@@ -18,7 +18,7 @@
             <span class="nav-link white-to-orange" id="guestBtn">GUEST</span>
         </div>
         <div id="loggedInNav" class="hidden">
-            <span id="userDisplay"></span>
+            <span id="userDisplay" class="user-tag"></span>
             <span class="nav-link orange-to-white" id="signOutBtn">LOGOUT</span>
         </div>
     </nav>
@@ -33,108 +33,69 @@
                     <div class="nav-item" data-page="potato-bin">📦 POTATO BIN</div>
                     <div class="nav-item" data-page="library">📚 MY LIBRARY</div>
                     <div class="nav-item" data-page="community">💬 COMMUNITY HUB</div>
-                    <div class="nav-item" data-page="history">📜 COMPRESSION HISTORY</div>
+                    <div class="nav-item" data-page="history">📜 HISTORY</div>
                 </nav>
             </div>
         </aside>
 
-        <main class="main-lab">
-            
+        <main class="main-content">
             <div id="labPage" class="content-page">
                 <header class="engine-header">
-                    <div class="potato-chamber">
-                        <div id="potato" class="electric-potato">🥔</div>
-                        <div id="energyRing" class="energy-ring"></div>
-                    </div>
+                    <div class="potato-chamber"><div id="potato" class="electric-potato">🥔</div></div>
                     <h1 class="main-title">HOT<span>POTATO</span></h1>
-                    <p class="main-subheading">Video Game Compressor</p>
                 </header>
-
                 <section class="tool-card">
                     <div class="drop-zone" id="dropZone">
                         <input type="file" id="fileInput" style="display:none;">
-                        <div class="dz-content">
-                            <span class="dz-icon">📥</span>
-                            <p id="fileLabel"><strong>DRAG GAME HERE</strong><br>or click to browse</p>
-                        </div>
+                        <p id="fileLabel"><strong>DRAG GAME HERE</strong></p>
                     </div>
-                    
                     <div class="system-options-grid">
-                        <div class="field"><label>Computer Type*</label><input type="text" id="pcType" placeholder="e.g. Laptop"></div>
-                        <div class="field"><label>RAM (GB)</label><input type="number" id="ramInput" placeholder="16"></div>
-                        <div class="field">
-                            <label>Optimization Focus</label>
-                            <select id="optFocus">
-                                <option value="quality">High Image Quality</option>
-                                <option value="balanced">Balanced</option>
-                                <option value="performance">Maximum Performance</option>
-                            </select>
-                        </div>
-                        <div class="field">
-                            <label>Compression Level</label>
-                            <select id="compLevel">
-                                <option value="0.10">Light (10%)</option>
-                                <option value="0.30">Standard (30%)</option>
-                                <option value="0.60">Deep Mash (60%)</option>
-                                <option value="0.85">POTATO MODE (85%)</option>
-                            </select>
-                        </div>
+                        <div class="field"><label>Computer Type</label><input type="text" id="pcType" placeholder="PC/Laptop"></div>
+                        <div class="field"><label>RAM</label><input type="number" id="ramInput" placeholder="16"></div>
+                        <div class="field"><label>Focus</label><select id="optFocus"><option value="quality">Quality</option><option value="performance">Performance</option></select></div>
+                        <div class="field"><label>Level</label><select id="compLevel"><option value="0.30">30%</option><option value="0.85">85%</option></select></div>
                     </div>
-
-                    <div id="warningBox" class="warning-text hidden">⚠️ WARNING: High compression may make game assets unreadable!</div>
-
-                    <div class="action-row">
-                        <button id="calcBtn" class="btn-secondary">CALCULATE BEST</button>
-                        <button id="igniteBtn" class="btn-ignite">IGNITE OPTIMIZATION</button>
-                    </div>
-
-                    <div id="progressArea" class="log-container hidden">
-                        <div class="progress-bar"><div id="progressFill" class="fill"></div></div>
-                    </div>
+                    <button id="igniteBtn" class="btn-ignite">IGNITE</button>
                 </section>
-            </div>
-
-            <div id="potato-binPage" class="content-page hidden">
-                <h2 class="page-title">📦 Potato Bin</h2>
-                <p>Global Optimization Database: See what others are compressing.</p>
-                <div class="placeholder-box">Loading Global Data...</div>
-            </div>
-
-            <div id="libraryPage" class="content-page hidden">
-                <h2 class="page-title">📚 My Library</h2>
-                <p>Manage your compressed local game files.</p>
-                <div class="placeholder-box">Scanning Library...</div>
             </div>
 
             <div id="communityPage" class="content-page hidden">
                 <h2 class="page-title">💬 Community Hub</h2>
-                <p>Forums for PC maintenance, performance tips, and questions.</p>
-                <div class="placeholder-box">Fetching Community Threads...</div>
+                <div class="auth-gate hidden">🔒 Log in to post messages</div>
+                <div class="forum-container">
+                    <div id="forumFeed" class="forum-feed">
+                        <div class="post"><strong>System:</strong> Welcome to the Community!</div>
+                    </div>
+                    <div id="forumInputArea" class="forum-input-wrap restricted">
+                        <input type="text" id="forumMessage" placeholder="Type a message..." disabled>
+                        <button id="sendBtn" class="btn-ignite" disabled>SEND</button>
+                    </div>
+                </div>
             </div>
 
+            <div id="potato-binPage" class="content-page hidden">
+                <h2 class="page-title">📦 Potato Bin</h2>
+                <div class="auth-gate hidden">🔒 Log in to view global stats</div>
+                <div class="page-inner">Global Database loading...</div>
+            </div>
+            <div id="libraryPage" class="content-page hidden">
+                <h2 class="page-title">📚 My Library</h2>
+                <div class="auth-gate hidden">🔒 Log in to access your library</div>
+                <div class="page-inner">No local games found.</div>
+            </div>
             <div id="historyPage" class="content-page hidden">
-                <h2 class="page-title">📜 Compression History</h2>
-                <p>A record of your past optimizations.</p>
-                <div id="historyList" class="placeholder-box">History is currently empty.</div>
+                <h2 class="page-title">📜 History</h2>
+                <div class="auth-gate hidden">🔒 Log in to view history</div>
+                <div class="page-inner" id="historyList">No recent activity.</div>
             </div>
-
         </main>
-    </div>
-
-    <div id="successModal" class="modal-overlay hidden">
-        <div class="modal-box">
-            <h2>⚡ OPTIMIZATION COMPLETE</h2>
-            <div class="comp-row"><span>Original Size:</span><span id="oldSize">---</span></div>
-            <div class="comp-row highlight"><span>New Size:</span><span id="newSize">---</span></div>
-            <button onclick="location.reload()" class="btn-ignite">RETURN TO LAB</button>
-        </div>
     </div>
 
     <div id="authModal" class="modal-overlay hidden">
         <div class="modal-box">
             <h2 id="authTitle">LOG IN</h2>
-            <input type="email" id="email" placeholder="Email"><br><br>
-            <input type="password" id="password" placeholder="Password"><br><br>
+            <input type="email" id="authEmail" placeholder="Email">
+            <input type="password" id="authPass" placeholder="Password">
             <button id="authSubmit" class="btn-ignite">PROCEED</button>
             <button onclick="closeAuth()" class="btn-secondary">CANCEL</button>
         </div>
