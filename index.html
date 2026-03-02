@@ -3,90 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hot Potato - Universal Video Game Compressor</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Hot Potato | Video Game Compressor</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-
-    <header class="main-header">
-        <div class="logo-area">
-            <div class="potato-icon">🥔</div>
-            <h1>Hot Potato</h1>
-            <p>Low-Spec Optimization Suite</p>
-        </div>
-        <nav class="tool-nav">
-            <ul>
-                <li><a href="#" class="active">Game Compressor</a></li>
-                <li><a href="#">Texture Peeler</a></li>
-                <li><a href="#">Audio Crusher</a></li>
-                <li><a href="#">About</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <main class="container">
-        <div class="tool-box">
-            <h2 class="tool-title">Video Game Compressor</h2>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3>🖥️ STATION PROFILE</h3>
+            </div>
             
-            <div class="upload-section">
-                <div class="upload-area" id="dropZone">
-                    <p>Select game archive or folder from your computer</p>
-                    <input type="file" id="fileInput" hidden>
-                    <button class="btn-select" onclick="document.getElementById('fileInput').click()">Choose File</button>
-                    <p class="small-text">Supported: .zip, .7z, .rar, .pak, .assets</p>
+            <div class="profile-inputs">
+                <div class="field">
+                    <label>RAM (GB)</label>
+                    <input type="number" id="ramInput" placeholder="8">
+                </div>
+                <div class="field">
+                    <label>Compression Level</label>
+                    <select id="compLevel">
+                        <option value="0.15">Standard Peel (15%)</option>
+                        <option value="0.45">Extreme Crush (45%)</option>
+                        <option value="0.85">POTATO MODE (85%)</option>
+                    </select>
+                </div>
+                <button id="runBenchmark" class="btn-benchmark">⚡ Run Hardware Test</button>
+            </div>
+
+            <div class="log-box">
+                <h4>OPTIMIZATION LOG</h4>
+                <div id="hwLog" class="hw-log">
+                    <p class="dim">> System Idle...</p>
                 </div>
             </div>
 
-            <div class="settings-section">
-                <h3>Compression Settings:</h3>
-                <div class="settings-grid">
-                    <label>
-                        Compression Level:
-                        <select id="compLevel">
-                            <option value="low">Standard (Fast)</option>
-                            <option value="mid" selected>Aggressive (Recommended for Low-End)</option>
-                            <option value="high">Extreme (Potato Mode)</option>
-                        </select>
-                    </label>
-                    <label>
-                        <input type="checkbox" checked> Downscale Textures (Half-Res)
-                    </label>
-                    <label>
-                        <input type="checkbox"> Convert Audio to Mono
-                    </label>
-                </div>
-                <button id="optimizeBtn" class="btn-action">Optimize!</button>
-            </div>
+            <div id="suggestedLevel" class="level-badge">---</div>
+        </aside>
 
-            <div id="progressContainer" class="progress-area hidden">
-                <p id="statusText">Reading game data...</p>
-                <div class="progress-bar">
-                    <div id="progressFill" class="fill"></div>
+        <main class="main-lab">
+            <header class="engine-header">
+                <div class="potato-chamber">
+                    <div id="potato" class="electric-potato">🥔</div>
+                    <div id="energyRing" class="energy-ring"></div>
+                </div>
+                <h1 class="main-title">HOT<span>POTATO</span></h1>
+                <p class="main-subheading">Video Game Compressor</p>
+            </header>
+
+            <section class="tool-card">
+                <div class="drop-zone" id="dropZone">
+                    <input type="file" id="fileInput" style="display:none;">
+                    <div class="dz-content">
+                        <span class="dz-icon">📥</span>
+                        <p id="fileLabel"><strong>DRAG GAME HERE</strong><br>or click to browse</p>
+                    </div>
+                </div>
+                
+                <div id="progressArea" class="log-container hidden">
+                    <div class="progress-info">
+                        <span id="progressStatus">Optimizing Assets...</span>
+                        <span id="timeLeft">Est: --:--</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progressFill" class="fill"></div>
+                    </div>
+                    <div id="statusLog" class="status-log"></div>
+                </div>
+
+                <button id="igniteBtn" class="btn-ignite">IGNITE COMPRESSION</button>
+            </section>
+        </main>
+    </div>
+
+    <div id="successModal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <div class="modal-header">⚡ COMPRESSION DATA</div>
+            <div class="comparison-container">
+                <div class="comp-row">
+                    <span>Original Size:</span>
+                    <span id="oldSize">---</span>
+                </div>
+                <div class="comp-row highlight">
+                    <span>Potatofied Size:</span>
+                    <span id="newSize">---</span>
+                </div>
+                <div class="savings-badge">
+                    SAVED <span id="percentSaved">0%</span> OF BLOAT
                 </div>
             </div>
-
-            <div id="resultArea" class="result-area hidden">
-                <div class="success-banner">Optimization Complete!</div>
-                <p>Original Size: <span id="oldSize">0 GB</span></p>
-                <p>New Size: <span id="newSize" class="highlight">0 GB</span></p>
-                <button class="btn-download">Download Optimized Game</button>
-            </div>
+            <button id="closeModal" class="btn-reset">Return to Laboratory</button>
         </div>
-
-        <section class="info-text">
-            <h3>How to use Hot Potato?</h3>
-            <ol>
-                <li>Upload your downloaded game file (archive or folder).</li>
-                <li>Choose your compression level based on your PC specs.</li>
-                <li>Click "Optimize!" and wait for the Potato Engine to strip unnecessary data.</li>
-                <li>Download the smaller version and run it on your low-end machine!</li>
-            </ol>
-        </section>
-    </main>
-
-    <footer class="footer">
-        <p>&copy; 2024 Hot Potato Tools | Made for Low-End Gamers</p>
-    </footer>
+    </div>
 
     <script src="script.js"></script>
 </body>
