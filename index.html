@@ -44,49 +44,62 @@
                     <div class="potato-chamber"><div id="potato" class="electric-potato">🥔</div></div>
                     <h1 class="main-title">HOT<span>POTATO</span></h1>
                 </header>
+                
                 <section class="tool-card">
                     <div class="drop-zone" id="dropZone">
                         <input type="file" id="fileInput" style="display:none;">
-                        <p id="fileLabel"><strong>DRAG GAME HERE</strong></p>
+                        <div class="dz-icon">📁</div>
+                        <p id="fileLabel"><strong>DRAG GAME FOLDER OR .EXE HERE</strong><br><span>or click to browse files</span></p>
                     </div>
-                    <div class="system-options-grid">
-                        <div class="field"><label>Computer Type</label><input type="text" id="pcType" placeholder="PC/Laptop"></div>
-                        <div class="field"><label>RAM</label><input type="number" id="ramInput" placeholder="16"></div>
-                        <div class="field"><label>Focus</label><select id="optFocus"><option value="quality">Quality</option><option value="performance">Performance</option></select></div>
-                        <div class="field"><label>Level</label><select id="compLevel"><option value="0.30">30%</option><option value="0.85">85%</option></select></div>
-                    </div>
-                    <button id="igniteBtn" class="btn-ignite">IGNITE</button>
-                </section>
-            </div>
 
-            <div id="communityPage" class="content-page hidden">
-                <h2 class="page-title">💬 Community Hub</h2>
-                <div class="auth-gate hidden">🔒 Log in to post messages</div>
-                <div class="forum-container">
-                    <div id="forumFeed" class="forum-feed">
-                        <div class="post"><strong>System:</strong> Welcome to the Community!</div>
+                    <div class="system-options-grid">
+                        <div class="field"><label>PC Model/Type</label><input type="text" id="pcType" placeholder="e.g. Alienware M15"></div>
+                        <div class="field"><label>RAM (GB)</label><input type="number" id="ramInput" placeholder="16"></div>
+                        <div class="field"><label>Optimization Focus</label><select id="optFocus"><option value="quality">Visual Quality</option><option value="performance">FPS Boost</option></select></div>
+                        <div class="field"><label>Compression Level</label><select id="compLevel"><option value="0.30">Balanced (30%)</option><option value="0.85">TOTAL POTATO (85%)</option></select></div>
                     </div>
-                    <div id="forumInputArea" class="forum-input-wrap restricted">
-                        <input type="text" id="forumMessage" placeholder="Type a message..." disabled>
-                        <button id="sendBtn" class="btn-ignite" disabled>SEND</button>
-                    </div>
-                </div>
+                    <button id="igniteBtn" class="btn-ignite">IGNITE COMPRESSION</button>
+                </section>
             </div>
 
             <div id="potato-binPage" class="content-page hidden">
                 <h2 class="page-title">📦 Potato Bin</h2>
-                <div class="auth-gate hidden">🔒 Log in to view global stats</div>
-                <div class="page-inner">Global Database loading...</div>
+                <p class="subtitle">Global community optimizations shared by users</p>
+                <div class="game-grid">
+                    <div class="game-card"><h3>Cyberpunk 2077</h3><p>85% Mesh Compression by <em>NightCityRunner</em></p><button class="btn-sm">CLONE CONFIG</button></div>
+                    <div class="game-card"><h3>Starfield</h3><p>Optimized Textures by <em>SpacePotato</em></p><button class="btn-sm">CLONE CONFIG</button></div>
+                    <div class="game-card"><h3>Warzone</h3><p>Maximum FPS Build by <em>LagFree</em></p><button class="btn-sm">CLONE CONFIG</button></div>
+                </div>
             </div>
+
             <div id="libraryPage" class="content-page hidden">
                 <h2 class="page-title">📚 My Library</h2>
-                <div class="auth-gate hidden">🔒 Log in to access your library</div>
-                <div class="page-inner">No local games found.</div>
+                <div class="auth-gate hidden">🔒 Log in to manage and launch your compressed games</div>
+                <div class="game-grid" id="libraryGrid">
+                    <div class="game-card empty-state">Your library is currently empty. Ignite a game in the Lab to add it here!</div>
+                </div>
             </div>
+
+            <div id="communityPage" class="content-page hidden">
+                <h2 class="page-title">💬 Community Hub</h2>
+                <div class="forum-container">
+                    <div id="forumFeed" class="forum-feed">
+                        <div class="post"><strong>Admin:</strong> Welcome to the Hub! All users can read, but only members can post.</div>
+                    </div>
+                    <div id="forumInputArea" class="forum-input-wrap">
+                        <div class="auth-gate hidden">🔒 Sign in to join the conversation</div>
+                        <input type="text" id="forumMessage" placeholder="Type a message...">
+                        <button id="sendBtn" class="btn-ignite">SEND</button>
+                    </div>
+                </div>
+            </div>
+
             <div id="historyPage" class="content-page hidden">
                 <h2 class="page-title">📜 History</h2>
-                <div class="auth-gate hidden">🔒 Log in to view history</div>
-                <div class="page-inner" id="historyList">No recent activity.</div>
+                <div class="auth-gate hidden">🔒 Log in to view your optimization logs</div>
+                <div class="history-list" id="historyList">
+                    <p class="placeholder-text">No recent logs found.</p>
+                </div>
             </div>
         </main>
     </div>
@@ -94,6 +107,9 @@
     <div id="authModal" class="modal-overlay hidden">
         <div class="modal-box">
             <h2 id="authTitle">LOG IN</h2>
+            <div id="usernameField" class="hidden">
+                <input type="text" id="authUsername" placeholder="Create Username">
+            </div>
             <input type="email" id="authEmail" placeholder="Email">
             <input type="password" id="authPass" placeholder="Password">
             <button id="authSubmit" class="btn-ignite">PROCEED</button>
