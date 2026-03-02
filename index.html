@@ -39,14 +39,14 @@
         </aside>
 
         <main class="main-content">
-            <div id="labPage" class="content-page">
+            <div id="labPage" class="content-page lab-centered">
                 <header class="engine-header">
                     <div class="potato-chamber"><div id="potato" class="electric-potato">🥔</div></div>
                     <h1 class="main-title">HOT<span>POTATO</span></h1>
                     <p class="main-subheading">Video Game Compressor</p>
                 </header>
                 
-                <section class="tool-card">
+                <section class="tool-card large-engine">
                     <div class="drop-zone" id="dropZone">
                         <input type="file" id="fileInput" style="display:none;">
                         <div class="dz-icon">📁</div>
@@ -54,10 +54,25 @@
                     </div>
 
                     <div class="system-options-grid">
-                        <div class="field"><label>PC Model/Type</label><input type="text" id="pcType" placeholder="e.g. RTX 3080 Desktop"></div>
-                        <div class="field"><label>RAM (GB)</label><input type="number" id="ramInput" placeholder="16"></div>
-                        <div class="field"><label>Optimization Focus</label><select id="optFocus"><option value="quality">Visual Quality</option><option value="performance">FPS Boost</option></select></div>
-                        <div class="field"><label>Compression Level</label><select id="compLevel"><option value="0.30">Balanced (30%)</option><option value="0.85">TOTAL POTATO (85%)</option></select></div>
+                        <div class="field"><label>PC Model/Type</label><input type="text" id="pcType" placeholder="e.g. RTX 4070 Laptop"></div>
+                        <div class="field"><label>RAM (GB)</label><input type="number" id="ramInput" min="0" value="16"></div>
+                        <div class="field">
+                            <label>Optimization Focus</label>
+                            <select id="optFocus">
+                                <option value="quality">Image Quality</option>
+                                <option value="performance">Performance</option>
+                                <option value="balance">Balance</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>Compression Level</label>
+                            <select id="compLevel">
+                                <option value="0.15">Standard (15%)</option>
+                                <option value="0.30">Balance (30%)</option>
+                                <option value="0.60">Extreme (60%)</option>
+                                <option value="0.85">Potato Mode (85%)</option>
+                            </select>
+                        </div>
                     </div>
                     <button id="igniteBtn" class="btn-ignite">IGNITE COMPRESSION</button>
                 </section>
@@ -74,33 +89,25 @@
                 <div class="forum-layout">
                     <div class="forum-sidebar">
                         <button class="filter-btn active">All Discussions</button>
-                        <button class="filter-btn">General</button>
-                        <button class="filter-btn">Optimizations</button>
-                        <button class="filter-btn">Support</button>
+                        <button class="filter-btn">Optimization Tips</button>
+                        <button class="filter-btn">Showcase</button>
                     </div>
 
                     <div class="forum-main">
                         <div id="forumFeed" class="steam-feed">
                             <div class="thread-row">
                                 <div class="thread-info">
-                                    <span class="thread-title">Best settings for Handheld PCs (Steam Deck/Ally)?</span>
-                                    <span class="thread-meta">Started by <strong>PotatoMaster</strong> • 24 comments</span>
+                                    <span class="thread-title">Does Potato Mode affect draw distance?</span>
+                                    <span class="thread-meta">Started by <strong>LowSpecGamer</strong> • 42 comments</span>
                                 </div>
                                 <div class="thread-date">Mar 02</div>
-                            </div>
-                            <div class="thread-row">
-                                <div class="thread-info">
-                                    <span class="thread-title">Cyberpunk 2077: 85% Compression Result</span>
-                                    <span class="thread-meta">Started by <strong>NightCityChef</strong> • 156 comments</span>
-                                </div>
-                                <div class="thread-date">Feb 28</div>
                             </div>
                         </div>
                         
                         <div id="forumInputArea" class="steam-input-box">
-                            <div class="auth-gate hidden">🔒 Sign in to start a new discussion</div>
+                            <div class="auth-gate hidden">🔒 Sign in to join the discussion</div>
                             <textarea id="forumMessage" placeholder="Start a new discussion..."></textarea>
-                            <button id="sendBtn" class="btn-ignite">POST DISCUSSION</button>
+                            <button id="sendBtn" class="btn-ignite">POST</button>
                         </div>
                     </div>
                 </div>
@@ -109,22 +116,17 @@
             <div id="potato-binPage" class="content-page hidden">
                 <h2 class="page-title">📦 Potato Bin</h2>
                 <div class="game-grid">
-                    <div class="game-card"><h3>Starfield</h3><p>Optimized textures for 8GB RAM</p><button class="btn-sm">CLONE CONFIG</button></div>
-                    <div class="game-card"><h3>Elden Ring</h3><p>Invisible wall removal (85%)</p><button class="btn-sm">CLONE CONFIG</button></div>
+                    <div class="game-card"><h3>Cyberpunk 2077</h3><p>Extreme (60%) by User88</p><button class="btn-sm">CLONE</button></div>
                 </div>
             </div>
 
             <div id="libraryPage" class="content-page hidden">
                 <h2 class="page-title">📚 My Library</h2>
-                <div class="auth-gate hidden">🔒 Log in to manage your local library</div>
-                <div class="game-grid" id="libraryGrid">
-                    <div class="game-card empty">No games compressed yet.</div>
-                </div>
+                <div class="game-grid" id="libraryGrid"><div class="game-card empty">Your library is empty.</div></div>
             </div>
 
             <div id="historyPage" class="content-page hidden">
                 <h2 class="page-title">📜 History</h2>
-                <div class="auth-gate hidden">🔒 Log in to track your optimization history</div>
                 <div class="history-list" id="historyList"></div>
             </div>
         </main>
@@ -142,6 +144,10 @@
             <button onclick="closeAuth()" class="btn-secondary">CANCEL</button>
         </div>
     </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
 
     <script src="script.js"></script>
 </body>
