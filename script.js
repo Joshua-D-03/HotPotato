@@ -1,60 +1,71 @@
-// --- Supabase Config (Insert your keys here) ---
-const supabaseUrl = 'YOUR_SUPABASE_URL';
-const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+// 1. Connection Details
+const SB_URL = "https://adsevhtaaqerrumdjqdz.supabase.co";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkc2V2aHRhYXFlcnJ1bWRqcWR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyMDgwOTQsImV4cCI6MjA4Nzc4NDA5NH0.0OLKUChzRf9Hm0GxvH8cJ9USTiUmOdDkEAiIKlYqB7s";
+
+// 2. Initialize the Supabase Client
+const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
 document.addEventListener('DOMContentLoaded', async () => {
     // --- Auth DOM Elements ---
-    const authEmail = document.getElementById('authEmail');
-    const authPass = document.getElementById('authPass');
+    const emailInput = document.getElementById('email');
+    const passInput = document.getElementById('password');
+    const btnSignup = document.getElementById('btn-signup');
+    const btnLogin = document.getElementById('btn-login');
+    const statusMsg = document.getElementById('status-msg');
     const rememberMe = document.getElementById('rememberMe');
     const loggedOutUI = document.getElementById('loggedOutUI');
     const loggedInUI = document.getElementById('loggedInUI');
     const userDisplay = document.getElementById('userDisplay');
 
-    // --- Remember Me Logic ---
-    const savedEmail = localStorage.getItem('hp_remember_email');
+    // Remember Email Logic
+    const savedEmail = localStorage.getItem('hp_user_email');
     if (savedEmail) {
-        authEmail.value = savedEmail;
+        emailInput.value = savedEmail;
         rememberMe.checked = true;
     }
 
-    // --- Check Active Session ---
+    // Check Session
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (session) {
-        updateAuthUI(session.user);
+        loggedOutUI.classList.add('hidden');
+        loggedInUI.classList.remove('hidden');
+        userDisplay.innerText = session.user.email;
     }
 
-    function updateAuthUI(user) {
-        if (user) {
-            loggedOutUI.classList.add('hidden');
-            loggedInUI.classList.remove('hidden');
-            userDisplay.innerText = user.email;
+    // --- Sign-Up Logic ---
+    btnSignup.addEventListener('click', async () => {
+        statusMsg.innerText = "Processing...";
+        const { data, error } = await supabaseClient.auth.signUp({
+            email: emailInput.value,
+            password: passInput.value,
+        });
+
+        if (error) {
+            statusMsg.innerText = "Error: " + error.message;
+            statusMsg.style.color = "red";
+        } else {
+            statusMsg.innerText = "Success! User created.";
+            statusMsg.style.color = "green";
         }
-    }
+    });
 
-    // --- Auth Actions ---
-    document.getElementById('signUpBtn').onclick = async () => {
-        const { error } = await supabaseClient.auth.signUp({ 
-            email: authEmail.value, 
-            password: authPass.value 
+    // --- Login Logic ---
+    btnLogin.addEventListener('click', async () => {
+        statusMsg.innerText = "Logging in...";
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email: emailInput.value,
+            password: passInput.value,
         });
-        if (error) alert(error.message);
-        else alert("Verification email sent! Check your inbox.");
-    };
 
-    document.getElementById('signInBtn').onclick = async () => {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({ 
-            email: authEmail.value, 
-            password: authPass.value 
-        });
-        if (error) return alert(error.message);
-
-        if (rememberMe.checked) localStorage.setItem('hp_remember_email', authEmail.value);
-        else localStorage.removeItem('hp_remember_email');
-        
-        location.reload();
-    };
+        if (error) {
+            statusMsg.innerText = "Error: " + error.message;
+            statusMsg.style.color = "red";
+        } else {
+            if (rememberMe.checked) localStorage.setItem('hp_user_email', emailInput.value);
+            else localStorage.removeItem('hp_user_email');
+            location.reload();
+        }
+    });
 
     document.getElementById('signOutBtn').onclick = async () => {
         await supabaseClient.auth.signOut();
@@ -84,31 +95,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('fileLabel').innerHTML = `<strong>TARGET:</strong> ${currentFile.name}`;
     }};
 
-    // Benchmark Logic
+    // Hardware Test
     document.getElementById('runBenchmark').onclick = () => {
         const start = performance.now();
         for(let i=0; i<5000000; i++) Math.sqrt(i);
         const time = performance.now() - start;
         const ram = parseInt(document.getElementById('ramInput').value) || 0;
         
-        const log = document.getElementById('hwLog');
+        const hwLog = document.getElementById('hwLog');
         const p = document.createElement('p');
-        p.innerText = `> CPU Latency: ${time.toFixed(2)}ms | RAM: ${ram}GB`;
-        log.prepend(p);
+        p.innerText = `> Latency: ${time.toFixed(2)}ms | RAM: ${ram}GB`;
+        hwLog.prepend(p);
         
         document.getElementById('suggestedLevel').innerText = (ram < 6) ? "SUGGESTION: POTATO" : "SUGGESTION: STANDARD";
     };
 
-    // Ignite Compression
+    // Ignition
     igniteBtn.onclick = () => {
-        if (!currentFile) return alert("Please select a game first!");
-        
+        if (!currentFile) return alert("Select a game!");
         document.getElementById('progressArea').classList.remove('hidden');
         igniteBtn.disabled = true;
 
         const ratio = parseFloat(document.getElementById('compLevel').value);
-        const fileSizeMB = currentFile.size / 1e6;
-        let timeLeft = Math.ceil(3 + (fileSizeMB / 100) + (ratio * 10));
+        let timeLeft = Math.ceil(5 + (currentFile.size / 1e8));
         const total = timeLeft;
 
         const interval = setInterval(() => {
@@ -124,24 +133,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (timeLeft <= 0) {
                 clearInterval(interval);
-                showSuccess(ratio);
+                document.getElementById('oldSize').innerText = (currentFile.size / 1e6).toFixed(2) + " MB";
+                document.getElementById('newSize').innerText = ((currentFile.size / 1e6) * (1 - ratio)).toFixed(2) + " MB";
+                document.getElementById('percentSaved').innerText = (ratio * 100).toFixed(0) + "%";
+                document.getElementById('successModal').classList.remove('hidden');
             }
         }, 1000);
     };
-
-    function showSuccess(ratio) {
-        const oldSize = currentFile.size / 1e6;
-        document.getElementById('oldSize').innerText = oldSize.toFixed(2) + " MB";
-        document.getElementById('newSize').innerText = (oldSize * (1 - ratio)).toFixed(2) + " MB";
-        document.getElementById('percentSaved').innerText = (ratio * 100).toFixed(0) + "%";
-        document.getElementById('successModal').classList.remove('hidden');
-
-        // Auto Download
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(currentFile);
-        a.download = `potatofied_${currentFile.name}`;
-        a.click();
-    }
 
     document.getElementById('closeModal').onclick = () => location.reload();
 });
