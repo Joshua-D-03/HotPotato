@@ -1,18 +1,26 @@
 :root { --orange: #da8100; --cyan: #00f2ff; --dark: #050505; --panel: #1b2838; --steam-blue: #171a21; --card: #2a475e; }
 body { background: var(--dark); color: #c7d5e0; font-family: 'Motiva Sans', Sans-serif; margin: 0; overflow: hidden; }
 
-/* Branding & Title */
-.main-title { font-size: 3.5rem; letter-spacing: -2px; margin: 0; color: #fff; font-weight: 900; text-shadow: 0 0 20px rgba(255,255,255,0.1); }
-.main-title span { color: var(--orange); }
-.main-subheading { color: #66c0f4; font-weight: bold; text-transform: uppercase; letter-spacing: 4px; font-size: 0.9rem; margin-top: -5px; margin-bottom: 30px; }
+/* ENLARGED & CENTERED LABORATORY */
+.lab-centered { 
+    display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; max-width: 1100px !important; 
+}
+.large-engine { 
+    width: 100%; transform: scale(1.2); transform-origin: top center; margin-top: 50px; 
+}
 
-/* Navigation Colors */
-.top-nav { position: absolute; top: 25px; right: 30px; z-index: 1000; font-weight: bold; font-size: 0.85rem; }
-.white-to-orange { color: #fff; transition: 0.3s; cursor: pointer; }
+/* Two-Tone Title Branding */
+.main-title { font-size: 4rem; letter-spacing: -2px; margin: 0; color: #fff; font-weight: 900; }
+.main-title span { color: var(--orange); }
+.main-subheading { color: #66c0f4; font-weight: bold; text-transform: uppercase; letter-spacing: 5px; font-size: 1rem; margin-top: -5px; }
+
+/* Navigation & Auth Colors */
+.top-nav { position: absolute; top: 25px; right: 30px; z-index: 1000; font-weight: bold; }
+.white-to-orange { color: #fff; cursor: pointer; transition: 0.3s; }
 .white-to-orange:hover { color: var(--orange); }
-.orange-to-white { color: var(--orange); transition: 0.3s; cursor: pointer; }
+.orange-to-white { color: var(--orange); cursor: pointer; transition: 0.3s; }
 .orange-to-white:hover { color: #fff; }
-.user-tag { color: var(--cyan); border: 1px solid var(--cyan); padding: 5px 15px; border-radius: 2px; background: rgba(0,242,255,0.05); margin-right: 15px; }
+.user-tag { color: var(--cyan); border: 1px solid var(--cyan); padding: 5px 15px; background: rgba(0,242,255,0.05); margin-right: 15px; border-radius: 2px; }
 
 /* Sidebar */
 .app-container { display: flex; height: 100vh; }
@@ -22,39 +30,30 @@ body { background: var(--dark); color: #c7d5e0; font-family: 'Motiva Sans', Sans
 .nav-item { padding: 12px; cursor: pointer; color: #66c0f4; font-weight: bold; font-size: 0.85rem; margin-bottom: 5px; }
 .nav-item.active { background: linear-gradient(to right, #1b2838, #2a475e); color: #fff; border-left: 3px solid var(--orange); }
 
-/* Community Hub / Steam UI */
-.steam-header { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 15px 25px; margin-bottom: 20px; border-radius: 4px; }
-.search-bar-wrap input { background: #101822; border: 1px solid #000; color: #fff; padding: 10px 15px; width: 300px; border-radius: 4px; outline: none; }
-.forum-layout { display: flex; gap: 20px; text-align: left; }
-.forum-sidebar { width: 220px; display: flex; flex-direction: column; gap: 5px; }
-.filter-btn { background: transparent; border: none; color: #8ba2b9; padding: 10px; text-align: left; cursor: pointer; font-weight: bold; }
-.filter-btn.active { color: #fff; background: #3d4450; border-radius: 2px; }
+/* Main Feature Components */
+.main-content { flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
+.content-page { width: 100%; max-width: 900px; }
+.drop-zone { border: 2px dashed #3a3a3a; background: #101822; padding: 60px; cursor: pointer; border-radius: 8px; margin-bottom: 25px; text-align: center; }
+.electric-potato { font-size: 100px; animation: spin 10s linear infinite; filter: drop-shadow(0 0 20px var(--cyan)); display: inline-block; }
+.compressing-potato { filter: drop-shadow(0 0 50px #ff0000) sepia(100%) !important; animation: spin 0.4s linear infinite !important; }
 
-.forum-main { flex: 1; background: #1b2838; padding: 20px; border-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-.thread-row { background: rgba(0,0,0,0.2); padding: 15px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: 1px solid transparent; }
-.thread-row:hover { border-color: #3d4450; background: #233c51; }
-.thread-title { color: #66c0f4; font-size: 1.05rem; display: block; margin-bottom: 4px; }
-.thread-meta { font-size: 0.75rem; color: #8ba2b9; }
-
-/* The Engine / Lab */
-.drop-zone { border: 2px dashed #3a3a3a; background: #101822; padding: 60px; cursor: pointer; margin-bottom: 25px; border-radius: 8px; text-align: center; }
-.electric-potato { font-size: 80px; animation: spin 10s linear infinite; filter: drop-shadow(0 0 15px var(--cyan)); display: inline-block; }
-.compressing-potato { filter: drop-shadow(0 0 40px #ff0000) sepia(100%) !important; animation: spin 0.4s linear infinite !important; }
-@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-.system-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; text-align: left; }
-.field label { font-size: 0.7rem; color: #8ba2b9; text-transform: uppercase; font-weight: bold; margin-bottom: 6px; display: block; }
+/* Forms & Grids */
+.system-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; text-align: left; }
+.field label { font-size: 0.75rem; color: #8ba2b9; text-transform: uppercase; font-weight: bold; margin-bottom: 6px; display: block; }
 .field input, .field select { width: 100%; background: #101822; border: 1px solid #000; color: #fff; padding: 12px; box-sizing: border-box; }
-.btn-ignite { background: linear-gradient(to right, #da8100, #ff9d00); color: #fff; border: none; padding: 18px; font-weight: 800; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 1px; }
+.btn-ignite { background: linear-gradient(to right, #da8100, #ff9d00); color: #fff; border: none; padding: 20px; font-weight: 800; cursor: pointer; width: 100%; letter-spacing: 1px; }
 
-/* Auth States */
-.steam-input-box { margin-top: 25px; border-top: 1px solid #3a3a3a; padding-top: 20px; position: relative; }
-.steam-input-box textarea { width: 100%; background: #101822; border: 1px solid #000; color: #fff; padding: 15px; height: 100px; resize: none; box-sizing: border-box; outline: none; margin-bottom: 10px; }
-.auth-gate { color: var(--orange); font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; background: rgba(218, 129, 0, 0.1); padding: 10px; border-radius: 2px; }
-.disabled-content { opacity: 0.4; pointer-events: none; filter: grayscale(0.8); }
+/* Community / Forum */
+.forum-layout { display: flex; gap: 20px; text-align: left; }
+.forum-sidebar { width: 200px; display: flex; flex-direction: column; gap: 5px; }
+.forum-main { flex: 1; background: #1b2838; padding: 20px; border-radius: 4px; }
+.thread-row { background: rgba(0,0,0,0.2); padding: 15px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid transparent; }
+.thread-row:hover { background: #233c51; border-color: #3d4450; }
+.steam-input-box textarea { width: 100%; background: #101822; color: #fff; border: 1px solid #000; padding: 15px; height: 100px; resize: none; box-sizing: border-box; margin-bottom: 10px; outline: none; }
+
+/* Utils */
 .hidden { display: none !important; }
-
-/* Modal */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000; }
-.modal-box { background: var(--steam-blue); padding: 40px; border: 1px solid var(--orange); width: 350px; text-align: center; }
-.modal-box input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #333; color: #fff; box-sizing: border-box; }
+.disabled-content { opacity: 0.4; pointer-events: none; filter: grayscale(1); }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+.modal-box { background: var(--steam-blue); padding: 40px; border: 1px solid var(--orange); width: 350px; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
