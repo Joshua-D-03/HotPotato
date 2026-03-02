@@ -1,46 +1,74 @@
-:root { --orange: #da8100; --cyan: #00f2ff; --dark: #050505; --panel: #111; }
-body { background: var(--dark); color: #eee; font-family: 'Segoe UI', sans-serif; margin: 0; overflow: hidden; }
+:root {
+    --orange: #da8100;
+    --cyan: #00f2ff;
+    --dark: #050505;
+    --panel: #111;
+}
 
-/* Top Nav Links */
-.top-nav { position: absolute; top: 25px; right: 30px; z-index: 1000; display: flex; gap: 20px; }
-.nav-link { 
-    font-size: 0.85rem; font-weight: 800; cursor: pointer; letter-spacing: 2px; color: #888; transition: 0.3s; 
+body {
+    background: var(--dark);
+    color: #eee;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    overflow: hidden;
+}
+
+/* Auth Navigation */
+.top-nav {
+    position: absolute; top: 25px; right: 30px; z-index: 1000;
+    display: flex; gap: 20px;
+}
+.nav-link {
+    font-size: 0.85rem; font-weight: 800; cursor: pointer;
+    letter-spacing: 2px; color: #888; transition: 0.3s;
 }
 .nav-link:hover { color: var(--orange); }
 
-/* Auth Modal */
-.auth-modal { width: 300px !important; padding: 30px !important; }
-.auth-modal input { width: 100%; margin-bottom: 15px; background: #000; border: 1px solid #444; color: white; padding: 10px; border-radius: 4px; box-sizing: border-box;}
-.auth-footer { display: flex; gap: 10px; }
-
-/* Sidebar Collapsible */
-.sidebar { 
-    width: 300px; background: var(--panel); border-right: 1px solid #333; padding: 25px; 
-    display: flex; flex-direction: column; gap: 15px; transition: transform 0.4s ease; position: relative;
+/* Sidebar Logic */
+.sidebar {
+    width: 300px; background: var(--panel); border-right: 1px solid #333; padding: 25px;
+    display: flex; flex-direction: column; gap: 15px; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative; z-index: 500;
 }
 .sidebar.closed { transform: translateX(-300px); position: absolute; }
-.toggle-sidebar { position: absolute; right: -30px; top: 20px; background: #333; border: 1px solid #444; color: white; cursor: pointer; padding: 10px 5px; border-radius: 0 5px 5px 0; }
-.toggle-sidebar-open { position: absolute; left: 0; top: 20px; background: var(--orange); border: none; color: white; cursor: pointer; padding: 10px 15px; border-radius: 0 5px 5px 0; z-index: 100; }
+.toggle-sidebar {
+    position: absolute; right: -30px; top: 20px; background: #222; border: 1px solid #444;
+    color: white; cursor: pointer; padding: 10px 5px; border-radius: 0 5px 5px 0;
+}
+.toggle-sidebar-open {
+    position: absolute; left: 0; top: 20px; background: var(--orange); border: none;
+    color: white; cursor: pointer; padding: 10px 15px; border-radius: 0 5px 5px 0; z-index: 100;
+}
 
-/* Existing Engine Styles */
+/* Layout */
 .app-container { display: flex; height: 100vh; }
-.main-lab { flex: 1; padding: 40px; text-align: center; }
-.main-title { font-size: 3.5rem; margin: 0; font-weight: 900; }
-.main-title span { color: var(--orange); }
-.main-subheading { color: #666; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 5px; }
+.main-lab { flex: 1; padding: 40px; text-align: center; overflow-y: auto; }
 
+.main-title { font-size: 3.5rem; margin: 0; color: #fff; font-weight: 900; letter-spacing: -2px; }
+.main-title span { color: var(--orange); }
+.main-subheading { color: #666; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 5px; margin-bottom: 30px; }
+
+/* Potato UI */
 .potato-chamber { position: relative; width: 120px; height: 120px; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; }
-.electric-potato { font-size: 60px; animation: spin 15s linear infinite; }
+.electric-potato { font-size: 60px; animation: spin 15s linear infinite; transition: 0.5s; }
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-.overdrive { filter: drop-shadow(0 0 25px #ff0000) !important; animation: spin 2s linear infinite !important; }
+.overdrive { filter: drop-shadow(0 0 25px #ff0000) !important; animation: spin 2s linear infinite !important; transform: scale(1.2); }
+.energy-ring { position: absolute; width: 100px; height: 100px; border: 2px solid var(--cyan); border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.3; } 50% { transform: scale(1.15); opacity: 0.8; } }
+
+/* Functional Styles */
+.field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; text-align: left; }
+.field label { font-size: 0.7rem; color: #555; font-weight: bold; text-transform: uppercase; }
+.field input, .field select { background: #000; border: 1px solid #333; color: #fff; padding: 8px; border-radius: 4px; }
+.btn-benchmark { background: transparent; border: 1px solid var(--cyan); color: var(--cyan); padding: 10px; cursor: pointer; font-weight: bold; width: 100%; }
 
 .drop-zone { border: 2px dashed var(--orange); padding: 50px; cursor: pointer; background: rgba(218, 129, 0, 0.05); }
+.progress-bar { background: #222; height: 10px; border-radius: 5px; overflow: hidden; margin: 15px 0; }
 .fill { background: var(--cyan); height: 100%; width: 0%; transition: width 0.5s linear; }
-.btn-ignite { width: 100%; padding: 20px; background: var(--orange); border: none; color: white; font-weight: bold; cursor: pointer; }
-.hidden { display: none !important; }
 
+.btn-ignite { width: 100%; padding: 20px; background: var(--orange); border: none; color: white; font-weight: bold; cursor: pointer; }
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-.modal-box { background: #1a1a1a; padding: 40px; border: 2px solid var(--orange); text-align: center; }
-.comparison-container { background: #000; padding: 15px; border-radius: 4px; margin: 20px 0; }
-.comp-row { display: flex; justify-content: space-between; margin-bottom: 10px; }
-.savings-badge { background: var(--orange); color: white; padding: 10px; font-weight: bold; border-radius: 4px; }
+.modal-box { background: #1a1a1a; padding: 40px; border: 2px solid var(--orange); width: 400px; text-align: center; }
+.auth-modal input { width: 100%; margin-bottom: 15px; box-sizing: border-box; }
+.auth-footer { display: flex; gap: 10px; }
+.hidden { display: none !important; }
