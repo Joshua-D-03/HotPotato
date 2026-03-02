@@ -25,7 +25,7 @@
         <div class="modal-box auth-modal">
             <h2 id="authTitle">LOG IN</h2>
             <input type="email" id="email" placeholder="Email">
-            <input type="password" id="password" placeholder="Password">
+            <input type="password" id="password" placeholder="Password (min 6 chars)">
             <div class="auth-footer">
                 <button id="authSubmit" class="btn-ignite">PROCEED</button>
                 <button onclick="closeAuth()" class="btn-reset" style="background:#333">CANCEL</button>
@@ -40,10 +40,10 @@
             <div class="sidebar-content">
                 <div class="sidebar-header"><h3>🖥️ STATION PROFILE</h3></div>
                 <div class="profile-inputs">
-                    <div class="field"><label>Computer Type</label><input type="text" placeholder="e.g. Laptop / Desktop"></div>
-                    <div class="field"><label>Processor</label><input type="text" placeholder="e.g. i7-13700K"></div>
+                    <div class="field"><label>Computer Type</label><input type="text" id="pcType" placeholder="e.g. Desktop"></div>
+                    <div class="field"><label>Processor</label><input type="text" id="cpuType" placeholder="e.g. i9-14900K"></div>
                     <div class="field"><label>RAM (GB)</label><input type="number" id="ramInput" placeholder="16"></div>
-                    <div class="field"><label>Storage Type</label><input type="text" placeholder="e.g. NVMe SSD"></div>
+                    <div class="field"><label>Storage Type</label><input type="text" id="diskType" placeholder="e.g. Gen5 NVMe"></div>
                     <div class="field">
                         <label>Compression Level</label>
                         <select id="compLevel">
@@ -58,6 +58,7 @@
                     <h4>OPTIMIZATION LOG</h4>
                     <div id="hwLog" class="hw-log"><p class="dim">> System Idle...</p></div>
                 </div>
+                <div id="suggestedLevel" class="level-badge">---</div>
             </div>
         </aside>
 
@@ -81,11 +82,16 @@
                         <p id="fileLabel"><strong>DRAG GAME HERE</strong><br>or click to browse</p>
                     </div>
                 </div>
+                
                 <div id="progressArea" class="log-container hidden">
-                    <div class="progress-info"><span id="progressStatus">Boiling...</span><span id="timeLeft">Est: --:--</span></div>
+                    <div class="progress-info">
+                        <span id="progressStatus">Boiling Bloat...</span>
+                        <span id="timeLeft">Est: --:--</span>
+                    </div>
                     <div class="progress-bar"><div id="progressFill" class="fill"></div></div>
                     <div id="statusLog" class="status-log"></div>
                 </div>
+
                 <button id="igniteBtn" class="btn-ignite">IGNITE COMPRESSION</button>
             </section>
         </main>
