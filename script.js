@@ -4,96 +4,80 @@ const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
 document.addEventListener('DOMContentLoaded', async () => {
     const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggleSidebar');
     const potato = document.getElementById('potato');
-    const compLevel = document.getElementById('compLevel');
-    const warningBox = document.getElementById('warningBox');
-    const recommendedText = document.getElementById('recommendedText');
-    let currentFile = null;
+    const navItems = document.querySelectorAll('.nav-item');
+    let userSession = null;
 
-    // Sidebar Toggling
-    document.getElementById('closeSidebar').onclick = () => { sidebar.classList.add('closed'); document.getElementById('openSidebar').classList.remove('hidden'); };
-    document.getElementById('openSidebar').onclick = () => { sidebar.classList.remove('closed'); document.getElementById('openSidebar').classList.add('hidden'); };
+    // --- Auth State ---
+    const updateAuth = async () => {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        userSession = session;
+        const gates = document.querySelectorAll('.auth-gate');
+        const forumWrap = document.getElementById('forumInputArea');
 
-    // File Selection
-    const dropZone = document.getElementById('dropZone');
-    const fileInput = document.getElementById('fileInput');
-    dropZone.onclick = () => fileInput.click();
-    fileInput.onchange = (e) => {
-        if (e.target.files[0]) {
-            currentFile = e.target.files[0];
-            document.getElementById('fileLabel').innerHTML = `<strong>TARGET LOADED:</strong><br>${currentFile.name}`;
-            updateRecommendation();
+        if (session) {
+            document.getElementById('loggedOutNav').classList.add('hidden');
+            document.getElementById('loggedInNav').classList.remove('hidden');
+            document.getElementById('userDisplay').innerText = (session.user.email || "GUEST").toUpperCase();
+            gates.forEach(g => g.classList.add('hidden'));
+            forumWrap.classList.remove('restricted');
+            document.getElementById('forumMessage').disabled = false;
+            document.getElementById('sendBtn').disabled = false;
+        } else {
+            document.getElementById('loggedOutNav').classList.remove('hidden');
+            document.getElementById('loggedInNav').classList.add('hidden');
+            gates.forEach(g => g.classList.remove('hidden'));
+            forumWrap.classList.add('restricted');
+            document.getElementById('forumMessage').disabled = true;
+            document.getElementById('sendBtn').disabled = true;
         }
     };
+    await updateAuth();
 
-    // Optimization Logic & Warning
-    compLevel.onchange = () => {
-        warningBox.classList.toggle('hidden', parseFloat(compLevel.value) < 0.75);
-        updateRecommendation();
+    // --- Sidebar & Navigation ---
+    toggleBtn.onclick = () => {
+        const closed = sidebar.classList.toggle('closed');
+        toggleBtn.innerText = closed ? "▶" : "◀";
     };
 
-    function updateRecommendation() {
-        const pc = document.getElementById('pcType').value;
-        const focus = document.getElementById('optFocus').value;
-        if (!pc) { recommendedText.innerText = "Enter PC Type Above"; return; }
-        recommendedText.innerText = `REC: ${focus.toUpperCase()} for ${pc}`;
-    }
+    navItems.forEach(item => {
+        item.onclick = () => {
+            const pageId = item.getAttribute('data-page');
+            document.querySelectorAll('.content-page').forEach(p => p.classList.add('hidden'));
+            document.getElementById(`${pageId}Page`).classList.remove('hidden');
+            navItems.forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+        };
+    });
 
-    // Compression Ignition
+    // --- Forum Logic ---
+    const sendMsg = () => {
+        const inp = document.getElementById('forumMessage');
+        const feed = document.getElementById('forumFeed');
+        if (!inp.value.trim() || !userSession) return;
+        
+        const msg = document.createElement('div');
+        msg.className = 'post';
+        msg.innerHTML = `<strong>${userSession.user.email.split('@')[0]}:</strong> ${inp.value}`;
+        feed.appendChild(msg);
+        feed.scrollTop = feed.scrollHeight;
+        inp.value = "";
+    };
+    document.getElementById('sendBtn').onclick = sendMsg;
+
+    // --- Ignite Logic ---
     document.getElementById('igniteBtn').onclick = () => {
-        if (!currentFile || !document.getElementById('pcType').value) {
-            return alert("Please select a game and enter your Computer Type!");
-        }
-
-        document.getElementById('progressArea').classList.remove('hidden');
-        potato.classList.add('compressing-potato'); // Electrify & Turn Red
-        
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += 1;
-            document.getElementById('progressFill').style.width = progress + "%";
-            if (progress >= 100) {
-                clearInterval(interval);
-                finalizeCompression();
-            }
-        }, 30);
+        potato.classList.add('compressing-potato');
+        setTimeout(() => {
+            potato.classList.remove('compressing-potato');
+            alert("Optimization Ignite Complete!");
+        }, 3000);
     };
 
-    function formatComparison(bytes) {
-        const mb = (bytes / (1024 * 1024)).toFixed(2);
-        const gb = (bytes / (1024 * 1024 * 1024)).toFixed(2);
-        return `${mb} MB (${gb} GB)`;
-    }
-
-    function finalizeCompression() {
-        const ratio = parseFloat(compLevel.value);
-        const newSize = currentFile.size * (1 - ratio);
-
-        document.getElementById('oldSize').innerText = formatComparison(currentFile.size);
-        document.getElementById('newSize').innerText = formatComparison(newSize);
-        document.getElementById('percentSaved').innerText = (ratio * 100).toFixed(0) + "%";
-        
-        potato.classList.remove('compressing-potato');
-        document.getElementById('successModal').classList.remove('hidden');
-    }
-
-    // Auth Actions
-    window.openAuth = (mode) => {
-        document.getElementById('authTitle').innerText = mode === 'login' ? 'LOG IN' : 'SIGN UP';
-        document.getElementById('authModal').classList.remove('hidden');
-    };
+    // --- Auth Actions ---
+    window.openAuth = () => document.getElementById('authModal').classList.remove('hidden');
     window.closeAuth = () => document.getElementById('authModal').classList.add('hidden');
-
-    document.getElementById('guestBtn').onclick = async () => { await supabaseClient.auth.signInAnonymously(); location.reload(); };
     document.getElementById('signOutBtn').onclick = async () => { await supabaseClient.auth.signOut(); location.reload(); };
-
-    // Session UI Sync
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (session) {
-        document.getElementById('loggedOutNav').classList.add('hidden');
-        document.getElementById('loggedInNav').classList.remove('hidden');
-        document.getElementById('userDisplay').innerText = session.user.is_anonymous ? "GUEST" : session.user.email;
-    }
-
-    document.getElementById('closeModal').onclick = () => location.reload();
+    document.getElementById('guestBtn').onclick = async () => { await supabaseClient.auth.signInAnonymously(); location.reload(); };
 });
