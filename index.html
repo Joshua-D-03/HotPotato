@@ -3,120 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hot Potato | Video Game Compressor</title>
+    <title>GameShrink | Game Optimization Dashboard</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+    <div class="container">
+        <header>
+            <h1>Game<span>Shrink</span></h1>
+            <button id="steam-connect" class="btn-steam">Connect Steam Account</button>
+        </header>
 
-    <nav class="top-nav">
-        <div id="loggedOutNav">
-            <span class="nav-link white-to-orange" onclick="openAuth('signup')">SIGN UP</span>
-            <span class="nav-separator">|</span>
-            <span class="nav-link orange-to-white" onclick="openAuth('login')">LOG IN</span>
-            <span class="nav-separator">|</span>
-            <span class="nav-link white-to-orange" id="guestBtn">GUEST</span>
-        </div>
-        <div id="loggedInNav" class="hidden">
-            <span id="userDisplay" class="user-tag"></span>
-            <span class="nav-link orange-to-white" id="signOutBtn">LOGOUT</span>
-        </div>
-    </nav>
+        <main class="dashboard">
+            <section class="panel specs-panel">
+                <h3>System Specifications</h3>
+                <form id="specs-form">
+                    <div class="input-group">
+                        <label>RAM (GB)</label>
+                        <input type="number" id="ram-input" placeholder="e.g. 8">
+                    </div>
+                    <div class="input-group">
+                        <label>VRAM (GB)</label>
+                        <input type="number" id="vram-input" placeholder="e.g. 2">
+                    </div>
+                    <div class="input-group">
+                        <label>Available Storage (GB)</label>
+                        <input type="number" id="storage-input" placeholder="e.g. 50">
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="remember-me">
+                        <label for="remember-me">Remember this PC</label>
+                    </div>
+                </form>
+            </section>
 
-    <div class="app-container">
-        <aside class="sidebar closed" id="sidebar">
-            <button class="toggle-sidebar" id="toggleSidebar">▶</button>
-            <div class="sidebar-content">
-                <h3 class="side-title">COMMAND CENTER</h3>
-                <nav class="sidebar-nav">
-                    <div class="nav-item active" data-page="lab">🧪 THE LABORATORY</div>
-                    <div class="nav-item" data-page="potato-bin">📦 POTATO BIN</div>
-                    <div class="nav-item" data-page="library">📚 MY LIBRARY</div>
-                    <div class="nav-item" data-page="community">💬 COMMUNITY HUB</div>
-                    <div class="nav-item" data-page="history">📜 HISTORY</div>
-                </nav>
-            </div>
-        </aside>
+            <section class="panel catalog-panel">
+                <h3>Your Steam Library</h3>
+                <div id="game-list" class="game-grid">
+                    <p class="placeholder-text">Connect Steam to see games...</p>
+                </div>
+            </section>
 
-        <main class="main-content">
-            <div id="labPage" class="content-page">
-                <header class="engine-header">
-                    <div class="potato-chamber"><div id="potato" class="electric-potato">🥔</div></div>
-                    <h1 class="main-title">HOT<span>POTATO</span></h1>
-                </header>
+            <section class="panel controls-panel">
+                <h3>Optimization Settings</h3>
                 
-                <section class="tool-card">
-                    <div class="drop-zone" id="dropZone">
-                        <input type="file" id="fileInput" style="display:none;">
-                        <div class="dz-icon">📁</div>
-                        <p id="fileLabel"><strong>DRAG GAME FOLDER OR .EXE HERE</strong><br><span>or click to browse files</span></p>
+                <div class="slider-container">
+                    <div class="slider-labels">
+                        <span>Max Performance</span>
+                        <span>Max Quality</span>
+                    </div>
+                    <input type="range" id="quality-slider" min="0" max="100" value="50">
+                    <p id="target-fps">Target: 60 FPS</p>
+                </div>
+
+                <div class="status-monitors">
+                    <div id="vram-monitor" class="monitor">
+                        <span class="label">VRAM Usage:</span>
+                        <span class="value">0GB / 0GB</span>
+                        <div class="warning-msg" id="vram-warning">⚠️ Exceeds Physical Limit!</div>
+                    </div>
+                    
+                    <div id="storage-estimator" class="monitor">
+                        <span class="label">Est. Install Size:</span>
+                        <span class="value">--</span>
+                        <div class="warning-msg" id="storage-warning">⚠️ Insufficient Space!</div>
                     </div>
 
-                    <div class="system-options-grid">
-                        <div class="field"><label>PC Model/Type</label><input type="text" id="pcType" placeholder="e.g. Alienware M15"></div>
-                        <div class="field"><label>RAM (GB)</label><input type="number" id="ramInput" placeholder="16"></div>
-                        <div class="field"><label>Optimization Focus</label><select id="optFocus"><option value="quality">Visual Quality</option><option value="performance">FPS Boost</option></select></div>
-                        <div class="field"><label>Compression Level</label><select id="compLevel"><option value="0.30">Balanced (30%)</option><option value="0.85">TOTAL POTATO (85%)</option></select></div>
-                    </div>
-                    <button id="igniteBtn" class="btn-ignite">IGNITE COMPRESSION</button>
-                </section>
-            </div>
-
-            <div id="potato-binPage" class="content-page hidden">
-                <h2 class="page-title">📦 Potato Bin</h2>
-                <p class="subtitle">Global community optimizations shared by users</p>
-                <div class="game-grid">
-                    <div class="game-card"><h3>Cyberpunk 2077</h3><p>85% Mesh Compression by <em>NightCityRunner</em></p><button class="btn-sm">CLONE CONFIG</button></div>
-                    <div class="game-card"><h3>Starfield</h3><p>Optimized Textures by <em>SpacePotato</em></p><button class="btn-sm">CLONE CONFIG</button></div>
-                    <div class="game-card"><h3>Warzone</h3><p>Maximum FPS Build by <em>LagFree</em></p><button class="btn-sm">CLONE CONFIG</button></div>
-                </div>
-            </div>
-
-            <div id="libraryPage" class="content-page hidden">
-                <h2 class="page-title">📚 My Library</h2>
-                <div class="auth-gate hidden">🔒 Log in to manage and launch your compressed games</div>
-                <div class="game-grid" id="libraryGrid">
-                    <div class="game-card empty-state">Your library is currently empty. Ignite a game in the Lab to add it here!</div>
-                </div>
-            </div>
-
-            <div id="communityPage" class="content-page hidden">
-                <h2 class="page-title">💬 Community Hub</h2>
-                <div class="forum-container">
-                    <div id="forumFeed" class="forum-feed">
-                        <div class="post"><strong>Admin:</strong> Welcome to the Hub! All users can read, but only members can post.</div>
-                    </div>
-                    <div id="forumInputArea" class="forum-input-wrap">
-                        <div class="auth-gate hidden">🔒 Sign in to join the conversation</div>
-                        <input type="text" id="forumMessage" placeholder="Type a message...">
-                        <button id="sendBtn" class="btn-ignite">SEND</button>
+                    <div id="readability-check" class="monitor">
+                        <span class="label">UI Readability:</span>
+                        <span class="value" id="readability-status">Optimal</span>
                     </div>
                 </div>
-            </div>
 
-            <div id="historyPage" class="content-page hidden">
-                <h2 class="page-title">📜 History</h2>
-                <div class="auth-gate hidden">🔒 Log in to view your optimization logs</div>
-                <div class="history-list" id="historyList">
-                    <p class="placeholder-text">No recent logs found.</p>
-                </div>
-            </div>
+                <button id="optimize-btn" class="btn-primary" disabled>Optimize & Download</button>
+            </section>
         </main>
     </div>
-
-    <div id="authModal" class="modal-overlay hidden">
-        <div class="modal-box">
-            <h2 id="authTitle">LOG IN</h2>
-            <div id="usernameField" class="hidden">
-                <input type="text" id="authUsername" placeholder="Create Username">
-            </div>
-            <input type="email" id="authEmail" placeholder="Email">
-            <input type="password" id="authPass" placeholder="Password">
-            <button id="authSubmit" class="btn-ignite">PROCEED</button>
-            <button onclick="closeAuth()" class="btn-secondary">CANCEL</button>
-        </div>
-    </div>
-
     <script src="script.js"></script>
 </body>
 </html>
