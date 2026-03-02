@@ -1,98 +1,114 @@
-let sys = { ram: 0, vram: 0 };
-let game = { ram: 0, vram: 0 };
-let currentMode = 'quality';
-let fpsTarget = 30;
+const SB_URL = "https://adsevhtaaqerrumdjqdz.supabase.co";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkc2V2aHRhYXFlcnJ1bWRqcWR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyMDgwOTQsImV4cCI6MjA4Nzc4NDA5NH0.0OLKUChzRf9Hm0GxvH8cJ9USTiUmOdDkEAiIKlYqB7s";
+const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
-function startScan() {
-    sys.ram = navigator.deviceMemory || 8;
-    sys.vram = sys.ram * 0.25; // Estimated VRAM for integrated/low-end cards
-    transition(1, 2);
-}
+document.addEventListener('DOMContentLoaded', async () => {
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggleSidebar');
+    const potato = document.getElementById('potato');
+    const navItems = document.querySelectorAll('.nav-item');
+    let userSession = null;
 
-function showManualForm() { document.getElementById('manual-form').classList.remove('hidden'); }
+    // --- Auth Management ---
+    const updateUI = async () => {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        userSession = session;
+        const gates = document.querySelectorAll('.auth-gate');
+        const forumInput = document.getElementById('forumInputArea');
 
-function saveManualSpec() {
-    sys.ram = parseFloat(document.getElementById('m-ram').value) || 8;
-    sys.vram = parseFloat(document.getElementById('m-vram').value) || 2;
-    transition(1, 2);
-}
+        if (session) {
+            document.getElementById('loggedOutNav').classList.add('hidden');
+            document.getElementById('loggedInNav').classList.remove('hidden');
+            const name = session.user.user_metadata.username || session.user.email.split('@')[0];
+            document.getElementById('userDisplay').innerText = name.toUpperCase();
+            
+            // Unlock page interactions
+            gates.forEach(g => g.classList.add('hidden'));
+            forumInput.classList.remove('disabled-content');
+        } else {
+            document.getElementById('loggedOutNav').classList.remove('hidden');
+            document.getElementById('loggedInNav').classList.add('hidden');
+            
+            // Lock page interactions
+            gates.forEach(g => g.classList.remove('hidden'));
+            forumInput.classList.add('disabled-content');
+        }
+    };
+    await updateUI();
 
-function updateFPS(val) { 
-    document.getElementById('fps-val').innerText = val; 
-    fpsTarget = parseInt(val); 
-}
+    // --- Community Discussion Search ---
+    document.getElementById('forumSearch').oninput = (e) => {
+        const term = e.target.value.toLowerCase();
+        document.querySelectorAll('.thread-row').forEach(row => {
+            const text = row.innerText.toLowerCase();
+            row.style.display = text.includes(term) ? 'flex' : 'none';
+        });
+    };
 
-function setMode(mode) {
-    currentMode = mode;
-    document.getElementById('mode-quality').classList.toggle('active', mode === 'quality');
-    document.getElementById('mode-perf').classList.toggle('active', mode === 'perf');
-}
-
-function processComparison() {
-    game.ram = parseFloat(document.getElementById('g-ram').value) || 16;
-    game.vram = parseFloat(document.getElementById('g-vram').value) || 6;
-
-    const vramPower = sys.vram / game.vram;
-    const modeMult = currentMode === 'perf' ? 0.75 : 1.15;
-    const fpsWeight = 30 / fpsTarget;
-
-    // The Universal Bridge Formula
-    let scale = (vramPower * modeMult * fpsWeight).toFixed(2);
-    scale = Math.max(0.30, Math.min(1.0, scale));
-
-    renderResults(scale, vramPower);
-    transition(2, 3);
-}
-
-function renderResults(scale, vramPower) {
-    window.finalScale = scale;
-    const stress = Math.min(100, (1 / vramPower) * 50);
+    // --- File Drag & Drop Engine ---
+    const dz = document.getElementById('dropZone');
+    const fInp = document.getElementById('fileInput');
     
-    document.getElementById('vram-fill').style.width = stress + "%";
-    document.getElementById('stress-pct').innerText = Math.round(stress) + "% Pressure";
-    document.getElementById('scale-val').innerText = Math.round(scale * 100) + "% of Native";
-    
-    const status = document.getElementById('read-status');
-    const strat = document.getElementById('strat-desc');
+    dz.onclick = () => fInp.click();
+    fInp.onchange = (e) => {
+        if (e.target.files[0]) {
+            document.getElementById('fileLabel').innerHTML = `<strong>CHAMBER READY:</strong><br>${e.target.files[0].name}`;
+            dz.style.borderColor = "var(--cyan)";
+        }
+    };
 
-    if (scale < 0.48) {
-        status.innerText = "CRITICAL BLUR";
-        status.style.color = "#f85149";
-        strat.innerText = "Extreme Sub-Sampling (Focus on Frame Stability)";
-    } else {
-        status.innerText = "CLEAR LEGIBILITY";
-        status.style.color = "#3fb950";
-        strat.innerText = "Balanced Bridge (Optimization Priority)";
-    }
-}
+    document.getElementById('igniteBtn').onclick = () => {
+        if (!fInp.files[0]) return alert("Please drop a game folder into the chamber!");
+        potato.classList.add('compressing-potato');
+        setTimeout(() => {
+            potato.classList.remove('compressing-potato');
+            alert("IGNITION SUCCESSFUL: Optimization complete.");
+        }, 3000);
+    };
 
-function downloadConfig() {
-    const content = `
-; Architect v8.0 Universal Bridge
-; ------------------------------
-; This file optimizes the game by bridging your hardware deficit.
-; Estimated Resolution Scale: ${window.finalScale}
+    // --- Sidebar Navigation (Always Visible) ---
+    toggleBtn.onclick = () => {
+        const isClosed = sidebar.classList.toggle('closed');
+        toggleBtn.innerText = isClosed ? "▶" : "◀";
+    };
 
-[Display]
-ResolutionScale=${window.finalScale}
-FrameRateLimit=${fpsTarget}
+    navItems.forEach(item => {
+        item.onclick = () => {
+            const id = item.getAttribute('data-page');
+            document.querySelectorAll('.content-page').forEach(p => p.classList.add('hidden'));
+            document.getElementById(`${id}Page`).classList.remove('hidden');
+            navItems.forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+        };
+    });
 
-[Graphics]
-TextureQuality=${window.finalScale < 0.5 ? 0 : 1}
-ShadowQuality=0
-VRAM_Budget_MB=${sys.vram * 1024}
-Optimization_Mode=${currentMode}
-    `.trim();
+    // --- Auth Actions ---
+    window.openAuth = (m) => {
+        document.getElementById('authTitle').innerText = m === 'signup' ? 'SIGN UP' : 'LOG IN';
+        document.getElementById('usernameField').classList.toggle('hidden', m !== 'signup');
+        document.getElementById('authModal').classList.remove('hidden');
+    };
+    window.closeAuth = () => document.getElementById('authModal').classList.add('hidden');
 
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = "Bridge_Optimization.ini";
-    a.click();
-}
+    document.getElementById('authSubmit').onclick = async () => {
+        const email = document.getElementById('authEmail').value;
+        const pass = document.getElementById('authPass').value;
+        const username = document.getElementById('authUsername').value;
+        const isSignUp = !document.getElementById('usernameField').classList.contains('hidden');
 
-function transition(from, to) {
-    document.getElementById(`step-${from}`).classList.remove('active');
-    document.getElementById(`step-${to}`).classList.add('active');
-}
+        if (isSignUp) {
+            const { error } = await supabaseClient.auth.signUp({ 
+                email, 
+                password: pass, 
+                options: { data: { username } } 
+            });
+            if (error) alert(error.message); else alert("Check your email for verification!");
+        } else {
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
+            if (error) alert(error.message); else location.reload();
+        }
+    };
+
+    document.getElementById('signOutBtn').onclick = async () => { await supabaseClient.auth.signOut(); location.reload(); };
+    document.getElementById('guestBtn').onclick = async () => { await supabaseClient.auth.signInAnonymously(); location.reload(); };
+});
