@@ -1,106 +1,40 @@
-const SB_URL = "https://adsevhtaaqerrumdjqdz.supabase.co";
-const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkc2V2aHRhYXFlcnJ1bWRqcWR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyMDgwOTQsImV4cCI6MjA4Nzc4NDA5NH0.0OLKUChzRf9Hm0GxvH8cJ9USTiUmOdDkEAiIKlYqB7s";
-const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
+:root { --orange: #da8100; --cyan: #00f2ff; --dark: #050505; --panel: #111; }
+body { background: var(--dark); color: #eee; font-family: 'Segoe UI', sans-serif; margin: 0; overflow: hidden; }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const sidebar = document.getElementById('sidebar');
-    const toggleSidebar = document.getElementById('toggleSidebar');
-    const potato = document.getElementById('potato');
-    const fileInput = document.getElementById('fileInput');
-    const dropZone = document.getElementById('dropZone');
-    const compSelect = document.getElementById('compLevel');
-    const warningBox = document.getElementById('warningBox');
-    let currentFile = null;
+/* Navigation & Sidebar */
+.top-nav { position: absolute; top: 25px; right: 30px; z-index: 1000; display: flex; align-items: center; }
+.nav-link { font-weight: 800; cursor: pointer; transition: 0.3s; padding: 0 10px; font-size: 0.85rem; }
+.user-tag { color: var(--cyan); font-weight: bold; margin-right: 15px; font-size: 0.8rem; }
 
-    // --- SIDEBAR & PAGE NAVIGATION ---
-    toggleSidebar.onclick = () => {
-        const isClosed = sidebar.classList.toggle('closed');
-        toggleSidebar.innerText = isClosed ? "▶" : "◀";
-    };
+.app-container { display: flex; height: 100vh; }
+.sidebar { width: 280px; background: var(--panel); border-right: 1px solid #333; transition: 0.4s; position: relative; padding: 20px; box-sizing: border-box; }
+.sidebar.closed { transform: translateX(-280px); }
+.toggle-sidebar { position: absolute; right: -40px; top: 20px; background: #222; border: 1px solid #444; color: white; cursor: pointer; width: 40px; height: 40px; border-radius: 0 5px 5px 0; }
+.nav-item { padding: 12px; cursor: pointer; border-radius: 4px; color: #888; font-weight: bold; font-size: 0.85rem; margin-bottom: 5px; }
+.nav-item.active { background: var(--orange); color: #fff; }
 
-    const navItems = document.querySelectorAll('.nav-item');
-    const pages = document.querySelectorAll('.content-page');
+/* Forum UI */
+.forum-container { background: #0a0a0a; border: 1px solid #222; border-radius: 8px; height: 400px; display: flex; flex-direction: column; }
+.forum-feed { flex: 1; padding: 20px; overflow-y: auto; text-align: left; }
+.post { background: #151515; padding: 10px; margin-bottom: 8px; border-left: 3px solid var(--orange); font-size: 0.9rem; }
+.forum-input-wrap { display: flex; padding: 10px; gap: 10px; background: #111; border-top: 1px solid #222; }
+.forum-input-wrap input { flex: 1; background: #000; border: 1px solid #333; color: #fff; padding: 10px; }
+.forum-input-wrap.restricted { opacity: 0.3; cursor: not-allowed; }
 
-    navItems.forEach(item => {
-        item.onclick = () => {
-            const targetPage = item.getAttribute('data-page');
-            
-            // Toggle Active Nav State
-            navItems.forEach(i => i.classList.remove('active'));
-            item.classList.add('active');
+/* Lab UI */
+.main-content { flex: 1; padding: 40px; display: flex; flex-direction: column; align-items: center; overflow-y: auto; }
+.content-page { width: 100%; max-width: 700px; text-align: center; }
+.auth-gate { background: rgba(218, 129, 0, 0.1); border: 1px solid var(--orange); padding: 12px; margin-bottom: 15px; color: var(--orange); font-weight: bold; }
+.electric-potato { font-size: 70px; animation: spin 10s linear infinite; display: inline-block; filter: drop-shadow(0 0 10px var(--cyan)); }
+.compressing-potato { filter: drop-shadow(0 0 35px #ff0000) sepia(100%) saturate(500%) !important; animation: spin 0.6s linear infinite !important; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-            // Switch Visibility
-            pages.forEach(p => p.classList.add('hidden'));
-            document.getElementById(`${targetPage}Page`).classList.remove('hidden');
-        };
-    });
+.system-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; background: #000; padding: 25px; border: 1px solid #333; border-radius: 8px; }
+.field { display: flex; flex-direction: column; text-align: left; gap: 5px; font-size: 0.7rem; }
+.btn-ignite { background: var(--orange); color: white; border: none; padding: 15px 30px; cursor: pointer; font-weight: 800; }
+.hidden { display: none !important; }
 
-    // --- LABORATORY ENGINE ---
-    dropZone.onclick = () => fileInput.click();
-    fileInput.onchange = (e) => {
-        if (e.target.files[0]) {
-            currentFile = e.target.files[0];
-            document.getElementById('fileLabel').innerHTML = `<strong>LOADED:</strong><br>${currentFile.name}`;
-        }
-    };
-
-    document.getElementById('calcBtn').onclick = () => {
-        const pcType = document.getElementById('pcType').value.trim().toLowerCase();
-        if (!currentFile || !pcType) return alert("System requires a Game File and Computer Type to calculate!");
-
-        const fileSizeGB = currentFile.size / (1024 ** 3);
-        const focusSelect = document.getElementById('optFocus');
-
-        // Intelligent pre-selection
-        if (pcType.includes("laptop") || pcType.includes("potato")) {
-            focusSelect.value = "performance";
-            compSelect.value = (fileSizeGB > 20) ? "0.85" : "0.60";
-        } else {
-            focusSelect.value = (fileSizeGB < 15) ? "quality" : "balanced";
-            compSelect.value = (fileSizeGB > 60) ? "0.60" : "0.30";
-        }
-
-        warningBox.classList.toggle('hidden', parseFloat(compSelect.value) < 0.80);
-        alert("Best settings pre-applied for your configuration!");
-    };
-
-    document.getElementById('igniteBtn').onclick = async () => {
-        if (!currentFile || !document.getElementById('pcType').value) return alert("System missing configuration data!");
-        
-        document.getElementById('progressArea').classList.remove('hidden');
-        potato.classList.add('compressing-potato');
-
-        let prog = 0;
-        const interval = setInterval(async () => {
-            prog += 2;
-            document.getElementById('progressFill').style.width = prog + "%";
-            if (prog >= 100) {
-                clearInterval(interval);
-                
-                const ratio = parseFloat(compSelect.value);
-                const oldSize = currentFile.size;
-                const newSize = oldSize * (1 - ratio);
-
-                // --- SAVE TO SUPABASE ---
-                const { data: { user } } = await supabaseClient.auth.getUser();
-                if (user) {
-                    await supabaseClient.from('history').insert([
-                        { user_id: user.id, game_name: currentFile.name, original_size: oldSize, ratio: ratio }
-                    ]);
-                }
-
-                const format = (b) => `${(b / (1024**2)).toFixed(2)} MB (${(b / (1024**3)).toFixed(2)} GB)`;
-                document.getElementById('oldSize').innerText = format(oldSize);
-                document.getElementById('newSize').innerText = format(newSize);
-                
-                potato.classList.remove('compressing-potato');
-                document.getElementById('successModal').classList.remove('hidden');
-            }
-        }, 50);
-    };
-
-    // --- AUTH BOILERPLATE ---
-    window.openAuth = (m) => document.getElementById('authModal').classList.remove('hidden');
-    window.closeAuth = () => document.getElementById('authModal').classList.add('hidden');
-    document.getElementById('guestBtn').onclick = async () => { await supabaseClient.auth.signInAnonymously(); location.reload(); };
-});
+/* Modals */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+.modal-box { background: #1a1a1a; padding: 40px; border: 2px solid var(--orange); width: 350px; text-align: center; }
+.modal-box input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #333; color: #fff; box-sizing: border-box; }
