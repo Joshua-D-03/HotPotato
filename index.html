@@ -11,15 +11,16 @@
 
     <div id="authBar" class="auth-bar">
         <div id="loggedOutUI">
-            <input type="email" id="authEmail" placeholder="Email">
-            <input type="password" id="authPass" placeholder="Password">
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Password (min 6 chars)">
             <div class="auth-actions">
-                <button id="signInBtn">Login</button>
-                <button id="signUpBtn">Sign Up</button>
+                <button id="btn-login">Login</button>
+                <button id="btn-signup">Create Account</button>
                 <label class="remember-me">
                     <input type="checkbox" id="rememberMe"> Remember
                 </label>
             </div>
+            <p id="status-msg" style="font-size: 0.7rem; margin: 5px 0 0;"></p>
         </div>
         <div id="loggedInUI" class="hidden">
             <span id="userDisplay"></span>
