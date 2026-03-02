@@ -2,66 +2,92 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Hot Potato | Universal Game Optimizer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hot Potato - Universal Video Game Compressor</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="nexus-app">
-        <header class="hero-header">
-            <div class="potato-container">
-                <div class="lightning-bolt"></div>
-                <div class="lightning-bolt"></div>
-                <div class="rotating-potato">🥔</div>
-                <div class="energy-ring"></div>
+
+    <header class="main-header">
+        <div class="logo-area">
+            <div class="potato-icon">🥔</div>
+            <h1>Hot Potato</h1>
+            <p>Low-Spec Optimization Suite</p>
+        </div>
+        <nav class="tool-nav">
+            <ul>
+                <li><a href="#" class="active">Game Compressor</a></li>
+                <li><a href="#">Texture Peeler</a></li>
+                <li><a href="#">Audio Crusher</a></li>
+                <li><a href="#">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="tool-box">
+            <h2 class="tool-title">Video Game Compressor</h2>
+            
+            <div class="upload-section">
+                <div class="upload-area" id="dropZone">
+                    <p>Select game archive or folder from your computer</p>
+                    <input type="file" id="fileInput" hidden>
+                    <button class="btn-select" onclick="document.getElementById('fileInput').click()">Choose File</button>
+                    <p class="small-text">Supported: .zip, .7z, .rar, .pak, .assets</p>
+                </div>
             </div>
-            <h1>HOT<span>POTATO</span></h1>
-            <p>Universal Asset Compression Engine</p>
-        </header>
 
-        <main class="nexus-main">
-            <section id="optimizer" class="view-content">
-                <div class="drop-zone" id="dropArea">
-                    <div class="dz-inner">
-                        <span class="dz-icon">📥</span>
-                        <p>DROP GAME FOLDER HERE</p>
-                        <small>Target any installed game directory</small>
-                    </div>
+            <div class="settings-section">
+                <h3>Compression Settings:</h3>
+                <div class="settings-grid">
+                    <label>
+                        Compression Level:
+                        <select id="compLevel">
+                            <option value="low">Standard (Fast)</option>
+                            <option value="mid" selected>Aggressive (Recommended for Low-End)</option>
+                            <option value="high">Extreme (Potato Mode)</option>
+                        </select>
+                    </label>
+                    <label>
+                        <input type="checkbox" checked> Downscale Textures (Half-Res)
+                    </label>
+                    <label>
+                        <input type="checkbox"> Convert Audio to Mono
+                    </label>
                 </div>
+                <button id="optimizeBtn" class="btn-action">Optimize!</button>
+            </div>
 
-                <div class="config-grid">
-                    <div class="nexus-card">
-                        <h3>1. Performance Target</h3>
-                        <input type="range" id="optSlider" min="1" max="100" value="50">
-                        <div class="slider-meta">
-                            <span id="strengthLabel">BALANCED</span>
-                        </div>
-                        <div id="readabilityWarn" class="alert-box hidden">
-                            ⚠️ LOW READABILITY: UI text may become blurred.
-                        </div>
-                    </div>
-
-                    <div class="nexus-card">
-                        <h3>2. Hardware Profile</h3>
-                        <div class="input-group">
-                            <input type="number" id="ramInput" placeholder="Target RAM (GB)">
-                            <input type="number" id="vramInput" placeholder="Target VRAM (GB)">
-                        </div>
-                    </div>
+            <div id="progressContainer" class="progress-area hidden">
+                <p id="statusText">Reading game data...</p>
+                <div class="progress-bar">
+                    <div id="progressFill" class="fill"></div>
                 </div>
+            </div>
 
-                <button id="startBtn" class="btn-nexus-main">START OPTIMIZATION</button>
-            </section>
+            <div id="resultArea" class="result-area hidden">
+                <div class="success-banner">Optimization Complete!</div>
+                <p>Original Size: <span id="oldSize">0 GB</span></p>
+                <p>New Size: <span id="newSize" class="highlight">0 GB</span></p>
+                <button class="btn-download">Download Optimized Game</button>
+            </div>
+        </div>
 
-            <section id="library" class="view-content">
-                <div class="view-header">
-                    <h2>Processed Games</h2>
-                </div>
-                <div id="gameGrid" class="nexus-grid">
-                    <div id="emptyState" class="empty-msg">No games optimized yet. Drop a folder above to begin.</div>
-                </div>
-            </section>
-        </main>
-    </div>
+        <section class="info-text">
+            <h3>How to use Hot Potato?</h3>
+            <ol>
+                <li>Upload your downloaded game file (archive or folder).</li>
+                <li>Choose your compression level based on your PC specs.</li>
+                <li>Click "Optimize!" and wait for the Potato Engine to strip unnecessary data.</li>
+                <li>Download the smaller version and run it on your low-end machine!</li>
+            </ol>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2024 Hot Potato Tools | Made for Low-End Gamers</p>
+    </footer>
+
     <script src="script.js"></script>
 </body>
 </html>
