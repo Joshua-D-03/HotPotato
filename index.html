@@ -29,24 +29,24 @@
             <div class="sidebar-content">
                 <h3 class="side-title">COMMAND CENTER</h3>
                 <nav class="sidebar-nav">
-                    <div class="nav-item active" data-page="lab">🧪 THE LABORATORY</div>
-                    <div class="nav-item" data-page="potato-bin">📦 POTATO BIN</div>
-                    <div class="nav-item" data-page="library">📚 MY LIBRARY</div>
-                    <div class="nav-item" data-page="community">💬 COMMUNITY HUB</div>
-                    <div class="nav-item" data-page="history">📜 HISTORY</div>
+                    <div class="nav-item active" data-page="lab">THE LABORATORY</div>
+                    <div class="nav-item" data-page="potato-bin">POTATO BIN</div>
+                    <div class="nav-item" data-page="library">MY LIBRARY</div>
+                    <div class="nav-item" data-page="community">COMMUNITY HUB</div>
+                    <div class="nav-item" data-page="history">HISTORY</div>
                 </nav>
             </div>
         </aside>
 
         <main class="main-content">
             <div id="labPage" class="content-page lab-centered">
-                <header class="engine-header">
+                <header class="engine-header-stacked">
                     <div class="potato-chamber"><div id="potato" class="electric-potato">🥔</div></div>
                     <h1 class="main-title">HOT<span>POTATO</span></h1>
                     <p class="main-subheading">Video Game Compressor</p>
                 </header>
                 
-                <section class="tool-card large-engine">
+                <section class="tool-card engine-scaled">
                     <div class="drop-zone" id="dropZone">
                         <input type="file" id="fileInput" style="display:none;">
                         <div class="dz-icon">📁</div>
@@ -54,7 +54,7 @@
                     </div>
 
                     <div class="system-options-grid">
-                        <div class="field"><label>PC Model/Type</label><input type="text" id="pcType" placeholder="e.g. RTX 4070 Laptop"></div>
+                        <div class="field"><label>PC Model/Type</label><input type="text" id="pcType" placeholder="e.g. Alienware M16"></div>
                         <div class="field"><label>RAM (GB)</label><input type="number" id="ramInput" min="0" value="16"></div>
                         <div class="field">
                             <label>Optimization Focus</label>
@@ -78,6 +78,15 @@
                 </section>
             </div>
 
+            <div id="potato-binPage" class="content-page hidden">
+                <h2 class="page-title">Potato Bin</h2>
+                <p class="technical-subtitle">Global Optimization Configuration Repository</p>
+                <div class="game-grid">
+                    <div class="game-card"><h3>Starfield</h3><p>Potato Mode (85%) Config</p><button class="btn-sm">CLONE</button></div>
+                    <div class="game-card"><h3>Elden Ring</h3><p>Balance (30%) Config</p><button class="btn-sm">CLONE</button></div>
+                </div>
+            </div>
+
             <div id="communityPage" class="content-page hidden">
                 <div class="steam-header">
                     <h2 class="page-title">Community Discussions</h2>
@@ -89,23 +98,22 @@
                 <div class="forum-layout">
                     <div class="forum-sidebar">
                         <button class="filter-btn active">All Discussions</button>
-                        <button class="filter-btn">Optimization Tips</button>
-                        <button class="filter-btn">Showcase</button>
+                        <button class="filter-btn">General</button>
                     </div>
 
                     <div class="forum-main">
                         <div id="forumFeed" class="steam-feed">
                             <div class="thread-row">
                                 <div class="thread-info">
-                                    <span class="thread-title">Does Potato Mode affect draw distance?</span>
-                                    <span class="thread-meta">Started by <strong>LowSpecGamer</strong> • 42 comments</span>
+                                    <span class="thread-title">Best settings for RTX 3050?</span>
+                                    <span class="thread-meta">Started by <strong>ChefPotato</strong> • 8 comments</span>
                                 </div>
-                                <div class="thread-date">Mar 02</div>
+                                <div class="thread-date">Mar 03</div>
                             </div>
                         </div>
                         
                         <div id="forumInputArea" class="steam-input-box">
-                            <div class="auth-gate hidden">🔒 Sign in to join the discussion</div>
+                            <div class="auth-gate hidden">🔒 Log in to post a new discussion</div>
                             <textarea id="forumMessage" placeholder="Start a new discussion..."></textarea>
                             <button id="sendBtn" class="btn-ignite">POST</button>
                         </div>
@@ -113,21 +121,13 @@
                 </div>
             </div>
 
-            <div id="potato-binPage" class="content-page hidden">
-                <h2 class="page-title">📦 Potato Bin</h2>
-                <div class="game-grid">
-                    <div class="game-card"><h3>Cyberpunk 2077</h3><p>Extreme (60%) by User88</p><button class="btn-sm">CLONE</button></div>
-                </div>
-            </div>
-
             <div id="libraryPage" class="content-page hidden">
-                <h2 class="page-title">📚 My Library</h2>
-                <div class="game-grid" id="libraryGrid"><div class="game-card empty">Your library is empty.</div></div>
+                <h2 class="page-title">My Library</h2>
+                <div class="game-grid"><div class="game-card empty">Your library is empty.</div></div>
             </div>
-
             <div id="historyPage" class="content-page hidden">
-                <h2 class="page-title">📜 History</h2>
-                <div class="history-list" id="historyList"></div>
+                <h2 class="page-title">History</h2>
+                <div class="history-list"></div>
             </div>
         </main>
     </div>
@@ -135,19 +135,13 @@
     <div id="authModal" class="modal-overlay hidden">
         <div class="modal-box">
             <h2 id="authTitle" style="color:var(--orange)">LOG IN</h2>
-            <div id="usernameField" class="hidden">
-                <input type="text" id="authUsername" placeholder="Create Username">
-            </div>
+            <div id="usernameField" class="hidden"><input type="text" id="authUsername" placeholder="Username"></div>
             <input type="email" id="authEmail" placeholder="Email">
             <input type="password" id="authPass" placeholder="Password">
             <button id="authSubmit" class="btn-ignite">PROCEED</button>
             <button onclick="closeAuth()" class="btn-secondary">CANCEL</button>
         </div>
     </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
 
     <script src="script.js"></script>
 </body>
