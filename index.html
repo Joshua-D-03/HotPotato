@@ -27,9 +27,9 @@
         <aside class="sidebar closed" id="sidebar">
             <button class="toggle-sidebar" id="toggleSidebar">▶</button>
             <div class="sidebar-content">
-                <h3 class="side-title">COMMAND CENTER</h3>
+                <h2 class="side-title">COMMAND CENTER</h2>
                 <nav class="sidebar-nav">
-                    <div class="nav-item active" data-page="lab">THE LABORATORY</div>
+                    <div class="nav-item active" data-page="lab">COMPRESSOR</div>
                     <div class="nav-item" data-page="potato-bin">POTATO BIN</div>
                     <div class="nav-item" data-page="library">MY LIBRARY</div>
                     <div class="nav-item" data-page="community">COMMUNITY HUB</div>
@@ -78,57 +78,61 @@
                 </section>
             </div>
 
+            <div id="historyPage" class="content-page hidden">
+                <h2 class="page-title">Compression History</h2>
+                <p class="technical-subtitle">Your local optimization archive</p>
+                <div class="steam-grid" id="historyGrid">
+                    <div class="steam-card">
+                        <div class="card-art" style="background-image: url('https://shared.fastly.steamstatic.com/store_images/library/730/header.jpg');"></div>
+                        <div class="card-info">
+                            <h4>Counter-Strike 2</h4>
+                            <p>Compressed: 30% Balance</p>
+                        </div>
+                    </div>
+                    <div class="steam-card">
+                        <div class="card-art" style="background-image: url('https://shared.fastly.steamstatic.com/store_images/library/1091500/header.jpg');"></div>
+                        <div class="card-info">
+                            <h4>Cyberpunk 2077</h4>
+                            <p>Compressed: 85% Potato</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="potato-binPage" class="content-page hidden">
                 <h2 class="page-title">Potato Bin</h2>
                 <p class="technical-subtitle">Global Optimization Configuration Repository</p>
-                <div class="game-grid">
-                    <div class="game-card"><h3>Starfield</h3><p>Potato Mode (85%) Config</p><button class="btn-sm">CLONE</button></div>
-                    <div class="game-card"><h3>Elden Ring</h3><p>Balance (30%) Config</p><button class="btn-sm">CLONE</button></div>
+                <div class="steam-grid">
+                    <div class="steam-card">
+                        <div class="card-art" style="background-image: url('https://shared.fastly.steamstatic.com/store_images/library/1174180/header.jpg');"></div>
+                        <div class="card-info"><h4>Red Dead Redemption 2</h4><button class="btn-sm">CLONE</button></div>
+                    </div>
                 </div>
             </div>
 
             <div id="communityPage" class="content-page hidden">
                 <div class="steam-header">
                     <h2 class="page-title">Community Discussions</h2>
-                    <div class="search-bar-wrap">
-                        <input type="text" id="forumSearch" placeholder="Search discussions...">
-                    </div>
+                    <input type="text" id="forumSearch" placeholder="Search discussions...">
                 </div>
-
                 <div class="forum-layout">
-                    <div class="forum-sidebar">
-                        <button class="filter-btn active">All Discussions</button>
-                        <button class="filter-btn">General</button>
-                    </div>
-
                     <div class="forum-main">
                         <div id="forumFeed" class="steam-feed">
                             <div class="thread-row">
-                                <div class="thread-info">
-                                    <span class="thread-title">Best settings for RTX 3050?</span>
-                                    <span class="thread-meta">Started by <strong>ChefPotato</strong> • 8 comments</span>
-                                </div>
-                                <div class="thread-date">Mar 03</div>
+                                <span class="thread-title">Testing 85% on Integrated Graphics</span>
+                                <span class="thread-date">Mar 03</span>
                             </div>
                         </div>
-                        
                         <div id="forumInputArea" class="steam-input-box">
-                            <div class="auth-gate hidden">🔒 Log in to post a new discussion</div>
-                            <textarea id="forumMessage" placeholder="Start a new discussion..."></textarea>
+                            <div class="auth-gate hidden">🔒 Log in to post</div>
+                            <textarea id="forumMessage" placeholder="Start a discussion..."></textarea>
                             <button id="sendBtn" class="btn-ignite">POST</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div id="libraryPage" class="content-page hidden">
-                <h2 class="page-title">My Library</h2>
-                <div class="game-grid"><div class="game-card empty">Your library is empty.</div></div>
-            </div>
-            <div id="historyPage" class="content-page hidden">
-                <h2 class="page-title">History</h2>
-                <div class="history-list"></div>
-            </div>
+            <div id="libraryPage" class="content-page hidden"><h2 class="page-title">My Library</h2></div>
         </main>
     </div>
 
@@ -138,8 +142,10 @@
             <div id="usernameField" class="hidden"><input type="text" id="authUsername" placeholder="Username"></div>
             <input type="email" id="authEmail" placeholder="Email">
             <input type="password" id="authPass" placeholder="Password">
-            <button id="authSubmit" class="btn-ignite">PROCEED</button>
-            <button onclick="closeAuth()" class="btn-secondary">CANCEL</button>
+            <div class="modal-buttons">
+                <button id="authSubmit" class="btn-ignite">PROCEED</button>
+                <button onclick="closeAuth()" class="btn-secondary">CANCEL</button>
+            </div>
         </div>
     </div>
 
