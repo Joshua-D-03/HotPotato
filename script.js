@@ -5,58 +5,38 @@ const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 document.addEventListener('DOMContentLoaded', async () => {
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('toggleSidebar');
-    const potato = document.getElementById('potato');
     const navItems = document.querySelectorAll('.nav-item');
-    let userSession = null;
 
-    // --- Authentication & Browsing Permissions ---
+    // --- AUTH UI UPDATES ---
     const updateUI = async () => {
         const { data: { session } } = await supabaseClient.auth.getSession();
-        userSession = session;
+        const loggedOut = document.getElementById('loggedOutNav');
+        const loggedIn = document.getElementById('loggedInNav');
         const gates = document.querySelectorAll('.auth-gate');
         const forumInput = document.getElementById('forumInputArea');
 
         if (session) {
-            document.getElementById('loggedOutNav').classList.add('hidden');
-            document.getElementById('loggedInNav').classList.remove('hidden');
-            const name = session.user.user_metadata.username || session.user.email.split('@')[0];
-            document.getElementById('userDisplay').innerText = name.toUpperCase();
-            
-            // Allow members to post
+            loggedOut.classList.add('hidden');
+            loggedIn.classList.remove('hidden');
+            document.getElementById('userDisplay').innerText = (session.user.user_metadata.username || "USER").toUpperCase();
             gates.forEach(g => g.classList.add('hidden'));
-            if(forumInput) forumInput.classList.remove('disabled-content');
+            if(forumInput) forumInput.style.opacity = "1";
         } else {
-            document.getElementById('loggedOutNav').classList.remove('hidden');
-            document.getElementById('loggedInNav').classList.add('hidden');
-            
-            // Allow browsing, but show "Log in to post" message and disable input
+            loggedOut.classList.remove('hidden');
+            loggedIn.classList.add('hidden');
             gates.forEach(g => g.classList.remove('hidden'));
-            if(forumInput) forumInput.classList.add('disabled-content');
+            if(forumInput) forumInput.style.opacity = "0.5";
         }
     };
     await updateUI();
 
-    // --- Sidebar Persistence ---
+    // --- SIDEBAR TOGGLE ---
     toggleBtn.onclick = () => {
         const isClosed = sidebar.classList.toggle('closed');
         toggleBtn.innerText = isClosed ? "▶" : "◀";
     };
 
-    // --- Lab Engine Logic ---
-    const dz = document.getElementById('dropZone');
-    const fInp = document.getElementById('fileInput');
-    dz.onclick = () => fInp.click();
-    
-    document.getElementById('igniteBtn').onclick = () => {
-        if (!fInp.files[0]) return alert("Load a game folder into the chamber first!");
-        potato.classList.add('compressing-potato');
-        setTimeout(() => {
-            potato.classList.remove('compressing-potato');
-            alert("IGNITION COMPLETE: System optimized.");
-        }, 3000);
-    };
-
-    // --- Site Navigation ---
+    // --- NAVIGATION ---
     navItems.forEach(item => {
         item.onclick = () => {
             const id = item.getAttribute('data-page');
@@ -67,10 +47,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
     });
 
-    // --- Auth Logic ---
-    window.openAuth = (m) => {
-        document.getElementById('authTitle').innerText = m === 'signup' ? 'SIGN UP' : 'LOG IN';
-        document.getElementById('usernameField').classList.toggle('hidden', m !== 'signup');
+    // --- AUTH FUNCTIONS ---
+    window.openAuth = (type) => {
+        document.getElementById('authTitle').innerText = type === 'signup' ? 'SIGN UP' : 'LOG IN';
+        document.getElementById('usernameField').classList.toggle('hidden', type !== 'signup');
         document.getElementById('authModal').classList.remove('hidden');
     };
     window.closeAuth = () => document.getElementById('authModal').classList.add('hidden');
@@ -82,8 +62,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const isSignUp = !document.getElementById('usernameField').classList.contains('hidden');
 
         if (isSignUp) {
-            await supabaseClient.auth.signUp({ email, password: pass, options: { data: { username } } });
-            alert("Verification email sent.");
+            const { error } = await supabaseClient.auth.signUp({ email, password: pass, options: { data: { username } } });
+            if (error) alert(error.message); else alert("Check email for verification!");
         } else {
             const { error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
             if (error) alert(error.message); else location.reload();
@@ -92,4 +72,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('signOutBtn').onclick = async () => { await supabaseClient.auth.signOut(); location.reload(); };
     document.getElementById('guestBtn').onclick = async () => { await supabaseClient.auth.signInAnonymously(); location.reload(); };
+
+    // --- COMPRESSOR ANIMATION ---
+    document.getElementById('igniteBtn').onclick = () => {
+        const potato = document.getElementById('potato');
+        potato.style.filter = "drop-shadow(0 0 50px #ff0000) sepia(100%)";
+        setTimeout(() => {
+            potato.style.filter = "drop-shadow(0 0 15px var(--cyan))";
+            alert("Compression Successful!");
+        }, 2000);
+    };
 });
