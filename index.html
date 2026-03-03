@@ -31,9 +31,8 @@
                 <nav class="sidebar-nav">
                     <div class="nav-item active" data-page="lab">COMPRESSOR</div>
                     <div class="nav-item" data-page="potato-bin">POTATO BIN</div>
-                    <div class="nav-item" data-page="library">MY LIBRARY</div>
+                    <div class="nav-item" data-page="history">LIBRARY & HISTORY</div>
                     <div class="nav-item" data-page="community">COMMUNITY HUB</div>
-                    <div class="nav-item" data-page="history">HISTORY</div>
                 </nav>
             </div>
         </aside>
@@ -46,7 +45,7 @@
                     <p class="main-subheading">Video Game Compressor</p>
                 </header>
                 
-                <section class="tool-card engine-scaled">
+                <section class="tool-card original-engine">
                     <div class="drop-zone" id="dropZone">
                         <input type="file" id="fileInput" style="display:none;">
                         <div class="dz-icon">📁</div>
@@ -54,7 +53,7 @@
                     </div>
 
                     <div class="system-options-grid">
-                        <div class="field"><label>PC Model/Type</label><input type="text" id="pcType" placeholder="e.g. Alienware M16"></div>
+                        <div class="field"><label>PC Model/Type</label><input type="text" id="pcType" placeholder="e.g. RTX 4090 Desktop"></div>
                         <div class="field"><label>RAM (GB)</label><input type="number" id="ramInput" min="0" value="16"></div>
                         <div class="field">
                             <label>Optimization Focus</label>
@@ -79,60 +78,41 @@
             </div>
 
             <div id="historyPage" class="content-page hidden">
-                <h2 class="page-title">Compression History</h2>
-                <p class="technical-subtitle">Your local optimization archive</p>
-                <div class="steam-grid" id="historyGrid">
-                    <div class="steam-card">
-                        <div class="card-art" style="background-image: url('https://shared.fastly.steamstatic.com/store_images/library/730/header.jpg');"></div>
-                        <div class="card-info">
-                            <h4>Counter-Strike 2</h4>
-                            <p>Compressed: 30% Balance</p>
-                        </div>
-                    </div>
-                    <div class="steam-card">
-                        <div class="card-art" style="background-image: url('https://shared.fastly.steamstatic.com/store_images/library/1091500/header.jpg');"></div>
-                        <div class="card-info">
-                            <h4>Cyberpunk 2077</h4>
-                            <p>Compressed: 85% Potato</p>
-                        </div>
-                    </div>
+                <div class="library-scroll-container">
+                    <div class="dashed-grid" id="historyGrid">
+                        <div class="dashed-square"><div class="poster-fill" style="background-image: url('https://shared.fastly.steamstatic.com/store_images/library/730/header.jpg');"></div></div>
+                        <div class="dashed-square"><div class="poster-fill" style="background-image: url('https://shared.fastly.steamstatic.com/store_images/library/1091500/header.jpg');"></div></div>
+                        <div class="dashed-square"><div class="poster-fill" style="background-image: url('https://shared.fastly.steamstatic.com/store_images/library/1174180/header.jpg');"></div></div>
+                        <div class="dashed-square"></div> <div class="dashed-square"></div> <div class="dashed-square"></div> </div>
                 </div>
             </div>
 
             <div id="potato-binPage" class="content-page hidden">
-                <h2 class="page-title">Potato Bin</h2>
-                <p class="technical-subtitle">Global Optimization Configuration Repository</p>
-                <div class="steam-grid">
-                    <div class="steam-card">
-                        <div class="card-art" style="background-image: url('https://shared.fastly.steamstatic.com/store_images/library/1174180/header.jpg');"></div>
-                        <div class="card-info"><h4>Red Dead Redemption 2</h4><button class="btn-sm">CLONE</button></div>
-                    </div>
+                <div class="dashed-grid">
+                    <div class="dashed-square"><div class="poster-fill" style="background-image: url('https://shared.fastly.steamstatic.com/store_images/library/1446780/header.jpg');"></div></div>
                 </div>
             </div>
 
             <div id="communityPage" class="content-page hidden">
                 <div class="steam-header">
-                    <h2 class="page-title">Community Discussions</h2>
                     <input type="text" id="forumSearch" placeholder="Search discussions...">
                 </div>
                 <div class="forum-layout">
                     <div class="forum-main">
                         <div id="forumFeed" class="steam-feed">
                             <div class="thread-row">
-                                <span class="thread-title">Testing 85% on Integrated Graphics</span>
+                                <span class="thread-title">Optimization for low-end laptops</span>
                                 <span class="thread-date">Mar 03</span>
                             </div>
                         </div>
                         <div id="forumInputArea" class="steam-input-box">
                             <div class="auth-gate hidden">🔒 Log in to post</div>
-                            <textarea id="forumMessage" placeholder="Start a discussion..."></textarea>
+                            <textarea id="forumMessage" placeholder="Join the discussion..."></textarea>
                             <button id="sendBtn" class="btn-ignite">POST</button>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div id="libraryPage" class="content-page hidden"><h2 class="page-title">My Library</h2></div>
         </main>
     </div>
 
