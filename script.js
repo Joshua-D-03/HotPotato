@@ -7,36 +7,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     const toggleBtn = document.getElementById('toggleSidebar');
     const navItems = document.querySelectorAll('.nav-item');
 
-    // --- AUTH UI UPDATES ---
+    // Authentication UI Logic
     const updateUI = async () => {
         const { data: { session } } = await supabaseClient.auth.getSession();
         const loggedOut = document.getElementById('loggedOutNav');
         const loggedIn = document.getElementById('loggedInNav');
-        const gates = document.querySelectorAll('.auth-gate');
-        const forumInput = document.getElementById('forumInputArea');
-
         if (session) {
             loggedOut.classList.add('hidden');
             loggedIn.classList.remove('hidden');
             document.getElementById('userDisplay').innerText = (session.user.user_metadata.username || "USER").toUpperCase();
-            gates.forEach(g => g.classList.add('hidden'));
-            if(forumInput) forumInput.style.opacity = "1";
         } else {
             loggedOut.classList.remove('hidden');
             loggedIn.classList.add('hidden');
-            gates.forEach(g => g.classList.remove('hidden'));
-            if(forumInput) forumInput.style.opacity = "0.5";
         }
     };
     await updateUI();
 
-    // --- SIDEBAR TOGGLE ---
+    // Sidebar Navigation
     toggleBtn.onclick = () => {
         const isClosed = sidebar.classList.toggle('closed');
         toggleBtn.innerText = isClosed ? "▶" : "◀";
     };
 
-    // --- NAVIGATION ---
     navItems.forEach(item => {
         item.onclick = () => {
             const id = item.getAttribute('data-page');
@@ -47,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
     });
 
-    // --- AUTH FUNCTIONS ---
+    // Auth Actions
     window.openAuth = (type) => {
         document.getElementById('authTitle').innerText = type === 'signup' ? 'SIGN UP' : 'LOG IN';
         document.getElementById('usernameField').classList.toggle('hidden', type !== 'signup');
@@ -60,10 +52,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const pass = document.getElementById('authPass').value;
         const username = document.getElementById('authUsername').value;
         const isSignUp = !document.getElementById('usernameField').classList.contains('hidden');
-
         if (isSignUp) {
-            const { error } = await supabaseClient.auth.signUp({ email, password: pass, options: { data: { username } } });
-            if (error) alert(error.message); else alert("Check email for verification!");
+            await supabaseClient.auth.signUp({ email, password: pass, options: { data: { username } } });
+            alert("Success! Check email for verification.");
         } else {
             const { error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
             if (error) alert(error.message); else location.reload();
@@ -73,13 +64,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('signOutBtn').onclick = async () => { await supabaseClient.auth.signOut(); location.reload(); };
     document.getElementById('guestBtn').onclick = async () => { await supabaseClient.auth.signInAnonymously(); location.reload(); };
 
-    // --- COMPRESSOR ANIMATION ---
+    // Compression Feature
     document.getElementById('igniteBtn').onclick = () => {
+        const fileInp = document.getElementById('fileInput');
+        if (!fileInp.files[0]) return alert("Please load a game into the chamber first.");
+        
         const potato = document.getElementById('potato');
-        potato.style.filter = "drop-shadow(0 0 50px #ff0000) sepia(100%)";
+        const level = document.getElementById('compLevel').value;
+        
+        // Visual Compression Effect
+        potato.style.filter = "drop-shadow(0 0 60px #ff0000) sepia(100%)";
         setTimeout(() => {
-            potato.style.filter = "drop-shadow(0 0 15px var(--cyan))";
-            alert("Compression Successful!");
-        }, 2000);
+            potato.style.filter = "drop-shadow(0 0 20px var(--cyan))";
+            alert(`COMPRESSION COMPLETE: Reduced by ${(level * 100)}%.`);
+            // Here you would trigger actual file processing or a mock download
+        }, 3000);
     };
+
+    document.getElementById('dropZone').onclick = () => document.getElementById('fileInput').click();
 });
