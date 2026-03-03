@@ -7,11 +7,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const toggleBtn = document.getElementById('toggleSidebar');
     const potato = document.getElementById('potato');
     const navItems = document.querySelectorAll('.nav-item');
-    const dropZone = document.getElementById('dropZone');
-    const fileInput = document.getElementById('fileInput');
     let userSession = null;
 
-    // --- 1. USER AUTH & PAGE ACCESS ---
+    // --- Authentication & Browsing Permissions ---
     const updateUI = async () => {
         const { data: { session } } = await supabaseClient.auth.getSession();
         userSession = session;
@@ -23,52 +21,42 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('loggedInNav').classList.remove('hidden');
             const name = session.user.user_metadata.username || session.user.email.split('@')[0];
             document.getElementById('userDisplay').innerText = name.toUpperCase();
+            
+            // Allow members to post
             gates.forEach(g => g.classList.add('hidden'));
             if(forumInput) forumInput.classList.remove('disabled-content');
         } else {
             document.getElementById('loggedOutNav').classList.remove('hidden');
             document.getElementById('loggedInNav').classList.add('hidden');
+            
+            // Allow browsing, but show "Log in to post" message and disable input
             gates.forEach(g => g.classList.remove('hidden'));
             if(forumInput) forumInput.classList.add('disabled-content');
         }
     };
     await updateUI();
 
-    // --- 2. ENGINE LOGIC ---
-    dropZone.onclick = () => fileInput.click();
-    fileInput.onchange = (e) => {
-        if (e.target.files[0]) {
-            document.getElementById('fileLabel').innerHTML = `<strong>CHAMBER LOADED:</strong><br>${e.target.files[0].name}`;
-            dropZone.style.borderColor = "var(--cyan)";
-        }
+    // --- Sidebar Persistence ---
+    toggleBtn.onclick = () => {
+        const isClosed = sidebar.classList.toggle('closed');
+        toggleBtn.innerText = isClosed ? "▶" : "◀";
     };
 
+    // --- Lab Engine Logic ---
+    const dz = document.getElementById('dropZone');
+    const fInp = document.getElementById('fileInput');
+    dz.onclick = () => fInp.click();
+    
     document.getElementById('igniteBtn').onclick = () => {
-        if (!fileInput.files[0]) return alert("Chamber empty! Please load a game folder.");
-        
+        if (!fInp.files[0]) return alert("Load a game folder into the chamber first!");
         potato.classList.add('compressing-potato');
         setTimeout(() => {
             potato.classList.remove('compressing-potato');
-            const ram = document.getElementById('ramInput').value;
-            const level = document.getElementById('compLevel').options[document.getElementById('compLevel').selectedIndex].text;
-            alert(`IGNITION SUCCESS: Optimized for ${ram}GB RAM at ${level}.`);
+            alert("IGNITION COMPLETE: System optimized.");
         }, 3000);
     };
 
-    // --- 3. COMMUNITY SEARCH ---
-    document.getElementById('forumSearch').oninput = (e) => {
-        const term = e.target.value.toLowerCase();
-        document.querySelectorAll('.thread-row').forEach(row => {
-            row.style.display = row.innerText.toLowerCase().includes(term) ? 'flex' : 'none';
-        });
-    };
-
-    // --- 4. NAVIGATION ---
-    toggleBtn.onclick = () => {
-        const closed = sidebar.classList.toggle('closed');
-        toggleBtn.innerText = closed ? "▶" : "◀";
-    };
-
+    // --- Site Navigation ---
     navItems.forEach(item => {
         item.onclick = () => {
             const id = item.getAttribute('data-page');
@@ -79,7 +67,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
     });
 
-    // --- 5. AUTH ACTIONS ---
+    // --- Auth Logic ---
     window.openAuth = (m) => {
         document.getElementById('authTitle').innerText = m === 'signup' ? 'SIGN UP' : 'LOG IN';
         document.getElementById('usernameField').classList.toggle('hidden', m !== 'signup');
@@ -94,10 +82,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const isSignUp = !document.getElementById('usernameField').classList.contains('hidden');
 
         if (isSignUp) {
-            const { error } = await supabaseClient.auth.signUp({ 
-                email, password: pass, options: { data: { username } } 
-            });
-            if (error) alert(error.message); else alert("Check email for verification!");
+            await supabaseClient.auth.signUp({ email, password: pass, options: { data: { username } } });
+            alert("Verification email sent.");
         } else {
             const { error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
             if (error) alert(error.message); else location.reload();
