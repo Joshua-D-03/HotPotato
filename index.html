@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hot Potato | Video Game Compressor</title>
+    <title>Hot Potato | AI-Driven Hardware Compressor</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -14,8 +14,6 @@
             <span class="nav-link white-to-orange" onclick="openAuth('signup')">SIGN UP</span>
             <span class="nav-separator">|</span>
             <span class="nav-link orange-to-white" onclick="openAuth('login')">LOG IN</span>
-            <span class="nav-separator">|</span>
-            <span class="nav-link white-to-orange" id="guestBtn">GUEST</span>
         </div>
         <div id="loggedInNav" class="hidden">
             <span id="userDisplay" class="user-tag"></span>
@@ -39,83 +37,62 @@
         <main class="main-content">
             <div id="labPage" class="content-page lab-centered">
                 <header class="engine-header-stacked">
-                    <div class="potato-chamber"><div id="potato" class="electric-potato">🥔</div></div>
+                    <div class="potato-chamber">
+                        <div id="potato" class="electric-potato">🥔</div>
+                        <div id="benchmarkBarContainer" class="hidden">
+                            <div id="benchmarkBar"></div>
+                        </div>
+                        <p id="statusText" class="status-msg">NEURAL LINK READY</p>
+                    </div>
                     <h1 class="main-title">HOT<span>POTATO</span></h1>
-                    <p class="main-subheading">Video Game Compressor</p>
+                    <p class="main-subheading">AI Hardware Analysis Engine</p>
                 </header>
                 
                 <section class="tool-card original-engine">
                     <div class="drop-zone" id="dropZone">
                         <input type="file" id="fileInput" style="display:none;">
                         <div class="dz-icon">📁</div>
-                        <p id="fileLabel"><strong>DRAG GAME HERE</strong><br><span>or click to browse files</span></p>
+                        <p id="fileLabel"><strong>INSERT GAME DATA</strong><br><span>or click to browse files</span></p>
                     </div>
 
                     <div class="system-options-grid">
-                        <div class="field"><label>PC Model/Type</label><input type="text" id="pcType" placeholder="e.g. RTX 4090"></div>
-                        <div class="field"><label>RAM (GB)</label><input type="number" id="ramInput" min="0" value="16"></div>
                         <div class="field">
-                            <label>Optimization Focus</label>
+                            <label>PC Model (AI Deep Search)</label>
+                            <input type="text" id="pcType" placeholder="e.g. RTX 4080, Steam Deck, GTX 1650">
+                        </div>
+                        <div class="field">
+                            <label>Disk Capacity (GB)</label>
+                            <input type="number" id="storageInput" min="1" value="500">
+                        </div>
+                        <div class="field">
+                            <label>AI Recommended Focus</label>
                             <select id="optFocus">
                                 <option value="quality">Image Quality</option>
                                 <option value="performance">Performance</option>
-                                <option value="balance">Balance</option>
+                                <option value="balance" selected>Balanced Path</option>
                             </select>
                         </div>
                         <div class="field">
                             <label>Compression Level</label>
                             <select id="compLevel">
                                 <option value="0.15">Standard (15%)</option>
-                                <option value="0.30">Balance (30%)</option>
+                                <option value="0.30">Balanced (30%)</option>
                                 <option value="0.60">Extreme (60%)</option>
                                 <option value="0.85">Potato Mode (85%)</option>
                             </select>
                         </div>
                     </div>
-                    <button id="igniteBtn" class="btn-ignite">IGNITE COMPRESSION</button>
+                    <button id="igniteBtn" class="btn-ignite">ANALYZE HARDWARE & IGNITE</button>
                 </section>
             </div>
 
             <div id="historyPage" class="content-page hidden">
                 <div class="library-scroll-container">
                     <div class="dashed-grid" id="historyGrid">
-                        <div class="dashed-square"><div class="poster-fill" style="background-image: url('https://shared.fastly.steamstatic.com/store_images/library/730/header.jpg');"></div></div>
-                        <div class="dashed-square"><div class="poster-fill" style="background-image: url('https://shared.fastly.steamstatic.com/store_images/library/1091500/header.jpg');"></div></div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="communityPage" class="content-page hidden">
-                <div class="steam-header">
-                    <input type="text" id="forumSearch" placeholder="Search discussions...">
-                </div>
-                <div class="forum-layout">
-                    <div class="forum-main">
-                        <div id="forumFeed" class="steam-feed">
-                            <div class="thread-row"><span class="thread-title">Optimization complete!</span><span class="thread-date">Mar 04</span></div>
                         </div>
-                        <div id="forumInputArea" class="steam-input-box">
-                            <div class="auth-gate hidden">🔒 Log in to post</div>
-                            <textarea id="forumMessage" placeholder="Join the discussion..."></textarea>
-                            <button id="sendBtn" class="btn-ignite">POST</button>
-                        </div>
-                    </div>
                 </div>
             </div>
         </main>
-    </div>
-
-    <div id="authModal" class="modal-overlay hidden">
-        <div class="modal-box">
-            <h2 id="authTitle" style="color:var(--orange)">LOG IN</h2>
-            <div id="usernameField" class="hidden"><input type="text" id="authUsername" placeholder="Username"></div>
-            <input type="email" id="authEmail" placeholder="Email">
-            <input type="password" id="authPass" placeholder="Password">
-            <div class="modal-buttons">
-                <button id="authSubmit" class="btn-ignite">PROCEED</button>
-                <button onclick="closeAuth()" class="btn-secondary">CANCEL</button>
-            </div>
-        </div>
     </div>
 
     <script src="script.js"></script>
