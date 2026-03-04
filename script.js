@@ -1,16 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
     const potato = document.getElementById('potato');
     const statusText = document.getElementById('statusText');
-    const benchBarContainer = document.getElementById('benchmarkBarContainer');
-    const benchBar = document.getElementById('benchmarkBar');
+    const potatoBin = document.getElementById('potatoBin');
     const historyGrid = document.getElementById('historyGrid');
+    const fileInput = document.getElementById('fileInput');
+    const benchBar = document.getElementById('benchmarkBar');
+    const benchBarContainer = document.getElementById('benchmarkBarContainer');
 
-    // Sidebar/Nav Controls
+    // Sidebar Toggle
     document.getElementById('toggleSidebar').onclick = () => {
-        const closed = document.getElementById('sidebar').classList.toggle('closed');
-        document.getElementById('toggleSidebar').innerText = closed ? "▶" : "◀";
+        const isClosed = document.getElementById('sidebar').classList.toggle('closed');
+        document.getElementById('toggleSidebar').innerText = isClosed ? "▶" : "◀";
     };
 
+    // Page Navigation
     document.querySelectorAll('.nav-item').forEach(item => {
         item.onclick = () => {
             const page = item.getAttribute('data-page');
@@ -21,88 +24,80 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     });
 
-    // AI HARDWARE ANALYSIS & COMPRESSION ENGINE
+    // File Input (Placing the Game)
+    fileInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            document.getElementById('fileLabel').innerHTML = `<strong>${file.name}</strong><br>LOADED IN CHAMBER`;
+            
+            // Visual feedback in Potato Bin
+            const icon = document.createElement('div');
+            icon.style = "width:35px; height:35px; background:var(--orange); border-radius:4px; font-size:8px; display:flex; align-items:center; justify-content:center; text-align:center; color:white; overflow:hidden;";
+            icon.innerText = file.name.substring(0, 4).toUpperCase();
+            potatoBin.appendChild(icon);
+            statusText.innerText = "GAME PLACED. READY TO IGNITE.";
+        }
+    };
+
+    // AI Analysis + Compression Logic
     document.getElementById('igniteBtn').onclick = async () => {
+        if (!fileInput.files[0]) return alert("Place a game in the bin first!");
+
         const pcModel = document.getElementById('pcType').value.toLowerCase();
-        const fileInp = document.getElementById('fileInput');
         const storage = parseInt(document.getElementById('storageInput').value);
-        
-        if (!fileInp.files[0]) return alert("CORE ERROR: No game directory detected.");
-        if (!pcModel) return alert("CORE ERROR: Enter PC Model for AI Hardware Analysis.");
+        const gameSize = fileInput.files[0].size / (1024 ** 3) || 15;
 
-        // 1. STORAGE VALIDATION
-        const gameSizeGB = fileInp.files[0].size / (1024 ** 3) || 12.5; 
-        if (storage < (gameSizeGB * 1.5)) return alert(`STORAGE DENIED: Need ${ (gameSizeGB * 1.5).toFixed(1) }GB for processing.`);
+        // Storage Check
+        if (storage < (gameSize * 1.5)) return alert("INSUFFICIENT STORAGE FOR COMPRESSION.");
 
-        // 2. AI WEB SEARCH SIMULATION
+        // AI Scan Phase
         potato.classList.add('scanning');
-        statusText.innerText = "Searching Web for Hardware Specs...";
+        statusText.innerText = "AI SCANNING HARDWARE PROFILE...";
         await new Promise(r => setTimeout(r, 2000));
 
-        let hardwareScore = 0.5; // Baseline for unknown hardware
-        let recommendation = "Balance Focus";
+        let score = 0.75; // Base score
+        if (pcModel.includes("rtx") || pcModel.includes("40")) score = 0.98;
+        if (pcModel.includes("deck") || pcModel.includes("gtx")) score = 0.65;
 
-        // Deep Search Analysis Logic
-        if (pcModel.includes("rtx") || pcModel.includes("40") || pcModel.includes("3080") || pcModel.includes("3090")) {
-            hardwareScore = 0.98;
-            recommendation = "Quality Focus (High-End GPU Detected)";
-            document.getElementById('optFocus').value = "quality";
-        } else if (pcModel.includes("gtx") || pcModel.includes("deck") || pcModel.includes("1650") || pcModel.includes("1050")) {
-            hardwareScore = 0.68;
-            recommendation = "Performance Focus (Handheld/Mid-Range Detected)";
-            document.getElementById('optFocus').value = "performance";
-        } else if (pcModel.includes("integrated") || pcModel.includes("uhd") || pcModel.includes("iris")) {
-            hardwareScore = 0.32;
-            recommendation = "Extreme Compression (Low Power Detected)";
-            document.getElementById('compLevel').value = "0.85";
-        }
-
-        // 3. HARDWARE STRESS-TEST (BENCHMARK)
+        // Benchmark Phase
         potato.classList.remove('scanning');
-        potato.classList.add('benchmarking');
-        statusText.innerText = `Calibrating: ${recommendation}`;
+        potato.classList.add('igniting'); // Visual jitter
         benchBarContainer.classList.remove('hidden');
-        
+        statusText.innerText = "CALIBRATING ENGINE...";
+
         let progress = 0;
         const interval = setInterval(() => {
-            progress += 2;
+            progress += 5;
             benchBar.style.width = `${progress}%`;
             if (progress >= 100) {
                 clearInterval(interval);
-                runIgnition(hardwareScore, pcModel.toUpperCase());
+                finalizeCompression(score, pcModel.toUpperCase());
             }
-        }, 40);
-
-        function runIgnition(score, modelName) {
-            // 4. FINAL IGNITION
-            potato.classList.remove('benchmarking');
-            potato.classList.add('igniting');
-            statusText.innerText = "Igniting Compression Engine...";
-
-            setTimeout(() => {
-                potato.classList.remove('igniting');
-                benchBarContainer.classList.add('hidden');
-                statusText.innerText = "Compression Success!";
-
-                const finalPotatoScore = (score * 100).toFixed(1);
-                
-                // Add to History Grid
-                const newSquare = document.createElement('div');
-                newSquare.className = 'dashed-square';
-                const randomID = Math.floor(Math.random() * 8000);
-                
-                newSquare.innerHTML = `
-                    <div class="poster-fill" style="background-image: url('https://picsum.photos/seed/${randomID}/400/600')"></div>
-                    <div class="info-overlay">
-                        <p style="color:var(--cyan); font-size:0.65rem; letter-spacing:1px">${modelName}</p>
-                        <p class="overlay-value">SCORE: ${finalPotatoScore}%</p>
-                        <p style="font-size:0.7rem">SAVED: ${(gameSizeGB * 0.45).toFixed(1)} GB</p>
-                        <button class="report-btn" onclick="alert('Report Saved: Optimization aligned to ${modelName}')">GENERATE REPORT</button>
-                    </div>
-                `;
-                historyGrid.prepend(newSquare);
-                alert(`Compression Complete. Game metadata optimized for ${modelName}.`);
-            }, 3000);
-        }
+        }, 100);
     };
+
+    function finalizeCompression(score, model) {
+        setTimeout(() => {
+            potato.classList.remove('igniting');
+            benchBarContainer.classList.add('hidden');
+            statusText.innerText = "IGNITION SUCCESSFUL";
+
+            // Add Result to Library
+            const entry = document.createElement('div');
+            entry.className = 'dashed-square';
+            const randomSeed = Math.floor(Math.random() * 9000);
+            entry.innerHTML = `
+                <div style="width:100%; height:100%; background:url('https://picsum.photos/seed/${randomSeed}/300/400'); background-size:cover;"></div>
+                <div class="info-overlay">
+                    <p style="color:var(--orange); font-weight:bold;">SCORE: ${(score * 100).toFixed(0)}%</p>
+                    <p style="font-size:10px">${model || "GENERIC PC"}</p>
+                    <p style="font-size:10px; color:var(--cyan)">OPTIMIZED</p>
+                </div>
+            `;
+            historyGrid.prepend(entry);
+            alert("Compression sequence finished. Results moved to Library.");
+        }, 1000);
+    }
+
+    document.getElementById('dropZone').onclick = () => fileInput.click();
 });
