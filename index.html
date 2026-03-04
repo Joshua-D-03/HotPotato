@@ -14,8 +14,6 @@
             <span class="nav-link white-to-orange" onclick="openAuth('signup')">SIGN UP</span>
             <span class="nav-separator">|</span>
             <span class="nav-link orange-to-white" onclick="openAuth('login')">LOG IN</span>
-            <span class="nav-separator">|</span>
-            <span class="nav-link white-to-orange" id="guestBtn">GUEST</span>
         </div>
         <div id="loggedInNav" class="hidden">
             <span id="userDisplay" class="user-tag"></span>
@@ -86,13 +84,19 @@
 
             <div id="communityPage" class="content-page hidden">
                 <div class="steam-header">
-                    <input type="text" id="forumSearch" placeholder="Search discussions...">
+                    <div id="postContainer" class="hidden">
+                        <input type="text" id="newThreadTitle" placeholder="Start a new discussion...">
+                        <button id="postBtn" class="btn-ignite-small">POST</button>
+                    </div>
+                    <div id="loginReminder" class="login-msg">Log in to participate in the discussion</div>
                 </div>
-                <div class="forum-layout">
+                <div class="forum-layout scrollable-forum">
                     <div id="forumFeed" class="steam-feed">
                         <div class="thread-row"><span class="thread-title">RTX 4090 Compression Benchmarks</span><span class="thread-date">MAR 04</span></div>
                         <div class="thread-row"><span class="thread-title">Best settings for Steam Deck?</span><span class="thread-date">MAR 03</span></div>
-                        <div class="thread-row"><span class="thread-title">Help: Potato Mode is too powerful</span><span class="thread-date">MAR 01</span></div>
+                        <div class="thread-row"><span class="thread-title">Potato Mode 85% is actually stable!</span><span class="thread-date">MAR 02</span></div>
+                        <div class="thread-row"><span class="thread-title">Cyberpunk size reduction report</span><span class="thread-date">FEB 28</span></div>
+                        <div class="thread-row"><span class="thread-title">GTX 1650 vs RTX 3050 scores</span><span class="thread-date">FEB 25</span></div>
                     </div>
                 </div>
             </div>
