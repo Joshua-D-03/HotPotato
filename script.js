@@ -1,18 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
+    let isLoggedIn = false;
+
     const potato = document.getElementById('potato');
     const statusText = document.getElementById('statusText');
     const historyGrid = document.getElementById('historyGrid');
     const fileInput = document.getElementById('fileInput');
+    const storageInput = document.getElementById('storageInput');
     const benchBar = document.getElementById('benchmarkBar');
     const benchBarContainer = document.getElementById('benchmarkBarContainer');
 
-    // Sidebar Toggle
-    document.getElementById('toggleSidebar').onclick = () => {
-        const isClosed = document.getElementById('sidebar').classList.toggle('closed');
-        document.getElementById('toggleSidebar').innerText = isClosed ? "▶" : "◀";
-    };
+    // Transparent Input behavior
+    storageInput.addEventListener('focus', function() {
+        if(this.value === "500") this.value = "";
+    });
+    storageInput.addEventListener('blur', function() {
+        if(this.value === "") this.value = "500";
+    });
 
-    // Navigation Switcher
+    // Navigation and Permissions
     document.querySelectorAll('.nav-item').forEach(item => {
         item.onclick = () => {
             const page = item.getAttribute('data-page');
@@ -20,66 +25,80 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById(`${page}Page`).classList.remove('hidden');
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             item.classList.add('active');
+            
+            // Check visibility for community posting
+            updateCommunityAccess();
         };
     });
 
-    // Ignite Sequence
-    document.getElementById('igniteBtn').onclick = () => {
-        if (!fileInput.files[0]) return alert("Please select a game to compress.");
+    function updateCommunityAccess() {
+        if (isLoggedIn) {
+            document.getElementById('postContainer').classList.remove('hidden');
+            document.getElementById('loginReminder').classList.add('hidden');
+        } else {
+            document.getElementById('postContainer').classList.add('hidden');
+            document.getElementById('loginReminder').classList.remove('hidden');
+        }
+    }
 
-        const pcModel = document.getElementById('pcType').value || "Standard PC";
+    // Auth Simulation (Login/Sign Up)
+    window.openAuth = (mode) => {
+        isLoggedIn = true;
+        document.getElementById('loggedOutNav').classList.add('hidden');
+        document.getElementById('loggedInNav').classList.remove('hidden');
+        document.getElementById('userDisplay').innerText = "USER_771";
+        updateCommunityAccess();
+        alert(`Successfully ${mode === 'login' ? 'logged in' : 'signed up'}!`);
+    };
+
+    document.getElementById('signOutBtn').onclick = () => location.reload();
+
+    // Ignite Logic
+    document.getElementById('igniteBtn').onclick = () => {
+        if (!fileInput.files[0]) return alert("Select a game file first.");
         
-        // Trigger Rotation & Glow
         potato.classList.add('compressing-active');
-        statusText.innerText = "INITIALIZING CORE...";
+        statusText.innerText = "COMPRESSING...";
         benchBarContainer.classList.remove('hidden');
 
         let progress = 0;
         const interval = setInterval(() => {
             progress += 2;
             benchBar.style.width = `${progress}%`;
-            
-            if (progress === 40) statusText.innerText = "MAPPING TEXTURE DATA...";
-            if (progress === 80) statusText.innerText = "FINALIZING OPTIMIZATION...";
-
             if (progress >= 100) {
                 clearInterval(interval);
-                finalize(pcModel);
+                finalize();
             }
-        }, 60);
+        }, 50);
     };
 
-    function finalize(model) {
+    function finalize() {
         setTimeout(() => {
-            // Reset Animation
             potato.classList.remove('compressing-active');
             benchBarContainer.classList.add('hidden');
-            statusText.innerText = "COMPRESSION SUCCESSFUL";
+            statusText.innerText = "";
 
             const entry = document.createElement('div');
             entry.className = 'dashed-square';
-            const seed = Math.floor(Math.random() * 10000);
-            entry.innerHTML = `
-                <div style="width:100%; height:100%; background:url('https://picsum.photos/seed/${seed}/300/400'); background-size:cover;"></div>
-                <div class="info-overlay">
-                    <p style="color:var(--orange); font-weight:bold;">OPTIMIZED</p>
-                    <p style="font-size:10px; color:#fff">${model.toUpperCase()}</p>
-                </div>
-            `;
+            const seed = Math.floor(Math.random() * 5000);
+            entry.innerHTML = `<div style="width:100%; height:100%; background:url('https://picsum.photos/seed/${seed}/400/400'); background-size:cover;"></div>`;
             historyGrid.prepend(entry);
-            alert(`Succesfully compressed metadata for ${model}.`);
             benchBar.style.width = "0%";
         }, 500);
     }
 
-    // Auth Simulation
-    document.getElementById('guestBtn').onclick = () => {
-        document.getElementById('loggedOutNav').classList.add('hidden');
-        document.getElementById('loggedInNav').classList.remove('hidden');
-        document.getElementById('userDisplay').innerText = "GUEST_USER";
+    // Community Posting Logic
+    document.getElementById('postBtn').onclick = () => {
+        const title = document.getElementById('newThreadTitle').value;
+        if (!title) return;
+        
+        const newThread = document.createElement('div');
+        newThread.className = 'thread-row';
+        newThread.innerHTML = `<span class="thread-title">${title}</span><span class="thread-date">JUST NOW</span>`;
+        document.getElementById('forumFeed').prepend(newThread);
+        document.getElementById('newThreadTitle').value = "";
     };
 
-    document.getElementById('signOutBtn').onclick = () => location.reload();
     document.getElementById('dropZone').onclick = () => fileInput.click();
     fileInput.onchange = (e) => {
         if(e.target.files[0]) document.getElementById('fileLabel').innerText = e.target.files[0].name;
