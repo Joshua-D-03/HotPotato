@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hot Potato | AI-Driven Hardware Compressor</title>
+    <title>Hot Potato | Video Game Compressor</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -22,8 +22,8 @@
     </nav>
 
     <div class="app-container">
-        <aside class="sidebar closed" id="sidebar">
-            <button class="toggle-sidebar" id="toggleSidebar">▶</button>
+        <aside class="sidebar" id="sidebar">
+            <button class="toggle-sidebar" id="toggleSidebar">◀</button>
             <div class="sidebar-content">
                 <h2 class="side-title">COMMAND CENTER</h2>
                 <nav class="sidebar-nav">
@@ -31,6 +31,12 @@
                     <div class="nav-item" data-page="history">LIBRARY & HISTORY</div>
                     <div class="nav-item" data-page="community">COMMUNITY HUB</div>
                 </nav>
+
+                <div class="potato-bin-section">
+                    <h3 class="bin-label">POTATO BIN</h3>
+                    <div id="potatoBin" class="bin-display">
+                        </div>
+                </div>
             </div>
         </aside>
 
@@ -52,44 +58,40 @@
                     <div class="drop-zone" id="dropZone">
                         <input type="file" id="fileInput" style="display:none;">
                         <div class="dz-icon">📁</div>
-                        <p id="fileLabel"><strong>INSERT GAME DATA</strong><br><span>or click to browse files</span></p>
+                        <p id="fileLabel"><strong>DRAG GAME HERE</strong><br><span>to place in the chamber</span></p>
                     </div>
 
                     <div class="system-options-grid">
                         <div class="field">
                             <label>PC Model (AI Deep Search)</label>
-                            <input type="text" id="pcType" placeholder="e.g. RTX 4080, Steam Deck, GTX 1650">
+                            <input type="text" id="pcType" placeholder="e.g. RTX 4080">
                         </div>
                         <div class="field">
-                            <label>Disk Capacity (GB)</label>
-                            <input type="number" id="storageInput" min="1" value="500">
+                            <label>Storage (GB)</label>
+                            <input type="number" id="storageInput" value="500">
                         </div>
                         <div class="field">
-                            <label>AI Recommended Focus</label>
+                            <label>Focus</label>
                             <select id="optFocus">
-                                <option value="quality">Image Quality</option>
-                                <option value="performance">Performance</option>
-                                <option value="balance" selected>Balanced Path</option>
+                                <option value="quality">Quality Focus</option>
+                                <option value="performance">Performance Focus</option>
                             </select>
                         </div>
                         <div class="field">
-                            <label>Compression Level</label>
+                            <label>Level</label>
                             <select id="compLevel">
-                                <option value="0.15">Standard (15%)</option>
-                                <option value="0.30">Balanced (30%)</option>
-                                <option value="0.60">Extreme (60%)</option>
-                                <option value="0.85">Potato Mode (85%)</option>
+                                <option value="0.30">Balance (30%)</option>
+                                <option value="0.85">Potato (85%)</option>
                             </select>
                         </div>
                     </div>
-                    <button id="igniteBtn" class="btn-ignite">ANALYZE HARDWARE & IGNITE</button>
+                    <button id="igniteBtn" class="btn-ignite">IGNITE COMPRESSION</button>
                 </section>
             </div>
 
             <div id="historyPage" class="content-page hidden">
                 <div class="library-scroll-container">
-                    <div class="dashed-grid" id="historyGrid">
-                        </div>
+                    <div class="dashed-grid" id="historyGrid"></div>
                 </div>
             </div>
         </main>
