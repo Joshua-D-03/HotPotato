@@ -14,6 +14,8 @@
             <span class="nav-link white-to-orange" onclick="openAuth('signup')">SIGN UP</span>
             <span class="nav-separator">|</span>
             <span class="nav-link orange-to-white" onclick="openAuth('login')">LOG IN</span>
+            <span class="nav-separator">|</span>
+            <span class="nav-link white-to-orange" id="guestBtn">GUEST</span>
         </div>
         <div id="loggedInNav" class="hidden">
             <span id="userDisplay" class="user-tag"></span>
@@ -28,15 +30,9 @@
                 <h2 class="side-title">COMMAND CENTER</h2>
                 <nav class="sidebar-nav">
                     <div class="nav-item active" data-page="lab">COMPRESSOR</div>
-                    <div class="nav-item" data-page="history">LIBRARY & HISTORY</div>
+                    <div class="nav-item" data-page="history">LIBRARY</div>
                     <div class="nav-item" data-page="community">COMMUNITY HUB</div>
                 </nav>
-
-                <div class="potato-bin-section">
-                    <h3 class="bin-label">POTATO BIN</h3>
-                    <div id="potatoBin" class="bin-display">
-                        </div>
-                </div>
             </div>
         </aside>
 
@@ -48,28 +44,22 @@
                         <div id="benchmarkBarContainer" class="hidden">
                             <div id="benchmarkBar"></div>
                         </div>
-                        <p id="statusText" class="status-msg">NEURAL LINK READY</p>
+                        <p id="statusText" class="status-msg">READY FOR INPUT</p>
                     </div>
                     <h1 class="main-title">HOT<span>POTATO</span></h1>
-                    <p class="main-subheading">AI Hardware Analysis Engine</p>
+                    <p class="main-subheading">VIDEO GAME COMPRESSOR</p>
                 </header>
                 
                 <section class="tool-card original-engine">
                     <div class="drop-zone" id="dropZone">
                         <input type="file" id="fileInput" style="display:none;">
                         <div class="dz-icon">📁</div>
-                        <p id="fileLabel"><strong>DRAG GAME HERE</strong><br><span>to place in the chamber</span></p>
+                        <p id="fileLabel"><strong>DRAG GAME HERE</strong><br><span>to begin optimization</span></p>
                     </div>
 
                     <div class="system-options-grid">
-                        <div class="field">
-                            <label>PC Model (AI Deep Search)</label>
-                            <input type="text" id="pcType" placeholder="e.g. RTX 4080">
-                        </div>
-                        <div class="field">
-                            <label>Storage (GB)</label>
-                            <input type="number" id="storageInput" value="500">
-                        </div>
+                        <div class="field"><label>PC Model</label><input type="text" id="pcType" placeholder="e.g. RTX 4080"></div>
+                        <div class="field"><label>Storage (GB)</label><input type="number" id="storageInput" value="500"></div>
                         <div class="field">
                             <label>Focus</label>
                             <select id="optFocus">
