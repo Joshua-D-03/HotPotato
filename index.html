@@ -12,13 +12,15 @@
     <div id="authModal" class="modal hidden">
         <div class="modal-content">
             <span class="close-modal" id="closeModal">&times;</span>
-            <h2 id="modalTitle">JOIN THE PATCH</h2>
+            <h2 id="modalTitle" class="orange-text">JOIN THE PATCH</h2>
             <div id="auth-form">
-                <input type="text" id="username" placeholder="Unique Username" required>
-                <div id="nameSuggestions" class="suggestions hidden"></div>
+                <div class="field">
+                    <input type="text" id="username" placeholder="Choose Username" required>
+                    <div id="nameSuggestions" class="suggestions hidden"></div>
+                </div>
                 <input type="email" id="email" placeholder="Email Address" required>
                 <input type="password" id="password" placeholder="Password (min 6 chars)" required>
-                <button id="signup-btn" class="btn-ignite">CREATE ACCOUNT</button>
+                <button id="signup-btn" class="btn-ignite">AUTHENTICATE</button>
                 <p id="status-msg"></p>
             </div>
         </div>
@@ -26,13 +28,13 @@
 
     <nav class="top-nav">
         <div id="loggedOutNav">
-            <span class="nav-link orange-themed" id="openSignup">SIGN UP</span>
+            <span class="nav-link orange-hover" id="openSignup">SIGN UP</span>
             <span class="nav-separator">|</span>
-            <span class="nav-link orange-themed" id="openLogin">LOG IN</span>
+            <span class="nav-link orange-hover" id="openLogin">LOG IN</span>
         </div>
         <div id="loggedInNav" class="hidden">
             <span id="userDisplay" class="user-tag"></span>
-            <span class="nav-link orange-themed" id="signOutBtn">LOGOUT</span>
+            <span class="nav-link orange-hover" id="signOutBtn">LOGOUT</span>
         </div>
     </nav>
 
@@ -56,11 +58,11 @@
                     <div id="benchmarkBarContainer" class="hidden">
                         <div id="benchmarkBar"></div>
                     </div>
-                    <p id="statusText" class="status-msg"></p>
+                    <p id="statusText" class="status-msg">READY FOR INPUT</p>
                 </div>
                 
                 <h1 class="main-title">HOT<span>POTATO</span></h1>
-                <p class="main-subheading">VIDEO GAME COMPRESSOR</p>
+                <p class="main-subheading">V I D E O &nbsp; G A M E &nbsp; C O M P R E S S O R</p>
                 
                 <section class="tool-card original-engine">
                     <div class="drop-zone" id="dropZone">
@@ -74,11 +76,11 @@
                     <div class="system-options-grid">
                         <div class="field">
                             <label>PC MODEL (WEB ASSESSMENT)</label>
-                            <input type="text" id="pcType" placeholder="Searching hardware...">
+                            <input type="text" id="pcType" placeholder="Searching hardware..." class="transparent-input">
                         </div>
                         <div class="field">
                             <label>STORAGE (GB)</label>
-                            <input type="number" id="storageInput" placeholder="">
+                            <input type="number" id="storageInput" placeholder="" class="transparent-input">
                         </div>
                         <div class="field">
                             <label>FOCUS</label>
@@ -91,10 +93,8 @@
                         <div class="field">
                             <label>COMPRESSION LEVEL</label>
                             <select id="compLevel">
-                                <option value="0.15">Standard 15%</option>
-                                <option value="0.30">Balance 30%</option>
-                                <option value="0.65">Extreme 65%</option>
-                                <option value="0.85">Potato Mode 85%</option>
+                                <option value="0.30">Balance (30%)</option>
+                                <option value="0.85">Potato Mode (85%)</option>
                             </select>
                         </div>
                     </div>
@@ -103,45 +103,18 @@
             </div>
 
             <div id="historyPage" class="content-page hidden">
-                <div class="library-header">
-                    <h2 class="orange-text">VAULT</h2>
-                    <div class="lib-controls">
-                        <input type="text" id="libSearch" placeholder="Search library...">
-                        <select id="libFilter">
-                            <option value="new">New to Old</option>
-                            <option value="old">Old to New</option>
-                            <option value="alpha">A-Z</option>
-                        </select>
-                    </div>
-                </div>
                 <div class="dashed-grid" id="historyGrid"></div>
             </div>
 
             <div id="communityPage" class="content-page hidden">
                 <div class="nexus-hub">
-                    <div class="hub-header">
-                        <h2>DISCUSSION FORUMS</h2>
-                        <input type="text" id="forumSearch" placeholder="Search discussions or users...">
-                    </div>
-                    <div id="postContainer" class="hidden">
-                        <input type="text" id="newThreadTitle" placeholder="Thread Subject...">
-                        <button id="postBtn" class="btn-ignite-small">SUBMIT</button>
-                    </div>
-                    <div id="loginReminder" class="login-msg">Log in to post on the forums</div>
+                    <div id="loginReminder" class="login-msg">Log in to participate in the discussion</div>
                     <table class="nexus-table">
                         <thead>
-                            <tr>
-                                <th>Topic</th>
-                                <th>Author</th>
-                                <th>Activity</th>
-                            </tr>
+                            <tr><th>Topic</th><th>Author</th><th>Activity</th></tr>
                         </thead>
                         <tbody id="forumFeed">
-                            <tr>
-                                <td><span class="thread-link">Ultimate Potato Optimization Guide</span></td>
-                                <td>PotatoMaster</td>
-                                <td>JUST NOW</td>
-                            </tr>
+                            <tr><td><span class="thread-link">RTX 4090 Benchmarks</span></td><td>GamerX</td><td>MAR 05</td></tr>
                         </tbody>
                     </table>
                 </div>
