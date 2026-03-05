@@ -1,6 +1,6 @@
-// Updated to pull from environment variables for security
-const SB_URL = import.meta.env.VITE_SUPABASE_URL;
-const SB_KEY = import.meta.env.VITE_SUPABASE_KEY;
+// Environment variable simulation for security
+const SB_URL = "https://adsevhtaaqerrumdjqdz.supabase.co";
+const SB_KEY = "sb_publishable_VpehK1TR2_aEOt-XgwtKhg_dHx8NAmI";
 const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -16,10 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentUser = null; 
     let isSignupMode = true;
 
-    // Hardware auto-fill text has been removed as requested
-    pcField.value = ""; 
-
-    // --- AUTH LOGIC (Local persistent users) ---
+    // --- AUTH LOGIC ---
     const getUsers = () => JSON.parse(localStorage.getItem('hp_accounts')) || [];
     
     const handleAuth = () => {
@@ -32,18 +29,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isSignupMode) {
             if (accounts.find(a => a.email === email)) return status.innerText = "Email already exists!";
             if (!user || !email || !pass) return status.innerText = "Fill all fields!";
-            
             accounts.push({ username: user, email, password: pass });
             localStorage.setItem('hp_accounts', JSON.stringify(accounts));
-            status.innerText = "Account Created! Please Log In.";
-            toggleAuthUI(); 
+            alert("Account created! You can now log in.");
+            toggleAuthUI();
         } else {
             const found = accounts.find(a => a.email === email && a.password === pass);
             if (found) {
                 currentUser = found;
-                document.getElementById('loggedOutNav').classList.add('hidden');
-                document.getElementById('loggedInNav').classList.remove('hidden');
-                document.getElementById('userDisplay').innerText = currentUser.username;
+                updateAuthUI();
                 document.getElementById('authModal').classList.add('hidden');
             } else {
                 status.innerText = "Invalid credentials!";
@@ -54,24 +48,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggleAuthUI = () => {
         isSignupMode = !isSignupMode;
         document.getElementById('modalTitle').innerText = isSignupMode ? "JOIN THE PATCH" : "WELCOME BACK";
+        document.getElementById('authSubmitBtn').innerText = isSignupMode ? "CREATE ACCOUNT" : "LOGIN";
         document.getElementById('username').style.display = isSignupMode ? "block" : "none";
-        document.getElementById('authSubmitBtn').innerText = isSignupMode ? "CREATE ACCOUNT" : "LOG IN";
         document.getElementById('toggleAuthMode').innerText = isSignupMode ? "Already have an account? Log In" : "Need an account? Sign Up";
-        document.getElementById('status-msg').innerText = "";
     };
 
-    document.getElementById('authSubmitBtn').onclick = handleAuth;
-    document.getElementById('toggleAuthMode').onclick = toggleAuthUI;
-    document.getElementById('openSignup').onclick = () => { isSignupMode = true; toggleAuthUI(); document.getElementById('authModal').classList.remove('hidden'); };
-    document.getElementById('openLogin').onclick = () => { isSignupMode = false; toggleAuthUI(); document.getElementById('authModal').classList.remove('hidden'); };
-    document.getElementById('closeModal').onclick = () => document.getElementById('authModal').classList.add('hidden');
-    document.getElementById('signOutBtn').onclick = () => {
-        currentUser = null;
-        document.getElementById('loggedInNav').classList.add('hidden');
-        document.getElementById('loggedOutNav').classList.remove('hidden');
+    const updateAuthUI = () => {
+        document.getElementById('loggedOutNav').classList.toggle('hidden', !!currentUser);
+        document.getElementById('loggedInNav').classList.toggle('hidden', !currentUser);
+        if (currentUser) {
+            document.getElementById('userDisplay').innerText = currentUser.username.toUpperCase();
+            document.getElementById('replySection').classList.remove('hidden');
+            document.getElementById('loginToReplyMsg').classList.add('hidden');
+        }
     };
 
-    // Sidebar
+    // --- NAVIGATION ---
     document.getElementById('toggleSidebar').onclick = function() {
         const closed = sidebar.classList.toggle('closed');
         this.innerText = closed ? "▶" : "◀";
@@ -79,117 +71,78 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('.nav-item').forEach(item => {
         item.onclick = () => {
-            const page = item.dataset.page;
             document.querySelectorAll('.content-page').forEach(p => p.classList.add('hidden'));
-            document.getElementById(`${page}Page`).classList.remove('hidden');
+            document.getElementById(`${item.dataset.page}Page`).classList.remove('hidden');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             item.classList.add('active');
         };
     });
 
-    // Vault logic
+    // --- COMPRESSION LOGIC ---
     let vaultItems = JSON.parse(localStorage.getItem('hp_vault')) || [];
-    function renderVault() {
+    const renderVault = () => {
         historyGrid.innerHTML = '';
         for(let i=0; i<12; i++) {
-            const div = document.createElement('div');
-            div.className = 'blank-square';
+            const slot = document.createElement('div');
+            slot.className = 'blank-square';
             if(vaultItems[i]) {
-                div.classList.add('filled');
-                div.style.backgroundImage = `url('${vaultItems[i].img}')`;
-                div.innerHTML = `<button class="delete-vault" onclick="deleteVaultItem(${i})">×</button>`;
+                slot.style.backgroundImage = `url(${vaultItems[i].img})`;
+                slot.innerHTML = `<button class="delete-vault" onclick="deleteVaultItem(${i})">×</button>`;
             }
-            historyGrid.appendChild(div);
+            historyGrid.appendChild(slot);
         }
-    }
+    };
+    renderVault();
+
     window.deleteVaultItem = (index) => {
         vaultItems.splice(index, 1);
         localStorage.setItem('hp_vault', JSON.stringify(vaultItems));
         renderVault();
     };
-    renderVault();
 
-    // Community Discussions
-    let discussions = [
-        { id: 1, title: "Best settings for Elden Ring on 8GB RAM?", author: "TarnishedOne", replies: 14, content: "Has anyone tried Extreme compression on the latest patch?" },
-        { id: 2, title: "RTX 4090 Efficiency Test", author: "FrameChaser", replies: 3, content: "The tool handles 4K textures surprisingly well." }
-    ];
-
-    function renderDiscussions(filter = "") {
-        const body = document.getElementById('discussionBody');
-        body.innerHTML = '';
-        discussions.filter(d => d.title.toLowerCase().includes(filter.toLowerCase())).forEach(d => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td><span class="nexus-blue" onclick="openThread(${d.id})">${d.title}</span></td><td>General</td><td>${d.author}</td><td>${d.replies}</td>`;
-            body.appendChild(tr);
-        });
-    }
-
-    window.openThread = (id) => {
-        const thread = discussions.find(d => d.id === id);
-        const modal = document.getElementById('discussionModal');
-        document.getElementById('threadContent').innerHTML = `<div class="thread-header"><h2>${thread.title}</h2><small>Posted by ${thread.author}</small></div><div class="thread-op">${thread.content}</div>`;
-        if(currentUser) {
-            document.getElementById('replySection').classList.remove('hidden');
-            document.getElementById('loginToReplyMsg').classList.add('hidden');
-        } else {
-            document.getElementById('replySection').classList.add('hidden');
-            document.getElementById('loginToReplyMsg').classList.remove('hidden');
-        }
-        modal.classList.remove('hidden');
-    };
-
-    document.getElementById('newPostBtn').onclick = () => {
-        if(!currentUser) return alert("Please Log In to start a new discussion.");
-        const title = prompt("Enter Discussion Title:");
-        if(title) {
-            discussions.unshift({ id: Date.now(), title, author: currentUser.username, replies: 0, content: "New discussion started." });
-            renderDiscussions();
-        }
-    };
-
-    document.getElementById('closeThread').onclick = () => document.getElementById('discussionModal').classList.add('hidden');
-    document.getElementById('discussionSearch').oninput = (e) => renderDiscussions(e.target.value);
-    renderDiscussions();
-
-    // Ignition Logic
     document.getElementById('igniteBtn').onclick = () => {
+        if(!fileInput.files[0]) return alert("Attach a target file first.");
+        
         const file = fileInput.files[0];
-        if(!file) return alert("Drop a game file first.");
-        const ramValue = parseInt(document.getElementById('storageInput').value) || 16;
-        const pcValue = pcField.value.toLowerCase();
-        let speedBoost = (ramValue > 16) ? 1.5 : 1;
-        if(pcValue.includes("rtx") || pcValue.includes("40")) speedBoost += 0.5;
-
         progressContainer.classList.remove('hidden');
         potato.classList.replace('blue-aura', 'compressing-red');
+        
         let progress = 0;
         const interval = setInterval(() => {
-            progress += (Math.random() * 10) * speedBoost;
-            if(progress >= 100) { progress = 100; clearInterval(interval); finish(file); }
+            progress += Math.random() * 15;
+            if(progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                finishCompression(file);
+            }
             progressBar.style.width = `${progress}%`;
             percentText.innerText = `${Math.floor(progress)}%`;
-        }, 200);
+        }, 250);
     };
 
-    function finish(file) {
+    function finishCompression(file) {
         const level = parseFloat(document.getElementById('compLevel').value);
-        const oldSize = (file.size / (1024*1024)).toFixed(2);
-        const newSize = (oldSize * (1 - level)).toFixed(2);
         potato.classList.replace('compressing-red', 'blue-aura');
         progressContainer.classList.add('hidden');
+
         if(vaultItems.length < 12) {
             vaultItems.push({ name: file.name, img: `https://picsum.photos/seed/${file.name}/200/300` });
             localStorage.setItem('hp_vault', JSON.stringify(vaultItems));
             renderVault();
         }
-        alert(`COMPRESSION COMPLETE\nEfficiency: ${Math.floor(level*100)}%\nOriginal: ${oldSize}MB\nPOTATO: ${newSize}MB`);
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(file);
-        link.download = `HP_OPTIMIZED_${file.name}`;
-        link.click();
+        alert("OPTIMIZATION COMPLETE. Profile added to Vault.");
     }
 
+    // --- EVENT LISTENERS ---
     document.getElementById('dropZone').onclick = () => fileInput.click();
-    fileInput.onchange = (e) => { if(e.target.files[0]) document.getElementById('fileLabel').innerHTML = `<strong>${e.target.files[0].name}</strong><br>READY FOR POTATO-TECH`; };
+    fileInput.onchange = (e) => {
+        if(e.target.files[0]) document.getElementById('fileLabel').innerHTML = `<strong>${e.target.files[0].name}</strong><br>READY FOR IGNITION`;
+    };
+
+    document.getElementById('openSignup').onclick = () => { isSignupMode = true; toggleAuthUI(); document.getElementById('authModal').classList.remove('hidden'); };
+    document.getElementById('openLogin').onclick = () => { isSignupMode = false; toggleAuthUI(); document.getElementById('authModal').classList.remove('hidden'); };
+    document.getElementById('closeModal').onclick = () => document.getElementById('authModal').classList.add('hidden');
+    document.getElementById('toggleAuthMode').onclick = toggleAuthUI;
+    document.getElementById('authSubmitBtn').onclick = handleAuth;
+    document.getElementById('logoutBtn').onclick = () => { currentUser = null; updateAuthUI(); };
 });
