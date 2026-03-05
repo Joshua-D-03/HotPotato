@@ -23,7 +23,7 @@ body { background: var(--dark); color: #c7d5e0; font-family: 'Motiva Sans', sans
 .main-title span { color: var(--orange); }
 .main-subheading { letter-spacing: 12px; color: #66c0f4; font-weight: bold; font-size: 0.8rem; margin-top: -10px; margin-bottom: 50px; }
 
-/* Nav Links - Requested White Hover */
+/* Nav Links - White Hover */
 .white-hover { color: var(--orange); cursor: pointer; font-weight: bold; transition: color 0.2s; }
 .white-hover:hover { color: #ffffff !important; }
 
@@ -47,7 +47,7 @@ body { background: var(--dark); color: #c7d5e0; font-family: 'Motiva Sans', sans
 input, select { background: #000; border: 1px solid #333; color: #fff; padding: 12px; width: 100%; box-sizing: border-box; }
 .btn-ignite { background: var(--orange); color: white; border: none; padding: 25px; width: 100%; font-weight: 900; cursor: pointer; font-size: 1.2rem; letter-spacing: 2px; }
 
-/* Community */
+/* Community & Tables */
 .community-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
 #discussionSearch { width: 250px; background: #111; border: 1px solid #333; padding: 8px; }
 .nexus-container { width: 100%; max-width: 1000px; background: #0a0a0a; border: 1px solid #222; padding: 30px; text-align: left; }
@@ -69,6 +69,8 @@ input, select { background: #000; border: 1px solid #333; color: #fff; padding: 
 .blank-square:hover .delete-vault { display: block; }
 
 .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+.modal-content { background: #1b2838; padding: 40px; border: 1px solid #2a475e; width: 350px; text-align: center; }
+.close-modal { position: absolute; top: 20px; right: 20px; color: white; cursor: pointer; font-size: 1.5rem; }
 .hidden { display: none !important; }
 .top-nav { position: fixed; top: 30px; right: 40px; z-index: 1500; }
 .orange-hover { color: var(--orange); cursor: pointer; font-weight: bold; }
