@@ -18,6 +18,7 @@
                 <input type="email" id="email" placeholder="Email Address" required>
                 <input type="password" id="password" placeholder="Password" required>
                 <button id="signup-btn" class="btn-ignite">CREATE ACCOUNT</button>
+                <p id="status-msg"></p>
             </div>
         </div>
     </div>
@@ -28,12 +29,16 @@
             <span class="nav-separator">|</span>
             <span class="nav-link orange-hover" id="openLogin">LOG IN</span>
         </div>
+        <div id="loggedInNav" class="hidden">
+            <span id="userDisplay" class="user-tag"></span>
+            <span class="nav-link orange-hover" id="signOutBtn">LOGOUT</span>
+        </div>
     </nav>
 
     <div class="app-container">
         <aside class="sidebar" id="sidebar">
             <button class="toggle-sidebar" id="toggleSidebar">▶</button>
-            <div class="sidebar-content">
+            <div class="sidebar-content" id="sidebarContent">
                 <h2 class="side-title">COMMAND CENTER</h2>
                 <nav class="sidebar-nav">
                     <div class="nav-item active" data-page="lab">COMPRESSOR</div>
@@ -52,7 +57,7 @@
                 <h1 class="main-title">HOT<span>POTATO</span></h1>
                 <p class="main-subheading">V I D E O &nbsp; G A M E &nbsp; C O M P R E S S O R</p>
                 
-                <section class="tool-card">
+                <section class="tool-card original-engine">
                     <div class="drop-zone" id="dropZone">
                         <input type="file" id="fileInput" style="display:none;">
                         <div class="box-inner">
@@ -90,28 +95,28 @@
             </div>
 
             <div id="historyPage" class="content-page hidden">
-                <div class="library-header">
-                    <h2 class="section-title">THE VAULT</h2>
-                    <input type="text" id="librarySearch" placeholder="Search saved games...">
-                </div>
+                <h2 class="section-title">VAULT</h2>
                 <div class="dashed-grid" id="historyGrid"></div>
             </div>
 
             <div id="communityPage" class="content-page hidden">
                 <div class="nexus-container">
-                    <h2>MODS & DISCUSSIONS</h2>
+                    <div class="nexus-header">
+                        <h2>MODS & DISCUSSIONS</h2>
+                    </div>
                     <table class="nexus-table">
                         <thead>
                             <tr><th>File Name</th><th>Category</th><th>Author</th><th>Downloads</th></tr>
                         </thead>
                         <tbody>
-                            <tr><td><span class="nexus-blue">Potato_Texture_Pack_v2.pot</span></td><td>Optimization</td><td>LowSpecPro</td><td>5.8k</td></tr>
+                            <tr><td><span class="nexus-blue">Low_Spec_Textures_SotE.pot</span></td><td>Optimization</td><td>PotatoMaster</td><td>4.2k</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </main>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
