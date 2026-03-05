@@ -1,6 +1,6 @@
-// Environment variable simulation for security
-const SB_URL = "https://adsevhtaaqerrumdjqdz.supabase.co";
-const SB_KEY = "sb_publishable_VpehK1TR2_aEOt-XgwtKhg_dHx8NAmI";
+// Pulling from environment variables
+const SB_URL = import.meta.env.VITE_SUPABASE_URL;
+const SB_KEY = import.meta.env.VITE_SUPABASE_KEY;
 const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentUser = null; 
     let isSignupMode = true;
 
-    // --- AUTH LOGIC ---
+    // --- AUTH LOGIC (Local persistent users) ---
     const getUsers = () => JSON.parse(localStorage.getItem('hp_accounts')) || [];
     
     const handleAuth = () => {
@@ -29,41 +29,29 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isSignupMode) {
             if (accounts.find(a => a.email === email)) return status.innerText = "Email already exists!";
             if (!user || !email || !pass) return status.innerText = "Fill all fields!";
+            
             accounts.push({ username: user, email, password: pass });
             localStorage.setItem('hp_accounts', JSON.stringify(accounts));
-            alert("Account created! You can now log in.");
-            toggleAuthUI();
+            loginUser(user);
         } else {
             const found = accounts.find(a => a.email === email && a.password === pass);
-            if (found) {
-                currentUser = found;
-                updateAuthUI();
-                document.getElementById('authModal').classList.add('hidden');
-            } else {
-                status.innerText = "Invalid credentials!";
-            }
+            if (found) loginUser(found.username);
+            else status.innerText = "Invalid credentials!";
         }
     };
 
-    const toggleAuthUI = () => {
-        isSignupMode = !isSignupMode;
-        document.getElementById('modalTitle').innerText = isSignupMode ? "JOIN THE PATCH" : "WELCOME BACK";
-        document.getElementById('authSubmitBtn').innerText = isSignupMode ? "CREATE ACCOUNT" : "LOGIN";
-        document.getElementById('username').style.display = isSignupMode ? "block" : "none";
-        document.getElementById('toggleAuthMode').innerText = isSignupMode ? "Already have an account? Log In" : "Need an account? Sign Up";
+    const loginUser = (name) => {
+        currentUser = name;
+        localStorage.setItem('hp_current_user', name);
+        document.getElementById('userDisplay').innerText = name.toUpperCase();
+        document.getElementById('loggedOutNav').classList.add('hidden');
+        document.getElementById('loggedInNav').classList.remove('hidden');
+        document.getElementById('authModal').classList.add('hidden');
+        document.getElementById('replySection')?.classList.remove('hidden');
+        document.getElementById('loginToReplyMsg')?.classList.add('hidden');
     };
 
-    const updateAuthUI = () => {
-        document.getElementById('loggedOutNav').classList.toggle('hidden', !!currentUser);
-        document.getElementById('loggedInNav').classList.toggle('hidden', !currentUser);
-        if (currentUser) {
-            document.getElementById('userDisplay').innerText = currentUser.username.toUpperCase();
-            document.getElementById('replySection').classList.remove('hidden');
-            document.getElementById('loginToReplyMsg').classList.add('hidden');
-        }
-    };
-
-    // --- NAVIGATION ---
+    // Sidebar
     document.getElementById('toggleSidebar').onclick = function() {
         const closed = sidebar.classList.toggle('closed');
         this.innerText = closed ? "▶" : "◀";
@@ -78,71 +66,70 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     });
 
-    // --- COMPRESSION LOGIC ---
+    // Vault Logic
     let vaultItems = JSON.parse(localStorage.getItem('hp_vault')) || [];
     const renderVault = () => {
         historyGrid.innerHTML = '';
         for(let i=0; i<12; i++) {
-            const slot = document.createElement('div');
-            slot.className = 'blank-square';
-            if(vaultItems[i]) {
-                slot.style.backgroundImage = `url(${vaultItems[i].img})`;
-                slot.innerHTML = `<button class="delete-vault" onclick="deleteVaultItem(${i})">×</button>`;
+            const item = vaultItems[i];
+            const div = document.createElement('div');
+            div.className = `blank-square ${item ? 'filled' : ''}`;
+            if(item) {
+                div.style.backgroundImage = `url(${item.img})`;
+                div.innerHTML = `<button class="delete-vault" onclick="deleteItem(${i})">×</button>`;
             }
-            historyGrid.appendChild(slot);
+            historyGrid.appendChild(div);
         }
     };
-    renderVault();
 
-    window.deleteVaultItem = (index) => {
+    window.deleteItem = (index) => {
         vaultItems.splice(index, 1);
         localStorage.setItem('hp_vault', JSON.stringify(vaultItems));
         renderVault();
     };
+    renderVault();
 
+    // Compression Simulation
     document.getElementById('igniteBtn').onclick = () => {
-        if(!fileInput.files[0]) return alert("Attach a target file first.");
-        
         const file = fileInput.files[0];
+        if(!file) return alert("Upload a file first.");
+        
         progressContainer.classList.remove('hidden');
         potato.classList.replace('blue-aura', 'compressing-red');
         
         let progress = 0;
         const interval = setInterval(() => {
-            progress += Math.random() * 15;
-            if(progress >= 100) {
-                progress = 100;
-                clearInterval(interval);
-                finishCompression(file);
+            progress += (Math.random() * 10);
+            if(progress >= 100) { 
+                progress = 100; 
+                clearInterval(interval); 
+                finish(file); 
             }
             progressBar.style.width = `${progress}%`;
             percentText.innerText = `${Math.floor(progress)}%`;
-        }, 250);
+        }, 200);
     };
 
-    function finishCompression(file) {
+    function finish(file) {
         const level = parseFloat(document.getElementById('compLevel').value);
+        const oldSize = (file.size / (1024*1024)).toFixed(2);
+        const newSize = (oldSize * (1 - level)).toFixed(2);
         potato.classList.replace('compressing-red', 'blue-aura');
         progressContainer.classList.add('hidden');
-
         if(vaultItems.length < 12) {
             vaultItems.push({ name: file.name, img: `https://picsum.photos/seed/${file.name}/200/300` });
             localStorage.setItem('hp_vault', JSON.stringify(vaultItems));
             renderVault();
         }
-        alert("OPTIMIZATION COMPLETE. Profile added to Vault.");
+        alert(`COMPRESSION COMPLETE\nEfficiency: ${Math.floor(level*100)}%\nOriginal: ${oldSize}MB\nPOTATO: ${newSize}MB`);
     }
 
-    // --- EVENT LISTENERS ---
     document.getElementById('dropZone').onclick = () => fileInput.click();
-    fileInput.onchange = (e) => {
-        if(e.target.files[0]) document.getElementById('fileLabel').innerHTML = `<strong>${e.target.files[0].name}</strong><br>READY FOR IGNITION`;
-    };
-
-    document.getElementById('openSignup').onclick = () => { isSignupMode = true; toggleAuthUI(); document.getElementById('authModal').classList.remove('hidden'); };
-    document.getElementById('openLogin').onclick = () => { isSignupMode = false; toggleAuthUI(); document.getElementById('authModal').classList.remove('hidden'); };
-    document.getElementById('closeModal').onclick = () => document.getElementById('authModal').classList.add('hidden');
-    document.getElementById('toggleAuthMode').onclick = toggleAuthUI;
+    fileInput.onchange = (e) => { if(e.target.files[0]) document.getElementById('fileLabel').innerHTML = `<strong>${e.target.files[0].name}</strong><br>READY`; };
+    
     document.getElementById('authSubmitBtn').onclick = handleAuth;
-    document.getElementById('logoutBtn').onclick = () => { currentUser = null; updateAuthUI(); };
+    document.getElementById('logoutBtn').onclick = () => {
+        localStorage.removeItem('hp_current_user');
+        location.reload();
+    };
 });
