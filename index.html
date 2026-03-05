@@ -32,44 +32,69 @@
         </div>
         <div id="loggedInNav" class="hidden">
             <span id="userDisplay" class="user-tag"></span>
-            <span class="nav-link orange-hover" id="logoutBtn">LOGOUT</span>
+            <span class="nav-link white-hover" id="signOutBtn">LOGOUT</span>
         </div>
     </nav>
 
-    <div class="sidebar" id="sidebar">
-        <button class="toggle-sidebar" id="toggleSidebar">◀</button>
-        <div class="nav-item active" data-page="compressor">COMPRESSOR</div>
-        <div class="nav-item" data-page="history">VAULT</div>
-        <div class="nav-item" data-page="community">COMMUNITY</div>
-    </div>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <button class="toggle-sidebar" id="toggleSidebar">▶</button>
+            <div class="sidebar-content" id="sidebarContent">
+                <h2 class="side-title">COMMAND CENTER</h2>
+                <nav class="sidebar-nav">
+                    <div class="nav-item active" data-page="lab">COMPRESSOR</div>
+                    <div class="nav-item" data-page="history">LIBRARY</div>
+                    <div class="nav-item" data-page="community">COMMUNITY HUB</div>
+                </nav>
+            </div>
+        </aside>
 
-    <div class="main-content">
-        <main>
-            <div id="compressorPage" class="content-page">
-                <section class="compressor-container">
-                    <h2 class="section-title">&nbsp;&nbsp;&nbsp;COMMAND CENTER</h2>
-                    
+        <main class="main-content" id="mainContent">
+            <div id="labPage" class="content-page lab-centered">
+                <div class="potato-chamber">
+                    <div id="potato" class="electric-potato clockwise blue-aura">🥔</div>
+                </div>
+                
+                <h1 class="main-title">HOT<span>POTATO</span></h1>
+                <p class="main-subheading">V I D E O &nbsp; G A M E &nbsp; C O M P R E S S O R</p>
+                
+                <section class="tool-card original-engine">
                     <div class="drop-zone" id="dropZone">
-                        <div class="potato-orb blue-aura" id="potato"></div>
-                        <p id="fileLabel">DROP GAME EXECUTABLE HERE<br><small>OR CLICK TO BROWSE</small></p>
-                        <input type="file" id="fileInput" hidden>
-                        
-                        <div id="progressContainer" class="progress-wrapper hidden">
-                            <div class="progress-bar-bg">
-                                <div id="progressBar" class="progress-fill"></div>
-                            </div>
-                            <p id="percentText">0%</p>
+                        <input type="file" id="fileInput" style="display:none;">
+                        <div class="box-inner">
+                            <div class="dz-icon">📦</div>
+                            <p id="fileLabel"><strong>DROP GAME FILE HERE</strong><br><span>INTO THE COMPRESSION BOX</span></p>
                         </div>
                     </div>
 
-                    <div class="controls-grid">
-                        <div class="input-group">
-                            <label>TARGET HARDWARE</label>
-                            <input type="text" id="pcType" placeholder="Scanning..." readonly>
+                    <div id="progressContainer" class="progress-wrap hidden">
+                        <div class="progress-label">ANALYZING HARDWARE & COMPRESSING... <span id="percentText">0%</span></div>
+                        <div class="progress-track">
+                            <div id="progressBar" class="progress-fill"></div>
                         </div>
-                        <div class="input-group">
+                    </div>
+
+                    <div class="system-options-grid">
+                        <div class="field">
+                            <label>PC MODEL (SEARCH/IDENTIFY)</label>
+                            <input type="text" id="pcType" class="vanishing-placeholder" placeholder="">
+                        </div>
+                        <div class="field">
+                            <label>SYSTEM RAM (GB)</label>
+                            <input type="number" id="storageInput" class="transparent-input vanishing-placeholder" placeholder="16">
+                        </div>
+                        <div class="field">
+                            <label>FOCUS</label>
+                            <select id="optFocus">
+                                <option value="Balance">Balance</option>
+                                <option value="Performance">Performance</option>
+                                <option value="Quality">Quality</option>
+                            </select>
+                        </div>
+                        <div class="field">
                             <label>COMPRESSION LEVEL</label>
                             <select id="compLevel">
+                                <option value="0.15">Standard (15%)</option>
                                 <option value="0.30">Balanced (30%)</option>
                                 <option value="0.65">Extreme (65%)</option>
                                 <option value="0.85">Potato (85%)</option>
