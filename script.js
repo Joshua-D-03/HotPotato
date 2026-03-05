@@ -1,130 +1,118 @@
-// Configuration
 const SB_URL = "https://adsevhtaaqerrumdjqdz.supabase.co";
 const SB_KEY = "sb_publishable_VpehK1TR2_aEOt-XgwtKhg_dHx8NAmI";
-const supabase = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY) : null;
+const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
 document.addEventListener('DOMContentLoaded', () => {
-    let currentUser = null;
-    let libraryData = JSON.parse(localStorage.getItem('userLibrary')) || [];
-
     const potato = document.getElementById('potato');
-    const statusText = document.getElementById('statusText');
+    const sidebar = document.getElementById('sidebar');
+    const toggleSidebar = document.getElementById('toggleSidebar');
+    const fileInput = document.getElementById('fileInput');
     const pcInput = document.getElementById('pcType');
     const historyGrid = document.getElementById('historyGrid');
+    let libraryData = [];
 
-    // Persist PC Model
-    if(localStorage.getItem('pc_model')) pcInput.value = localStorage.getItem('pc_model');
+    // Memory: Remember PC Model
+    if(localStorage.getItem('savedPC')) pcInput.value = localStorage.getItem('savedPC');
 
-    // Generate Initial Blank Grid
-    const initGrid = () => {
-        historyGrid.innerHTML = '';
-        const itemsToRender = Math.max(libraryData.length, 12);
-        for(let i=0; i < itemsToRender; i++) {
-            const item = libraryData[i];
-            const div = document.createElement('div');
-            div.className = 'dashed-square';
-            if(item) {
-                div.innerHTML = `
-                    <div class="poster-fill" style="background-image:url('${item.img}')"></div>
-                    <div class="hover-info">
-                        <strong class="orange-text">${item.title}</strong><br>
-                        ${item.sizeInfo}<br>
-                        <span style="color:#555">${item.date}</span>
-                    </div>
-                `;
-            }
-            historyGrid.appendChild(div);
-        }
+    // Sidebar Toggle
+    toggleSidebar.onclick = () => {
+        const isClosed = sidebar.classList.toggle('closed');
+        toggleSidebar.innerText = isClosed ? "▶" : "◀";
     };
-    initGrid();
 
-    // Username Validation & Recommendations
-    document.getElementById('username').addEventListener('input', function() {
-        const val = this.value;
-        const sug = document.getElementById('nameSuggestions');
-        if(val.length > 3) {
-            sug.classList.remove('hidden');
-            sug.innerHTML = `Recommended: <span style="color:white">${val}_Potato</span> or <span style="color:white">Hot_${val}</span>`;
-        } else {
-            sug.classList.add('hidden');
-        }
+    // Page Switching
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.onclick = () => {
+            const page = item.getAttribute('data-page');
+            document.querySelectorAll('.content-page').forEach(p => p.classList.add('hidden'));
+            document.getElementById(`${page}Page`).classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+            if(page === 'history') renderLibrary();
+        };
     });
 
-    // Compression Engine
-    document.getElementById('igniteBtn').onclick = () => {
-        const file = document.getElementById('fileInput').files[0];
-        if(!file) return alert("Game box is empty. Drag a file in.");
+    // Username Availability / Recommendation
+    document.getElementById('username').oninput = function() {
+        const val = this.value;
+        const sug = document.getElementById('nameSuggestions');
+        if(val.length > 2) {
+            sug.classList.remove('hidden');
+            sug.innerHTML = `Recommended: <b>${val}_Potatofied</b> or <b>Hot_${val}</b>`;
+        }
+    };
 
-        // Speed up potato & turn red
+    // File Box Logic
+    document.getElementById('dropZone').onclick = () => fileInput.click();
+    fileInput.onchange = (e) => {
+        if(e.target.files[0]) {
+            document.getElementById('fileLabel').innerHTML = `<strong>${e.target.files[0].name}</strong><br>CHAMBERED`;
+        }
+    };
+
+    // Compression Ignition
+    document.getElementById('igniteBtn').onclick = () => {
+        const file = fileInput.files[0];
+        if(!file) return alert("Please drag a game into the box!");
+
+        // Assessment Simulation
+        localStorage.setItem('savedPC', pcInput.value);
         potato.classList.add('compressing-red');
         document.getElementById('benchmarkBarContainer').classList.remove('hidden');
-        statusText.innerText = "WEB ASSESSMENT: ANALYZING HARDWARE...";
-        
-        localStorage.setItem('pc_model', pcInput.value);
+        document.getElementById('statusText').innerText = "WEB ASSESSMENT: ANALYZING HARDWARE...";
 
         let progress = 0;
         const bar = document.getElementById('benchmarkBar');
         const interval = setInterval(() => {
-            progress += 1.5;
+            progress += 2;
             bar.style.width = progress + "%";
-            
-            if(progress > 40) statusText.innerText = "RESTRUCTURING INDIE/AAA DATA...";
-            if(progress > 80) statusText.innerText = "FINALIZING POTATOFIED PACK...";
-
             if(progress >= 100) {
                 clearInterval(interval);
-                finalizeCompression(file);
+                finishCompression(file);
             }
-        }, 60);
+        }, 50);
     };
 
-    function finalizeCompression(file) {
+    function finishCompression(file) {
         potato.classList.remove('compressing-red');
         document.getElementById('benchmarkBarContainer').classList.add('hidden');
-        statusText.innerText = "OPTIMIZATION COMPLETE";
+        document.getElementById('statusText').innerText = "SUCCESS";
 
         const level = parseFloat(document.getElementById('compLevel').value);
-        const originalGB = (file.size / (1024**3)).toFixed(2);
+        const originalGB = (file.size / (1024 ** 3)).toFixed(2);
         const compressedGB = (originalGB * (1 - level)).toFixed(2);
         const savedMB = ((originalGB - compressedGB) * 1024).toFixed(0);
 
-        const newEntry = {
-            title: `Potatofied-${file.name.split('.')[0]}`,
-            sizeInfo: `${originalGB}GB → ${compressedGB}GB (-${savedMB}MB)`,
+        const newGame = {
+            title: `Potatofied-${file.name}`,
+            info: `${originalGB}GB → ${compressedGB}GB (Saved ${savedMB}MB)`,
             date: new Date().toLocaleDateString(),
-            img: `https://picsum.photos/seed/${Math.random()}/400/400`,
-            timestamp: Date.now()
+            img: `https://picsum.photos/seed/${Math.random()}/200/200`
         };
 
-        libraryData.unshift(newEntry);
-        localStorage.setItem('userLibrary', JSON.stringify(libraryData));
-        initGrid();
-        alert(`Success! Game reduced by ${(level*100)}%`);
+        libraryData.unshift(newGame);
+        renderLibrary();
     }
 
-    // Modal Controls
+    function renderLibrary() {
+        historyGrid.innerHTML = '';
+        // Fill with current library + blank squares
+        libraryData.forEach(game => {
+            const square = document.createElement('div');
+            square.className = 'dashed-square';
+            square.style.backgroundImage = `url(${game.img})`;
+            square.style.backgroundSize = 'cover';
+            square.innerHTML = `<div class="hover-info"><b>${game.title}</b><br>${game.info}<br>${game.date}</div>`;
+            historyGrid.appendChild(square);
+        });
+        for(let i=0; i<8; i++) {
+            const blank = document.createElement('div');
+            blank.className = 'dashed-square';
+            historyGrid.appendChild(blank);
+        }
+    }
+
+    // Auth Modal Handlers (Supabase placeholders)
     document.getElementById('openSignup').onclick = () => document.getElementById('authModal').classList.remove('hidden');
     document.getElementById('closeModal').onclick = () => document.getElementById('authModal').classList.add('hidden');
-
-    // Sidebar & Navigation
-    document.querySelectorAll('.nav-item').forEach(btn => {
-        btn.onclick = () => {
-            const page = btn.dataset.page;
-            document.querySelectorAll('.content-page').forEach(p => p.classList.add('hidden'));
-            document.getElementById(`${page}Page`).classList.remove('hidden');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            btn.classList.add('active');
-            
-            // Community Read-Only Toggle
-            const isAuth = currentUser !== null;
-            document.getElementById('postContainer').classList.toggle('hidden', !isAuth);
-            document.getElementById('loginReminder').classList.toggle('hidden', isAuth);
-        };
-    });
-
-    // File Drag Hook
-    document.getElementById('dropZone').onclick = () => document.getElementById('fileInput').click();
-    document.getElementById('fileInput').onchange = (e) => {
-        if(e.target.files[0]) document.getElementById('fileLabel').innerHTML = `<strong>${e.target.files[0].name}</strong><br>CHAMBERED`;
-    };
 });
