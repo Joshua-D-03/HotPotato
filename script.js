@@ -1,5 +1,6 @@
-const SB_URL = "https://adsevhtaaqerrumdjqdz.supabase.co";
-const SB_KEY = "sb_publishable_VpehK1TR2_aEOt-XgwtKhg_dHx8NAmI";
+// Updated to pull from environment variables for security
+const SB_URL = import.meta.env.VITE_SUPABASE_URL;
+const SB_KEY = import.meta.env.VITE_SUPABASE_KEY;
 const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -14,6 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentUser = null; 
     let isSignupMode = true;
+
+    // Hardware auto-fill text has been removed as requested
+    pcField.value = ""; 
 
     // --- AUTH LOGIC (Local persistent users) ---
     const getUsers = () => JSON.parse(localStorage.getItem('hp_accounts')) || [];
@@ -32,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
             accounts.push({ username: user, email, password: pass });
             localStorage.setItem('hp_accounts', JSON.stringify(accounts));
             status.innerText = "Account Created! Please Log In.";
-            toggleAuthUI(); // Switch to login mode
+            toggleAuthUI(); 
         } else {
             const found = accounts.find(a => a.email === email && a.password === pass);
             if (found) {
@@ -67,10 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('loggedOutNav').classList.remove('hidden');
     };
 
-    // --- ENGINE LOGIC ---
-    // Default hardware text removed as requested
-    pcField.value = ""; 
-
+    // Sidebar
     document.getElementById('toggleSidebar').onclick = function() {
         const closed = sidebar.classList.toggle('closed');
         this.innerText = closed ? "▶" : "◀";
