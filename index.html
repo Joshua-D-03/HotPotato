@@ -9,15 +9,32 @@
 </head>
 <body>
 
+    <div id="authModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <h2 id="modalTitle" class="orange-text">JOIN THE PATCH</h2>
+            <div id="auth-form">
+                <div class="field">
+                    <input type="text" id="username" placeholder="Username" required>
+                    <div id="nameSuggestions" class="suggestions hidden"></div>
+                </div>
+                <input type="email" id="email" placeholder="Email Address" required>
+                <input type="password" id="password" placeholder="Password (min 6 chars)" required>
+                <button id="signup-btn" class="btn-ignite">AUTHENTICATE</button>
+                <p id="status-msg"></p>
+            </div>
+        </div>
+    </div>
+
     <nav class="top-nav">
         <div id="loggedOutNav">
-            <span class="nav-link white-to-orange" onclick="openAuth('signup')">SIGN UP</span>
+            <span class="nav-link orange-hover" id="openSignup">SIGN UP</span>
             <span class="nav-separator">|</span>
-            <span class="nav-link orange-to-white" onclick="openAuth('login')">LOG IN</span>
+            <span class="nav-link orange-hover" id="openLogin">LOG IN</span>
         </div>
         <div id="loggedInNav" class="hidden">
             <span id="userDisplay" class="user-tag"></span>
-            <span class="nav-link orange-to-white" id="signOutBtn">LOGOUT</span>
+            <span class="nav-link orange-hover" id="signOutBtn">LOGOUT</span>
         </div>
     </nav>
 
@@ -37,38 +54,49 @@
         <main class="main-content">
             <div id="labPage" class="content-page lab-centered">
                 <div class="potato-chamber">
-                    <div id="potato" class="electric-potato">🥔</div>
+                    <div id="potato" class="electric-potato clockwise">🥔</div>
                     <div id="benchmarkBarContainer" class="hidden">
                         <div id="benchmarkBar"></div>
                     </div>
-                    <p id="statusText" class="status-msg"></p>
+                    <p id="statusText" class="status-msg">READY FOR INPUT</p>
                 </div>
                 
                 <h1 class="main-title">HOT<span>POTATO</span></h1>
                 <p class="main-subheading">VIDEO GAME COMPRESSOR</p>
                 
                 <section class="tool-card original-engine">
-                    <div class="drop-zone" id="dropZone">
+                    <div class="drop-box" id="dropZone">
                         <input type="file" id="fileInput" style="display:none;">
-                        <div class="dz-icon">📁</div>
-                        <p id="fileLabel"><strong>DRAG GAME HERE</strong><br><span>to begin optimization</span></p>
+                        <div class="box-inner">
+                            <div class="dz-icon">📦</div>
+                            <p id="fileLabel"><strong>DROP GAME FILE HERE</strong><br><span>INTO THE COMPRESSION BOX</span></p>
+                        </div>
                     </div>
 
                     <div class="system-options-grid">
-                        <div class="field"><label>PC Model</label><input type="text" id="pcType" placeholder="RTX 4080"></div>
-                        <div class="field"><label>Storage (GB)</label><input type="number" id="storageInput" value="500" class="transparent-input"></div>
+                        <div class="field">
+                            <label>PC Model (Web Assessment)</label>
+                            <input type="text" id="pcType" placeholder="Searching hardware..." class="transparent-input">
+                        </div>
+                        <div class="field">
+                            <label>Storage (GB)</label>
+                            <input type="number" id="storageInput" value="500" class="transparent-input">
+                        </div>
                         <div class="field">
                             <label>Focus</label>
                             <select id="optFocus">
-                                <option value="quality">Quality Focus</option>
-                                <option value="performance">Performance Focus</option>
+                                <option value="Performance">Performance</option>
+                                <option value="Image Quality">Image Quality</option>
+                                <option value="Balance">Balance</option>
                             </select>
                         </div>
                         <div class="field">
-                            <label>Level</label>
+                            <label>Compression Level</label>
                             <select id="compLevel">
+                                <option value="0.15">Standard (15%)</option>
                                 <option value="0.30">Balance (30%)</option>
-                                <option value="0.85">Potato (85%)</option>
+                                <option value="0.65">Extreme (65%)</option>
+                                <option value="0.85">Potato Mode (85%)</option>
                             </select>
                         </div>
                     </div>
@@ -77,27 +105,52 @@
             </div>
 
             <div id="historyPage" class="content-page hidden">
-                <div class="library-scroll-container">
-                    <div class="dashed-grid" id="historyGrid"></div>
+                <div class="library-header">
+                    <h2 class="orange-text">MY VAULT</h2>
+                    <div class="lib-tools">
+                        <input type="text" id="libSearch" placeholder="Search games...">
+                        <select id="libFilter">
+                            <option value="new">Newest First</option>
+                            <option value="old">Oldest First</option>
+                            <option value="alpha">A-Z</option>
+                        </select>
+                    </div>
                 </div>
+                <div class="dashed-grid" id="historyGrid"></div>
             </div>
 
             <div id="communityPage" class="content-page hidden">
-                <div class="steam-header">
-                    <div id="postContainer" class="hidden">
-                        <input type="text" id="newThreadTitle" placeholder="Start a new discussion...">
-                        <button id="postBtn" class="btn-ignite-small">POST</button>
+                <div class="nexus-hub">
+                    <div class="hub-header">
+                        <h2>NEXUS FORUMS</h2>
+                        <input type="text" id="forumSearch" placeholder="Search discussions...">
                     </div>
-                    <div id="loginReminder" class="login-msg">Log in to participate in the discussion</div>
-                </div>
-                <div class="forum-layout scrollable-forum">
-                    <div id="forumFeed" class="steam-feed">
-                        <div class="thread-row"><span class="thread-title">RTX 4090 Compression Benchmarks</span><span class="thread-date">MAR 04</span></div>
-                        <div class="thread-row"><span class="thread-title">Best settings for Steam Deck?</span><span class="thread-date">MAR 03</span></div>
-                        <div class="thread-row"><span class="thread-title">Potato Mode 85% is actually stable!</span><span class="thread-date">MAR 02</span></div>
-                        <div class="thread-row"><span class="thread-title">Cyberpunk size reduction report</span><span class="thread-date">FEB 28</span></div>
-                        <div class="thread-row"><span class="thread-title">GTX 1650 vs RTX 3050 scores</span><span class="thread-date">FEB 25</span></div>
+                    <div id="postContainer" class="forum-post-box hidden">
+                        <input type="text" id="newThreadTitle" placeholder="Thread Subject...">
+                        <button id="postBtn" class="btn-ignite-small">SUBMIT</button>
                     </div>
+                    <div id="loginReminder" class="login-msg">READ-ONLY MODE: Sign in to post</div>
+                    <table class="nexus-table">
+                        <thead>
+                            <tr>
+                                <th>Topic</th>
+                                <th>Author</th>
+                                <th>Activity</th>
+                            </tr>
+                        </thead>
+                        <tbody id="forumFeed">
+                            <tr>
+                                <td><span class="thread-link">Cyberpunk 2077 - 85% Potato Benchmarks</span></td>
+                                <td>NightCityRunner</td>
+                                <td>JUST NOW</td>
+                            </tr>
+                            <tr>
+                                <td><span class="thread-link">RTX 4090 Web Assessment Bug?</span></td>
+                                <td>GamerX</td>
+                                <td>2 HOURS AGO</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </main>
