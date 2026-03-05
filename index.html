@@ -73,11 +73,12 @@
                         </div>
                         <div class="field">
                             <label>STORAGE (GB)</label>
-                            <input type="number" id="storageInput">
+                            <input type="number" id="storageInput" value="500">
                         </div>
                         <div class="field">
                             <label>FOCUS</label>
                             <select id="optFocus">
+                                <option value="Balance">Balance</option>
                                 <option value="Performance">Performance</option>
                                 <option value="Quality">Quality</option>
                             </select>
@@ -85,7 +86,9 @@
                         <div class="field">
                             <label>COMPRESSION LEVEL</label>
                             <select id="compLevel">
-                                <option value="0.30">Balance (30%)</option>
+                                <option value="0.15">Standard (15%)</option>
+                                <option value="0.30">Balanced (30%)</option>
+                                <option value="0.65">Extreme (65%)</option>
                                 <option value="0.85">Potato (85%)</option>
                             </select>
                         </div>
