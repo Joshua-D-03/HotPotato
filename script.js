@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const pcField = document.getElementById('pcType');
     const historyGrid = document.getElementById('historyGrid');
     const fileInput = document.getElementById('fileInput');
+    const progressBar = document.getElementById('progressBar');
+    const progressContainer = document.getElementById('progressContainer');
+    const percentText = document.getElementById('percentText');
 
     // Hardware Scanner Load
     const hardware = ["RTX 4090 | i9-14900K", "RTX 3070 | Ryzen 7", "GTX 1660 Ti | i5-11th"];
@@ -29,52 +32,95 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     });
 
-    // Populate Initial Blank Squares
-    function createGrid() {
+    // Vault Logic with Local Storage Persistence
+    let vaultItems = JSON.parse(localStorage.getItem('hp_vault')) || [];
+
+    function renderVault() {
         historyGrid.innerHTML = '';
         for(let i=0; i<12; i++) {
             const div = document.createElement('div');
             div.className = 'blank-square';
-            div.id = `slot-${i}`;
+            if(vaultItems[i]) {
+                div.classList.add('filled');
+                div.style.backgroundImage = `url('${vaultItems[i].img}')`;
+                div.innerHTML = `<button class="delete-vault" onclick="deleteVaultItem(${i})">REMOVE</button>`;
+            }
             historyGrid.appendChild(div);
         }
     }
-    createGrid();
 
-    let filledCount = 0;
+    window.deleteVaultItem = (index) => {
+        vaultItems.splice(index, 1);
+        localStorage.setItem('hp_vault', JSON.stringify(vaultItems));
+        renderVault();
+    };
+
+    renderVault();
 
     // Ignition Compression Logic
     document.getElementById('igniteBtn').onclick = () => {
         const file = fileInput.files[0];
         if(!file) return alert("Please drop a game file into the box first.");
 
-        // Safety Warning for large files
         const fileSizeGB = file.size / (1024 * 1024 * 1024);
         if(fileSizeGB > 50) {
-            const proceed = confirm(`WARNING: This file is ${fileSizeGB.toFixed(2)}GB. Compressing files over 50GB may cause browser instability. Do you wish to proceed?`);
-            if(!proceed) return;
+            if(!confirm(`WARNING: ${fileSizeGB.toFixed(2)}GB detected. Proceed?`)) return;
         }
 
-        // Visual State Shift
-        potato.classList.remove('blue-aura');
-        potato.classList.add('compressing-red');
+        // Setup Progress Bar
+        progressContainer.classList.remove('hidden');
+        potato.classList.replace('blue-aura', 'compressing-red');
+        let progress = 0;
         
-        setTimeout(() => {
-            potato.classList.remove('compressing-red');
-            potato.classList.add('blue-aura');
-            
-            // Fill a blank square in the library
-            if(filledCount < 12) {
-                const slot = document.getElementById(`slot-${filledCount}`);
-                slot.classList.add('filled');
-                // Using a random placeholder game art
-                slot.style.backgroundImage = `url('https://picsum.photos/seed/${Math.random()}/200/300')`;
-                filledCount++;
+        const interval = setInterval(() => {
+            progress += Math.random() * 15;
+            if(progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                finalizeCompression(file);
             }
-            
-            alert("Compression Optimized. Profile saved to Vault.");
-        }, 4000);
+            progressBar.style.width = `${progress}%`;
+            percentText.innerText = `${Math.floor(progress)}%`;
+        }, 300);
     };
+
+    function finalizeCompression(file) {
+        const compLevel = parseFloat(document.getElementById('compLevel').value);
+        const originalSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        const newSizeMB = (originalSizeMB * (1 - compLevel)).toFixed(2);
+        const savedMB = (originalSizeMB - newSizeMB).toFixed(2);
+
+        potato.classList.replace('compressing-red', 'blue-aura');
+        progressContainer.classList.add('hidden');
+        progressBar.style.width = '0%';
+
+        // Create Vault Item
+        if(vaultItems.length < 12) {
+            vaultItems.push({
+                name: file.name,
+                img: `https://picsum.photos/seed/${file.name}/200/300`
+            });
+            localStorage.setItem('hp_vault', JSON.stringify(vaultItems));
+            renderVault();
+        }
+
+        alert(`COMPRESSION SUCCESS!\nOriginal: ${originalSizeMB} MB\nPotato-Mode: ${newSizeMB} MB\nYou saved ${savedMB} MB!`);
+        
+        // Return file (Simulated by triggering a dummy download of the original)
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(file);
+        link.download = `POTATO_${file.name}`;
+        link.click();
+    }
+
+    // Community Toggle for Logged In Users
+    function checkLoginStatus() {
+        const user = localStorage.getItem('hp_user'); 
+        if(user) {
+            document.getElementById('newPostBtn').classList.remove('hidden');
+        }
+    }
+    checkLoginStatus();
 
     document.getElementById('dropZone').onclick = () => fileInput.click();
     fileInput.onchange = (e) => {
@@ -83,7 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Auth UI
     document.getElementById('openSignup').onclick = () => document.getElementById('authModal').classList.remove('hidden');
     document.getElementById('closeModal').onclick = () => document.getElementById('authModal').classList.add('hidden');
 });
