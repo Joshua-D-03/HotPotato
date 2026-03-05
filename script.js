@@ -12,9 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressContainer = document.getElementById('progressContainer');
     const percentText = document.getElementById('percentText');
 
+    let currentUser = null; // Track logged in status
+
     // Hardware Assessment
-    const autoDetect = "RTX 3060 | i7-11700K";
-    pcField.value = autoDetect;
+    pcField.value = "RTX 3060 | i7-11700K";
 
     // Sidebar
     document.getElementById('toggleSidebar').onclick = function() {
@@ -31,6 +32,20 @@ document.addEventListener('DOMContentLoaded', () => {
             item.classList.add('active');
         };
     });
+
+    // Login Simulation Logic
+    document.getElementById('openLogin').onclick = () => {
+        currentUser = { name: "PotatoUser" }; // Simulate login
+        document.getElementById('loggedOutNav').classList.add('hidden');
+        document.getElementById('loggedInNav').classList.remove('hidden');
+        document.getElementById('userDisplay').innerText = currentUser.name;
+    };
+
+    document.getElementById('signOutBtn').onclick = () => {
+        currentUser = null;
+        document.getElementById('loggedInNav').classList.add('hidden');
+        document.getElementById('loggedOutNav').classList.remove('hidden');
+    };
 
     // Vault logic
     let vaultItems = JSON.parse(localStorage.getItem('hp_vault')) || [];
@@ -82,7 +97,29 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="thread-header"><h2>${thread.title}</h2><small>Posted by ${thread.author}</small></div>
             <div class="thread-op">${thread.content}</div>
         `;
+
+        // Check login to show reply box
+        if(currentUser) {
+            document.getElementById('replySection').classList.remove('hidden');
+            document.getElementById('loginToReplyMsg').classList.add('hidden');
+        } else {
+            document.getElementById('replySection').classList.add('hidden');
+            document.getElementById('loginToReplyMsg').classList.remove('hidden');
+        }
+
         modal.classList.remove('hidden');
+    };
+
+    document.getElementById('newPostBtn').onclick = () => {
+        if(!currentUser) {
+            alert("Please Log In to start a new discussion.");
+            return;
+        }
+        const title = prompt("Enter Discussion Title:");
+        if(title) {
+            discussions.unshift({ id: Date.now(), title, author: currentUser.name, replies: 0, content: "New discussion started." });
+            renderDiscussions();
+        }
     };
 
     document.getElementById('closeThread').onclick = () => document.getElementById('discussionModal').classList.add('hidden');
@@ -94,7 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const file = fileInput.files[0];
         if(!file) return alert("Drop a game file first.");
 
-        // Analysis Adjustment: Higher RAM or High-End PC = Faster/More efficient compression
         const ramValue = parseInt(document.getElementById('storageInput').value) || 16;
         const pcValue = pcField.value.toLowerCase();
         let speedBoost = (ramValue > 16) ? 1.5 : 1;
