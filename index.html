@@ -12,15 +12,12 @@
     <div id="authModal" class="modal hidden">
         <div class="modal-content">
             <span class="close-modal" id="closeModal">&times;</span>
-            <h2 id="modalTitle" class="orange-text">JOIN THE PATCH</h2>
+            <h2 id="modalTitle">Sign Up</h2>
             <div id="auth-form">
-                <div class="field">
-                    <input type="text" id="username" placeholder="Choose Username" required>
-                    <div id="nameSuggestions" class="suggestions hidden"></div>
-                </div>
+                <input type="text" id="username" placeholder="Username" required>
                 <input type="email" id="email" placeholder="Email Address" required>
                 <input type="password" id="password" placeholder="Password (min 6 chars)" required>
-                <button id="signup-btn" class="btn-ignite">AUTHENTICATE</button>
+                <button id="signup-btn" class="btn-ignite">Create Account</button>
                 <p id="status-msg"></p>
             </div>
         </div>
@@ -28,13 +25,13 @@
 
     <nav class="top-nav">
         <div id="loggedOutNav">
-            <span class="nav-link orange-hover" id="openSignup">SIGN UP</span>
+            <span class="nav-link white-to-orange" id="openSignup">SIGN UP</span>
             <span class="nav-separator">|</span>
-            <span class="nav-link orange-hover" id="openLogin">LOG IN</span>
+            <span class="nav-link orange-to-white" id="openLogin">LOG IN</span>
         </div>
         <div id="loggedInNav" class="hidden">
             <span id="userDisplay" class="user-tag"></span>
-            <span class="nav-link orange-hover" id="signOutBtn">LOGOUT</span>
+            <span class="nav-link orange-to-white" id="signOutBtn">LOGOUT</span>
         </div>
     </nav>
 
@@ -51,50 +48,42 @@
             </div>
         </aside>
 
-        <main class="main-content" id="mainContent">
+        <main class="main-content">
             <div id="labPage" class="content-page lab-centered">
                 <div class="potato-chamber">
-                    <div id="potato" class="electric-potato clockwise">🥔</div>
+                    <div id="potato" class="electric-potato">🥔</div>
+                    <p class="potato-status-sub">NEURAL LINK IDLE</p>
                     <div id="benchmarkBarContainer" class="hidden">
                         <div id="benchmarkBar"></div>
                     </div>
-                    <p id="statusText" class="status-msg">READY FOR INPUT</p>
+                    <p id="statusText" class="status-msg"></p>
                 </div>
                 
                 <h1 class="main-title">HOT<span>POTATO</span></h1>
-                <p class="main-subheading">V I D E O &nbsp; G A M E &nbsp; C O M P R E S S O R</p>
+                <p class="main-subheading">VIDEO GAME COMPRESSOR</p>
                 
                 <section class="tool-card original-engine">
                     <div class="drop-zone" id="dropZone">
                         <input type="file" id="fileInput" style="display:none;">
-                        <div class="box-inner">
-                            <div class="dz-icon">📦</div>
-                            <p id="fileLabel"><strong>DROP GAME FILE HERE</strong><br><span>INTO THE COMPRESSION BOX</span></p>
-                        </div>
+                        <div class="dz-icon">📁</div>
+                        <p id="fileLabel"><strong>DRAG GAME HERE</strong><br><span>to begin optimization</span></p>
                     </div>
 
                     <div class="system-options-grid">
+                        <div class="field"><label>PC Model</label><input type="text" id="pcType" placeholder="RTX 4080"></div>
+                        <div class="field"><label>Storage (GB)</label><input type="number" id="storageInput" value="" placeholder="0" class="transparent-input"></div>
                         <div class="field">
-                            <label>PC MODEL (WEB ASSESSMENT)</label>
-                            <input type="text" id="pcType" placeholder="Searching hardware..." class="transparent-input">
-                        </div>
-                        <div class="field">
-                            <label>STORAGE (GB)</label>
-                            <input type="number" id="storageInput" placeholder="" class="transparent-input">
-                        </div>
-                        <div class="field">
-                            <label>FOCUS</label>
+                            <label>Focus</label>
                             <select id="optFocus">
-                                <option value="Performance">Performance</option>
-                                <option value="Image Quality">Image Quality</option>
-                                <option value="Balance">Balance</option>
+                                <option value="quality">Quality</option>
+                                <option value="perf">Performance</option>
                             </select>
                         </div>
                         <div class="field">
-                            <label>COMPRESSION LEVEL</label>
+                            <label>Level</label>
                             <select id="compLevel">
-                                <option value="0.30">Balance (30%)</option>
-                                <option value="0.85">Potato Mode (85%)</option>
+                                <option value="0.30">Balance</option>
+                                <option value="0.85">Potato</option>
                             </select>
                         </div>
                     </div>
@@ -107,17 +96,14 @@
             </div>
 
             <div id="communityPage" class="content-page hidden">
-                <div class="nexus-hub">
+                <div class="steam-header">
+                    <div id="postContainer" class="hidden">
+                        <input type="text" id="newThreadTitle" placeholder="Start a new discussion...">
+                        <button id="postBtn" class="btn-ignite-small">POST</button>
+                    </div>
                     <div id="loginReminder" class="login-msg">Log in to participate in the discussion</div>
-                    <table class="nexus-table">
-                        <thead>
-                            <tr><th>Topic</th><th>Author</th><th>Activity</th></tr>
-                        </thead>
-                        <tbody id="forumFeed">
-                            <tr><td><span class="thread-link">RTX 4090 Benchmarks</span></td><td>GamerX</td><td>MAR 05</td></tr>
-                        </tbody>
-                    </table>
                 </div>
+                <div id="forumFeed" class="steam-feed"></div>
             </div>
         </main>
     </div>
