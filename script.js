@@ -45,7 +45,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Ignition Compression Logic
     document.getElementById('igniteBtn').onclick = () => {
-        if(!fileInput.files[0]) return alert("Please drop a game file into the box first.");
+        const file = fileInput.files[0];
+        if(!file) return alert("Please drop a game file into the box first.");
+
+        // Safety Warning for large files
+        const fileSizeGB = file.size / (1024 * 1024 * 1024);
+        if(fileSizeGB > 50) {
+            const proceed = confirm(`WARNING: This file is ${fileSizeGB.toFixed(2)}GB. Compressing files over 50GB may cause browser instability. Do you wish to proceed?`);
+            if(!proceed) return;
+        }
 
         // Visual State Shift
         potato.classList.remove('blue-aura');
