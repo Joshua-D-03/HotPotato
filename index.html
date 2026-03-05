@@ -36,40 +36,38 @@
         </div>
     </nav>
 
-    <div class="app-container">
-        <aside class="sidebar" id="sidebar">
-            <button class="toggle-sidebar" id="toggleSidebar">◀</button>
-            <div class="nav-item active" data-page="compressor">COMPRESSOR</div>
-            <div class="nav-item" data-page="history">VAULT</div>
-            <div class="nav-item" data-page="community">NEXUS</div>
-        </aside>
+    <div class="sidebar" id="sidebar">
+        <button class="toggle-sidebar" id="toggleSidebar">◀</button>
+        <div class="nav-item active" data-page="compressor">COMPRESSOR</div>
+        <div class="nav-item" data-page="history">VAULT</div>
+        <div class="nav-item" data-page="community">COMMUNITY</div>
+    </div>
 
-        <main class="main-content">
+    <div class="main-content">
+        <main>
             <div id="compressorPage" class="content-page">
-                <h2 class="section-title">&nbsp;&nbsp;&nbsp;COMMAND CENTER</h2>
-                
-                <section class="compressor-zone">
-                    <div class="potato-stage">
-                        <div id="potato" class="potato blue-aura"></div>
-                        <div id="progressContainer" class="progress-container hidden">
+                <section class="compressor-container">
+                    <h2 class="section-title">&nbsp;&nbsp;&nbsp;COMMAND CENTER</h2>
+                    
+                    <div class="drop-zone" id="dropZone">
+                        <div class="potato-orb blue-aura" id="potato"></div>
+                        <p id="fileLabel">DROP GAME EXECUTABLE HERE<br><small>OR CLICK TO BROWSE</small></p>
+                        <input type="file" id="fileInput" hidden>
+                        
+                        <div id="progressContainer" class="progress-wrapper hidden">
                             <div class="progress-bar-bg">
                                 <div id="progressBar" class="progress-fill"></div>
                             </div>
-                            <div id="percentText">0%</div>
+                            <p id="percentText">0%</p>
                         </div>
                     </div>
 
-                    <div class="drop-box" id="dropZone">
-                        <input type="file" id="fileInput" hidden>
-                        <p id="fileLabel">DROP GAME EXECUTABLE OR FOLDER HERE<br><span style="font-size: 0.8rem; color: #555;">(Simulated Analysis)</span></p>
-                    </div>
-
-                    <div class="settings-grid">
-                        <div class="setting-card">
+                    <div class="controls-grid">
+                        <div class="input-group">
                             <label>TARGET HARDWARE</label>
-                            <input type="text" id="pcType" placeholder="Manual Override...">
+                            <input type="text" id="pcType" placeholder="Scanning..." readonly>
                         </div>
-                        <div class="setting-card">
+                        <div class="input-group">
                             <label>COMPRESSION LEVEL</label>
                             <select id="compLevel">
                                 <option value="0.30">Balanced (30%)</option>
@@ -92,6 +90,7 @@
                     <div class="nexus-header">
                         <div class="community-top-row">
                             <h2>MODS & DISCUSSIONS</h2>
+                            <input type="text" id="discussionSearch" placeholder="Search discussions...">
                         </div>
                         <button id="newPostBtn" class="btn-ignite" style="width: auto; padding: 10px 20px; font-size: 0.8rem; margin-top:10px;">NEW DISCUSSION</button>
                     </div>
@@ -115,7 +114,7 @@
                 <button id="postReplyBtn" class="btn-ignite" style="width:120px; padding:10px;">POST</button>
             </div>
             <div id="loginToReplyMsg" class="thread-reply-box" style="text-align: center; border: 1px dashed #333; padding: 20px;">
-                <p style="color: #8ba2b9;">You must be <span class="orange-hover" onclick="document.getElementById('openSignup').click()">Logged In</span> to reply.</p>
+                <p style="color: #8ba2b9;">You must be <span class="orange-hover" onclick="document.getElementById('openLogin').click()">Logged In</span> to reply to this discussion.</p>
             </div>
         </div>
     </div>
