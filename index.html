@@ -12,13 +12,12 @@
     <div id="authModal" class="modal hidden">
         <div class="modal-content">
             <span class="close-modal" id="closeModal">&times;</span>
-            <h2 id="modalTitle">Sign Up</h2>
+            <h2 id="modalTitle">JOIN THE PATCH</h2>
             <div id="auth-form">
                 <input type="text" id="username" placeholder="Username" required>
-                <div id="nameSuggestions" class="suggestions hidden"></div>
                 <input type="email" id="email" placeholder="Email Address" required>
-                <input type="password" id="password" placeholder="Password (min 6 chars)" required>
-                <button id="signup-btn" class="btn-ignite">Create Account</button>
+                <input type="password" id="password" placeholder="Password" required>
+                <button id="signup-btn" class="btn-ignite">CREATE ACCOUNT</button>
                 <p id="status-msg"></p>
             </div>
         </div>
@@ -26,13 +25,13 @@
 
     <nav class="top-nav">
         <div id="loggedOutNav">
-            <span class="nav-link white-to-orange" id="openSignup">SIGN UP</span>
+            <span class="nav-link orange-hover" id="openSignup">SIGN UP</span>
             <span class="nav-separator">|</span>
-            <span class="nav-link orange-to-white" id="openLogin">LOG IN</span>
+            <span class="nav-link orange-hover" id="openLogin">LOG IN</span>
         </div>
         <div id="loggedInNav" class="hidden">
             <span id="userDisplay" class="user-tag"></span>
-            <span class="nav-link orange-to-white" id="signOutBtn">LOGOUT</span>
+            <span class="nav-link orange-hover" id="signOutBtn">LOGOUT</span>
         </div>
     </nav>
 
@@ -52,7 +51,7 @@
         <main class="main-content" id="mainContent">
             <div id="labPage" class="content-page lab-centered">
                 <div class="potato-chamber">
-                    <div id="potato" class="electric-potato">🥔</div>
+                    <div id="potato" class="electric-potato clockwise blue-aura">🥔</div>
                     <div id="benchmarkBarContainer" class="hidden">
                         <div id="benchmarkBar"></div>
                     </div>
@@ -60,27 +59,35 @@
                 </div>
                 
                 <h1 class="main-title">HOT<span>POTATO</span></h1>
-                <p class="main-subheading">VIDEO GAME COMPRESSOR</p>
+                <p class="main-subheading">V I D E O &nbsp; G A M E &nbsp; C O M P R E S S O R</p>
                 
                 <section class="tool-card original-engine">
                     <div class="drop-zone" id="dropZone">
                         <input type="file" id="fileInput" style="display:none;">
-                        <div class="dz-icon">📁</div>
-                        <p id="fileLabel"><strong>DRAG GAME HERE</strong><br><span>to begin optimization</span></p>
+                        <div class="box-inner">
+                            <div class="dz-icon">📦</div>
+                            <p id="fileLabel"><strong>DROP GAME FILE HERE</strong><br><span>INTO THE COMPRESSION BOX</span></p>
+                        </div>
                     </div>
 
                     <div class="system-options-grid">
-                        <div class="field"><label>PC Model</label><input type="text" id="pcType" placeholder="RTX 4080"></div>
-                        <div class="field"><label>Storage (GB)</label><input type="number" id="storageInput" value="" placeholder=""></div>
                         <div class="field">
-                            <label>Focus</label>
+                            <label>PC MODEL (WEB ASSESSMENT)</label>
+                            <input type="text" id="pcType" placeholder="Searching hardware...">
+                        </div>
+                        <div class="field">
+                            <label>STORAGE (GB)</label>
+                            <input type="number" id="storageInput" placeholder="">
+                        </div>
+                        <div class="field">
+                            <label>FOCUS</label>
                             <select id="optFocus">
-                                <option value="quality">Quality</option>
-                                <option value="perf">Performance</option>
+                                <option value="Performance">Performance</option>
+                                <option value="Quality">Quality</option>
                             </select>
                         </div>
                         <div class="field">
-                            <label>Level</label>
+                            <label>COMPRESSION LEVEL</label>
                             <select id="compLevel">
                                 <option value="0.30">Balance (30%)</option>
                                 <option value="0.85">Potato (85%)</option>
@@ -96,14 +103,36 @@
             </div>
 
             <div id="communityPage" class="content-page hidden">
-                <div id="forumFeed" class="steam-feed"></div>
+                <div class="nexus-container">
+                    <div class="nexus-header">
+                        <h2>MODS & DISCUSSIONS</h2>
+                        <div class="nexus-search-bar">
+                            <input type="text" placeholder="Search mods, authors, or threads...">
+                        </div>
+                    </div>
+                    <table class="nexus-table">
+                        <thead>
+                            <tr>
+                                <th>File Name</th>
+                                <th>Category</th>
+                                <th>Author</th>
+                                <th>Downloads</th>
+                            </tr>
+                        </thead>
+                        <tbody id="forumFeed">
+                            <tr>
+                                <td><span class="nexus-blue">Cyberpunk_Potato_Ultra_Optimized.pot</span></td>
+                                <td>Optimization</td>
+                                <td>PotatoMaster</td>
+                                <td>1.2k</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </main>
     </div>
-<div class="app-container">
-    <aside class="sidebar" id="sidebar">...</aside>
-    <main class="main-content" id="mainContent">...</main>
-</div>
+
     <script src="script.js"></script>
 </body>
 </html>
