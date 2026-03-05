@@ -15,6 +15,7 @@
             <h2 id="modalTitle">Sign Up</h2>
             <div id="auth-form">
                 <input type="text" id="username" placeholder="Username" required>
+                <div id="nameSuggestions" class="suggestions hidden"></div>
                 <input type="email" id="email" placeholder="Email Address" required>
                 <input type="password" id="password" placeholder="Password (min 6 chars)" required>
                 <button id="signup-btn" class="btn-ignite">Create Account</button>
@@ -48,15 +49,14 @@
             </div>
         </aside>
 
-        <main class="main-content">
+        <main class="main-content" id="mainContent">
             <div id="labPage" class="content-page lab-centered">
                 <div class="potato-chamber">
                     <div id="potato" class="electric-potato">🥔</div>
-                    <p class="potato-status-sub">NEURAL LINK IDLE</p>
                     <div id="benchmarkBarContainer" class="hidden">
                         <div id="benchmarkBar"></div>
                     </div>
-                    <p id="statusText" class="status-msg"></p>
+                    <p id="statusText" class="status-msg">READY FOR INPUT</p>
                 </div>
                 
                 <h1 class="main-title">HOT<span>POTATO</span></h1>
@@ -71,7 +71,7 @@
 
                     <div class="system-options-grid">
                         <div class="field"><label>PC Model</label><input type="text" id="pcType" placeholder="RTX 4080"></div>
-                        <div class="field"><label>Storage (GB)</label><input type="number" id="storageInput" value="" placeholder="0" class="transparent-input"></div>
+                        <div class="field"><label>Storage (GB)</label><input type="number" id="storageInput" value="" placeholder=""></div>
                         <div class="field">
                             <label>Focus</label>
                             <select id="optFocus">
@@ -82,8 +82,8 @@
                         <div class="field">
                             <label>Level</label>
                             <select id="compLevel">
-                                <option value="0.30">Balance</option>
-                                <option value="0.85">Potato</option>
+                                <option value="0.30">Balance (30%)</option>
+                                <option value="0.85">Potato (85%)</option>
                             </select>
                         </div>
                     </div>
@@ -96,13 +96,6 @@
             </div>
 
             <div id="communityPage" class="content-page hidden">
-                <div class="steam-header">
-                    <div id="postContainer" class="hidden">
-                        <input type="text" id="newThreadTitle" placeholder="Start a new discussion...">
-                        <button id="postBtn" class="btn-ignite-small">POST</button>
-                    </div>
-                    <div id="loginReminder" class="login-msg">Log in to participate in the discussion</div>
-                </div>
                 <div id="forumFeed" class="steam-feed"></div>
             </div>
         </main>
