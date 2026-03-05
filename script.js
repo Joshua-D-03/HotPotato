@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('userDisplay').innerText = currentUser.username;
                 document.getElementById('authModal').classList.add('hidden');
             } else {
-                status.innerText = "Invalid credentials!";
+                status.innerText = "Invalid credentials! You must sign up first.";
             }
         }
     };
@@ -58,8 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('authSubmitBtn').onclick = handleAuth;
     document.getElementById('toggleAuthMode').onclick = toggleAuthUI;
-    document.getElementById('openSignup').onclick = () => { isSignupMode = false; toggleAuthUI(); document.getElementById('authModal').classList.remove('hidden'); };
-    document.getElementById('openLogin').onclick = () => { isSignupMode = true; toggleAuthUI(); document.getElementById('authModal').classList.remove('hidden'); };
+    document.getElementById('openSignup').onclick = () => { isSignupMode = true; toggleAuthUI(); document.getElementById('authModal').classList.remove('hidden'); };
+    document.getElementById('openLogin').onclick = () => { isSignupMode = false; toggleAuthUI(); document.getElementById('authModal').classList.remove('hidden'); };
     document.getElementById('closeModal').onclick = () => document.getElementById('authModal').classList.add('hidden');
     document.getElementById('signOutBtn').onclick = () => {
         currentUser = null;
@@ -68,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- ENGINE LOGIC ---
+    // Auto-fill PC Model but with no placeholder in HTML
     pcField.value = "RTX 3060 | i7-11700K";
 
     document.getElementById('toggleSidebar').onclick = function() {
