@@ -12,11 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressContainer = document.getElementById('progressContainer');
     const percentText = document.getElementById('percentText');
 
-    // Hardware Scanner Load
-    const hardware = ["RTX 4090 | i9-14900K", "RTX 3070 | Ryzen 7", "GTX 1660 Ti | i5-11th"];
-    setTimeout(() => { pcField.value = hardware[Math.floor(Math.random()*hardware.length)]; }, 1000);
+    // Hardware Assessment
+    const autoDetect = "RTX 3060 | i7-11700K";
+    pcField.value = autoDetect;
 
-    // Sidebar & Navigation
+    // Sidebar
     document.getElementById('toggleSidebar').onclick = function() {
         const closed = sidebar.classList.toggle('closed');
         this.innerText = closed ? "▶" : "◀";
@@ -32,9 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     });
 
-    // Vault Logic with Local Storage Persistence
+    // Vault logic
     let vaultItems = JSON.parse(localStorage.getItem('hp_vault')) || [];
-
     function renderVault() {
         historyGrid.innerHTML = '';
         for(let i=0; i<12; i++) {
@@ -43,92 +42,104 @@ document.addEventListener('DOMContentLoaded', () => {
             if(vaultItems[i]) {
                 div.classList.add('filled');
                 div.style.backgroundImage = `url('${vaultItems[i].img}')`;
-                div.innerHTML = `<button class="delete-vault" onclick="deleteVaultItem(${i})">REMOVE</button>`;
+                div.innerHTML = `<button class="delete-vault" onclick="deleteVaultItem(${i})">×</button>`;
             }
             historyGrid.appendChild(div);
         }
     }
-
     window.deleteVaultItem = (index) => {
         vaultItems.splice(index, 1);
         localStorage.setItem('hp_vault', JSON.stringify(vaultItems));
         renderVault();
     };
-
     renderVault();
 
-    // Ignition Compression Logic
+    // Community Discussions
+    let discussions = [
+        { id: 1, title: "Best settings for Elden Ring on 8GB RAM?", author: "TarnishedOne", replies: 14, content: "Has anyone tried Extreme compression on the latest patch?" },
+        { id: 2, title: "RTX 4090 Efficiency Test", author: "FrameChaser", replies: 3, content: "The tool handles 4K textures surprisingly well." }
+    ];
+
+    function renderDiscussions(filter = "") {
+        const body = document.getElementById('discussionBody');
+        body.innerHTML = '';
+        discussions.filter(d => d.title.toLowerCase().includes(filter.toLowerCase())).forEach(d => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><span class="nexus-blue" onclick="openThread(${d.id})">${d.title}</span></td>
+                <td>General</td>
+                <td>${d.author}</td>
+                <td>${d.replies}</td>
+            `;
+            body.appendChild(tr);
+        });
+    }
+
+    window.openThread = (id) => {
+        const thread = discussions.find(d => d.id === id);
+        const modal = document.getElementById('discussionModal');
+        document.getElementById('threadContent').innerHTML = `
+            <div class="thread-header"><h2>${thread.title}</h2><small>Posted by ${thread.author}</small></div>
+            <div class="thread-op">${thread.content}</div>
+        `;
+        modal.classList.remove('hidden');
+    };
+
+    document.getElementById('closeThread').onclick = () => document.getElementById('discussionModal').classList.add('hidden');
+    document.getElementById('discussionSearch').oninput = (e) => renderDiscussions(e.target.value);
+    renderDiscussions();
+
+    // Ignition Logic
     document.getElementById('igniteBtn').onclick = () => {
         const file = fileInput.files[0];
-        if(!file) return alert("Please drop a game file into the box first.");
+        if(!file) return alert("Drop a game file first.");
 
-        const fileSizeGB = file.size / (1024 * 1024 * 1024);
-        if(fileSizeGB > 50) {
-            if(!confirm(`WARNING: ${fileSizeGB.toFixed(2)}GB detected. Proceed?`)) return;
-        }
+        // Analysis Adjustment: Higher RAM or High-End PC = Faster/More efficient compression
+        const ramValue = parseInt(document.getElementById('storageInput').value) || 16;
+        const pcValue = pcField.value.toLowerCase();
+        let speedBoost = (ramValue > 16) ? 1.5 : 1;
+        if(pcValue.includes("rtx") || pcValue.includes("40")) speedBoost += 0.5;
 
-        // Setup Progress Bar
         progressContainer.classList.remove('hidden');
         potato.classList.replace('blue-aura', 'compressing-red');
-        let progress = 0;
         
+        let progress = 0;
         const interval = setInterval(() => {
-            progress += Math.random() * 15;
+            progress += (Math.random() * 10) * speedBoost;
             if(progress >= 100) {
                 progress = 100;
                 clearInterval(interval);
-                finalizeCompression(file);
+                finish(file);
             }
             progressBar.style.width = `${progress}%`;
             percentText.innerText = `${Math.floor(progress)}%`;
-        }, 300);
+        }, 200);
     };
 
-    function finalizeCompression(file) {
-        const compLevel = parseFloat(document.getElementById('compLevel').value);
-        const originalSizeMB = (file.size / (1024 * 1024)).toFixed(2);
-        const newSizeMB = (originalSizeMB * (1 - compLevel)).toFixed(2);
-        const savedMB = (originalSizeMB - newSizeMB).toFixed(2);
+    function finish(file) {
+        const level = parseFloat(document.getElementById('compLevel').value);
+        const oldSize = (file.size / (1024*1024)).toFixed(2);
+        const newSize = (oldSize * (1 - level)).toFixed(2);
 
         potato.classList.replace('compressing-red', 'blue-aura');
         progressContainer.classList.add('hidden');
-        progressBar.style.width = '0%';
 
-        // Create Vault Item
         if(vaultItems.length < 12) {
-            vaultItems.push({
-                name: file.name,
-                img: `https://picsum.photos/seed/${file.name}/200/300`
-            });
+            vaultItems.push({ name: file.name, img: `https://picsum.photos/seed/${file.name}/200/300` });
             localStorage.setItem('hp_vault', JSON.stringify(vaultItems));
             renderVault();
         }
 
-        alert(`COMPRESSION SUCCESS!\nOriginal: ${originalSizeMB} MB\nPotato-Mode: ${newSizeMB} MB\nYou saved ${savedMB} MB!`);
+        alert(`COMPRESSION COMPLETE\nEfficiency: ${Math.floor(level*100)}%\nOriginal: ${oldSize}MB\nPOTATO: ${newSize}MB`);
         
-        // Return file (Simulated by triggering a dummy download of the original)
         const link = document.createElement('a');
         link.href = URL.createObjectURL(file);
-        link.download = `POTATO_${file.name}`;
+        link.download = `HP_OPTIMIZED_${file.name}`;
         link.click();
     }
 
-    // Community Toggle for Logged In Users
-    function checkLoginStatus() {
-        const user = localStorage.getItem('hp_user'); 
-        if(user) {
-            document.getElementById('newPostBtn').classList.remove('hidden');
-        }
-    }
-    checkLoginStatus();
-
     document.getElementById('dropZone').onclick = () => fileInput.click();
-    fileInput.onchange = (e) => {
-        if(e.target.files[0]) {
-            document.getElementById('fileLabel').innerHTML = `<strong>${e.target.files[0].name}</strong><br>READY FOR IGNITION`;
-        }
-    };
-
+    fileInput.onchange = (e) => { if(e.target.files[0]) document.getElementById('fileLabel').innerHTML = `<strong>${e.target.files[0].name}</strong><br>READY FOR POTATO-TECH`; };
     document.getElementById('openSignup').onclick = () => document.getElementById('authModal').classList.remove('hidden');
     document.getElementById('closeModal').onclick = () => document.getElementById('authModal').classList.add('hidden');
 });
