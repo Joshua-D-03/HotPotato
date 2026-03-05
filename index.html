@@ -25,13 +25,13 @@
 
     <nav class="top-nav">
         <div id="loggedOutNav">
-            <span class="nav-link orange-hover" id="openSignup">SIGN UP</span>
+            <span class="nav-link white-hover" id="openSignup">SIGN UP</span>
             <span class="nav-separator">|</span>
-            <span class="nav-link orange-hover" id="openLogin">LOG IN</span>
+            <span class="nav-link white-hover" id="openLogin">LOG IN</span>
         </div>
         <div id="loggedInNav" class="hidden">
             <span id="userDisplay" class="user-tag"></span>
-            <span class="nav-link orange-hover" id="signOutBtn">LOGOUT</span>
+            <span class="nav-link white-hover" id="signOutBtn">LOGOUT</span>
         </div>
     </nav>
 
@@ -76,7 +76,7 @@
                     <div class="system-options-grid">
                         <div class="field">
                             <label>PC MODEL (SEARCH/IDENTIFY)</label>
-                            <input type="text" id="pcType" placeholder="Type Model (e.g. RTX 3080)...">
+                            <input type="text" id="pcType" class="vanishing-placeholder" placeholder="Type Model (e.g. RTX 3080)...">
                         </div>
                         <div class="field">
                             <label>SYSTEM RAM (GB)</label>
@@ -122,8 +122,7 @@
                         <thead>
                             <tr><th>Topic</th><th>Category</th><th>Author</th><th>Replies</th></tr>
                         </thead>
-                        <tbody id="discussionBody">
-                            </tbody>
+                        <tbody id="discussionBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -134,9 +133,12 @@
         <div class="modal-content steam-thread">
             <span class="close-modal" id="closeThread">&times;</span>
             <div id="threadContent"></div>
-            <div class="thread-reply-box">
+            <div id="replySection" class="thread-reply-box hidden">
                 <textarea id="replyText" placeholder="Write a comment..."></textarea>
-                <button class="btn-ignite" style="width:120px; padding:10px;">POST</button>
+                <button id="postReplyBtn" class="btn-ignite" style="width:120px; padding:10px;">POST</button>
+            </div>
+            <div id="loginToReplyMsg" class="thread-reply-box" style="text-align: center; border: 1px dashed #333; padding: 20px;">
+                <p style="color: #8ba2b9;">You must be <span class="orange-hover" onclick="document.getElementById('openLogin').click()">Logged In</span> to reply to this discussion.</p>
             </div>
         </div>
     </div>
