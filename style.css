@@ -1,8 +1,9 @@
 :root { 
     --orange: #da8100; 
+    --bright-orange: #ff8c00; 
     --dark: #050505; 
     --steam-blue: #171a21; 
-    --blue-accent: #66c0f4;
+    --cyan: #00f2ff; 
 }
 
 body { 
@@ -10,28 +11,22 @@ body {
     color: #c7d5e0; 
     font-family: 'Motiva Sans', sans-serif; 
     margin: 0; 
-    overflow-x: hidden;
+    overflow-x: hidden; 
 }
 
-/* Sidebar Connection Logic */
+/* Sidebar Toggle: Spaced items & Full Hide */
 .sidebar { 
     width: 280px; 
     background: var(--steam-blue); 
     border-right: 1px solid #333; 
-    transition: transform 0.3s ease; 
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
     position: fixed; 
     height: 100vh; 
     z-index: 1000; 
 }
 
-/* JavaScript toggles this class */
-.sidebar.closed { 
-    transform: translateX(-280px); 
-}
-
-.sidebar.closed .sidebar-content { 
-    display: none; 
-}
+.sidebar.closed { transform: translateX(-280px); }
+.sidebar.closed .sidebar-content { opacity: 0; pointer-events: none; }
 
 .toggle-sidebar { 
     position: absolute; 
@@ -45,85 +40,150 @@ body {
     border-radius: 0 4px 4px 0; 
 }
 
-/* Command Center Spacing */
 .nav-item { 
     padding: 30px 25px; 
     cursor: pointer; 
-    color: var(--blue-accent); 
+    color: #66c0f4; 
     font-weight: bold; 
-    text-transform: uppercase;
-    transition: 0.2s;
+    font-size: 0.8rem; 
+    letter-spacing: 1px; 
 }
 
 .nav-item.active { 
-    background: rgba(255, 255, 255, 0.05); 
+    background: linear-gradient(to right, #1b2838, #2a475e); 
     border-left: 4px solid var(--orange); 
-    color: #fff; 
 }
 
-/* Main Content Adjustment */
+/* Main Content Layout */
 .main-content { 
     margin-left: 280px; 
     padding: 40px; 
-    transition: margin-left 0.3s ease; 
+    transition: margin-left 0.4s ease; 
     display: flex; 
     flex-direction: column; 
     align-items: center; 
 }
 
-.sidebar.closed ~ .main-content { 
-    margin-left: 0; 
+.sidebar.closed ~ .main-content { margin-left: 0; }
+
+/* Potato Clockwork & Auras */
+.electric-potato { 
+    font-size: 110px; 
+    display: inline-block; 
+    transition: filter 0.3s; 
 }
 
-/* Potato & Animation Logic */
-.electric-potato { 
-    font-size: 100px; 
-    transition: 0.3s;
-}
+.clockwise { animation: rotate-clock 8s infinite linear; }
+
+.blue-aura { filter: drop-shadow(0 0 20px rgba(0, 242, 255, 0.6)); }
 
 .compressing-red { 
-    animation: jitter 0.1s infinite; 
-    color: #ff0000; 
-    filter: drop-shadow(0 0 20px red); 
+    animation: rotate-clock 0.3s infinite linear !important; 
+    filter: drop-shadow(0 0 30px #ff0000) !important; 
+    color: #ff3333;
 }
 
-@keyframes jitter {
-    0% { transform: translate(0,0); }
-    50% { transform: translate(2px, 2px); }
-    100% { transform: translate(-1px, -1px); }
+@keyframes rotate-clock { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* Typography */
+.main-title { 
+    font-size: 5.5rem; 
+    color: #fff; 
+    margin: 0; 
+    font-weight: 900; 
+    letter-spacing: -3px; 
 }
 
-/* Library Grid from JS */
-.dashed-grid { 
+.main-title span { color: var(--orange); }
+
+.main-subheading { 
+    letter-spacing: 8px; 
+    color: #66c0f4; 
+    font-weight: bold; 
+    font-size: 0.8rem; 
+    margin-top: -10px; 
+    margin-bottom: 40px; 
+}
+
+/* Drop Zone */
+.drop-zone { 
+    border: 2px solid #222; 
+    background: #080808; 
+    padding: 40px; 
+    cursor: pointer; 
+    width: 100%; 
+    max-width: 800px; 
+}
+
+.box-inner { 
+    border: 1px dashed #444; 
+    padding: 30px; 
+    text-align: center; 
+}
+
+/* UI Elements */
+.system-options-grid { 
     display: grid; 
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+    grid-template-columns: 1fr 1fr; 
     gap: 15px; 
-    width: 100%; 
-    max-width: 1000px;
+    margin-top: 30px; 
 }
 
-.dashed-square { 
-    aspect-ratio: 1/1; 
-    background: #000; 
-    border: 1px dashed #333; 
-    position: relative; 
-    overflow: hidden;
+select option { color: #000; background: #fff; }
+
+.btn-ignite { 
+    background: var(--orange); 
+    color: white; 
+    border: none; 
+    padding: 20px; 
+    width: 100%; 
+    font-weight: bold; 
+    cursor: pointer; 
 }
 
-.hover-info { 
-    position: absolute; 
-    bottom: 0; 
-    background: rgba(0,0,0,0.8); 
+.orange-hover { color: var(--orange); cursor: pointer; }
+.orange-hover:hover { color: var(--bright-orange); }
+
+/* Nexus Table Styles */
+.nexus-container { 
     width: 100%; 
-    padding: 10px; 
+    max-width: 1100px; 
+    background: #0a0a0a; 
+    border: 1px solid #222; 
+    padding: 25px; 
+}
+
+.nexus-table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 20px; 
+}
+
+.nexus-table th { 
+    text-align: left; 
+    padding: 12px; 
+    background: #1a1a1a; 
+    color: #66c0f4; 
     font-size: 0.75rem; 
-    border-top: 1px solid var(--orange);
+    border-bottom: 2px solid #333; 
 }
 
-/* Dropdown Black Text Fix */
-select option { 
-    color: #000; 
-    background: #fff; 
+.nexus-table td { 
+    padding: 15px 12px; 
+    border-bottom: 1px solid #1a1a1a; 
+    font-size: 0.9rem; 
+}
+
+.nexus-blue { color: #66c0f4; cursor: pointer; font-weight: bold; }
+
+.modal { 
+    position: fixed; 
+    inset: 0; 
+    background: rgba(0,0,0,0.8); 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    z-index: 2000; 
 }
 
 .hidden { display: none !important; }
