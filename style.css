@@ -23,6 +23,13 @@ body { background: var(--dark); color: #c7d5e0; font-family: 'Motiva Sans', sans
 .main-title span { color: var(--orange); }
 .main-subheading { letter-spacing: 12px; color: #66c0f4; font-weight: bold; font-size: 0.8rem; margin-top: -10px; margin-bottom: 50px; }
 
+/* Nav Links - Requested White Hover */
+.white-hover { color: var(--orange); cursor: pointer; font-weight: bold; transition: color 0.2s; }
+.white-hover:hover { color: #ffffff !important; }
+
+/* Vanishing Placeholders */
+.vanishing-placeholder:focus::placeholder { color: transparent; }
+
 /* Progress Bar */
 .progress-wrap { width: 100%; margin: 20px 0; }
 .progress-label { font-size: 0.7rem; color: var(--orange); margin-bottom: 5px; text-align: left; font-weight: bold; }
@@ -31,7 +38,6 @@ body { background: var(--dark); color: #c7d5e0; font-family: 'Motiva Sans', sans
 
 /* Inputs */
 .transparent-input { background: rgba(0, 0, 0, 0.2) !important; border: 1px solid rgba(255, 140, 0, 0.3) !important; }
-.vanishing-placeholder:focus::placeholder { color: transparent; }
 
 .tool-card { width: 100%; max-width: 800px; }
 .drop-zone { border: 2px solid #222; background: #080808; padding: 50px; cursor: pointer; }
@@ -41,7 +47,7 @@ body { background: var(--dark); color: #c7d5e0; font-family: 'Motiva Sans', sans
 input, select { background: #000; border: 1px solid #333; color: #fff; padding: 12px; width: 100%; box-sizing: border-box; }
 .btn-ignite { background: var(--orange); color: white; border: none; padding: 25px; width: 100%; font-weight: 900; cursor: pointer; font-size: 1.2rem; letter-spacing: 2px; }
 
-/* Community & Steam Style Threads */
+/* Community */
 .community-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
 #discussionSearch { width: 250px; background: #111; border: 1px solid #333; padding: 8px; }
 .nexus-container { width: 100%; max-width: 1000px; background: #0a0a0a; border: 1px solid #222; padding: 30px; text-align: left; }
@@ -54,7 +60,6 @@ input, select { background: #000; border: 1px solid #333; color: #fff; padding: 
 .steam-thread { background: #1b2838; width: 80%; max-width: 900px; padding: 40px; border: 1px solid #2a475e; text-align: left; }
 .thread-header { border-bottom: 1px solid var(--steam-gray); padding-bottom: 20px; margin-bottom: 20px; }
 .thread-op { background: rgba(0,0,0,0.3); padding: 20px; border-left: 3px solid var(--orange); margin-bottom: 20px; }
-.thread-reply-box { margin-top: 30px; }
 .thread-reply-box textarea { width: 100%; height: 100px; background: #000; color: #fff; border: 1px solid #333; padding: 10px; margin-bottom: 10px; }
 
 /* Vault */
