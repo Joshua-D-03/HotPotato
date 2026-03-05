@@ -51,4 +51,4 @@ input, select { background: #000; border: 1px solid #333; color: #fff; padding: 
 .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 2000; }
 .hidden { display: none !important; }
 .top-nav { position: fixed; top: 30px; right: 40px; z-index: 1500; }
-.orange-hover { color: var(--orange); cursor: pointer; font-weight: bold; }1500; }
+.orange-hover { color: var(--orange); cursor: pointer; font-weight: bold; }
