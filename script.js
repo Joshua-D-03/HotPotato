@@ -4,59 +4,55 @@ const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
 document.addEventListener('DOMContentLoaded', () => {
     const potato = document.getElementById('potato');
-    const sidebar = document.getElementById('sidebar');
-    const toggleSidebar = document.getElementById('toggleSidebar');
-    const fileInput = document.getElementById('fileInput');
     const pcInput = document.getElementById('pcType');
+    const fileInput = document.getElementById('fileInput');
     const historyGrid = document.getElementById('historyGrid');
     let libraryData = [];
 
-    // Memory: Remember PC Model
-    if(localStorage.getItem('savedPC')) pcInput.value = localStorage.getItem('savedPC');
+    // Persist PC Model Memory
+    if(localStorage.getItem('pc_assessment')) pcInput.value = localStorage.getItem('pc_assessment');
 
-    // Sidebar Toggle
-    toggleSidebar.onclick = () => {
-        const isClosed = sidebar.classList.toggle('closed');
-        toggleSidebar.innerText = isClosed ? "▶" : "◀";
+    // Sidebar Logic
+    document.getElementById('toggleSidebar').onclick = function() {
+        const sidebar = document.getElementById('sidebar');
+        const closed = sidebar.classList.toggle('closed');
+        this.innerText = closed ? "▶" : "◀";
     };
 
-    // Page Switching
+    // Navigation Logic
     document.querySelectorAll('.nav-item').forEach(item => {
         item.onclick = () => {
-            const page = item.getAttribute('data-page');
+            const page = item.dataset.page;
             document.querySelectorAll('.content-page').forEach(p => p.classList.add('hidden'));
             document.getElementById(`${page}Page`).classList.remove('hidden');
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             item.classList.add('active');
-            if(page === 'history') renderLibrary();
         };
     });
 
-    // Username Availability / Recommendation
+    // Username Logic
     document.getElementById('username').oninput = function() {
-        const val = this.value;
         const sug = document.getElementById('nameSuggestions');
-        if(val.length > 2) {
+        if(this.value.length > 2) {
             sug.classList.remove('hidden');
-            sug.innerHTML = `Recommended: <b>${val}_Potatofied</b> or <b>Hot_${val}</b>`;
+            sug.innerHTML = `Suggested: <b>${this.value}_Potatofied</b>`;
         }
     };
 
-    // File Box Logic
+    // Drag/Box Logic
     document.getElementById('dropZone').onclick = () => fileInput.click();
     fileInput.onchange = (e) => {
-        if(e.target.files[0]) {
-            document.getElementById('fileLabel').innerHTML = `<strong>${e.target.files[0].name}</strong><br>CHAMBERED`;
-        }
+        if(e.target.files[0]) document.getElementById('fileLabel').innerHTML = `<strong>${e.target.files[0].name}</strong><br>READY FOR PROCESSING`;
     };
 
-    // Compression Ignition
+    // Ignite Compression
     document.getElementById('igniteBtn').onclick = () => {
         const file = fileInput.files[0];
-        if(!file) return alert("Please drag a game into the box!");
+        if(!file) return alert("Please place a game in the box.");
 
-        // Assessment Simulation
-        localStorage.setItem('savedPC', pcInput.value);
+        // Remember PC for next visit
+        localStorage.setItem('pc_assessment', pcInput.value);
+
         potato.classList.add('compressing-red');
         document.getElementById('benchmarkBarContainer').classList.remove('hidden');
         document.getElementById('statusText').innerText = "WEB ASSESSMENT: ANALYZING HARDWARE...";
@@ -68,51 +64,47 @@ document.addEventListener('DOMContentLoaded', () => {
             bar.style.width = progress + "%";
             if(progress >= 100) {
                 clearInterval(interval);
-                finishCompression(file);
+                completeCompression(file);
             }
-        }, 50);
+        }, 60);
     };
 
-    function finishCompression(file) {
+    function completeCompression(file) {
         potato.classList.remove('compressing-red');
         document.getElementById('benchmarkBarContainer').classList.add('hidden');
-        document.getElementById('statusText').innerText = "SUCCESS";
-
+        
         const level = parseFloat(document.getElementById('compLevel').value);
-        const originalGB = (file.size / (1024 ** 3)).toFixed(2);
-        const compressedGB = (originalGB * (1 - level)).toFixed(2);
-        const savedMB = ((originalGB - compressedGB) * 1024).toFixed(0);
+        const originalSize = (file.size / (1024 ** 3)).toFixed(2); // GB
+        const compressedSize = (originalSize * (1 - level)).toFixed(2);
 
-        const newGame = {
-            title: `Potatofied-${file.name}`,
-            info: `${originalGB}GB → ${compressedGB}GB (Saved ${savedMB}MB)`,
+        const entry = {
+            title: `Potatofied-${file.name.split('.')[0]}`,
+            stats: `${originalSize}GB → ${compressedSize}GB`,
             date: new Date().toLocaleDateString(),
-            img: `https://picsum.photos/seed/${Math.random()}/200/200`
+            poster: `https://picsum.photos/seed/${Math.random()}/300/400`
         };
 
-        libraryData.unshift(newGame);
-        renderLibrary();
+        libraryData.unshift(entry);
+        updateLibrary();
+        alert(`${entry.title} created! Saved ${(level*100).toFixed(0)}% storage.`);
     }
 
-    function renderLibrary() {
+    function updateLibrary() {
         historyGrid.innerHTML = '';
-        // Fill with current library + blank squares
         libraryData.forEach(game => {
-            const square = document.createElement('div');
-            square.className = 'dashed-square';
-            square.style.backgroundImage = `url(${game.img})`;
-            square.style.backgroundSize = 'cover';
-            square.innerHTML = `<div class="hover-info"><b>${game.title}</b><br>${game.info}<br>${game.date}</div>`;
-            historyGrid.appendChild(square);
+            const div = document.createElement('div');
+            div.className = 'dashed-square';
+            div.style.backgroundImage = `url(${game.poster})`;
+            div.style.backgroundSize = 'cover';
+            div.innerHTML = `<div class="hover-info"><b>${game.title}</b><br>${game.stats}<br>${game.date}</div>`;
+            historyGrid.appendChild(div);
         });
-        for(let i=0; i<8; i++) {
-            const blank = document.createElement('div');
-            blank.className = 'dashed-square';
-            historyGrid.appendChild(blank);
+        // Blank squares
+        for(let i=0; i<12; i++) {
+            const div = document.createElement('div');
+            div.className = 'dashed-square';
+            historyGrid.appendChild(div);
         }
     }
-
-    // Auth Modal Handlers (Supabase placeholders)
-    document.getElementById('openSignup').onclick = () => document.getElementById('authModal').classList.remove('hidden');
-    document.getElementById('closeModal').onclick = () => document.getElementById('authModal').classList.add('hidden');
+    updateLibrary(); // Initialize blank grid
 });
