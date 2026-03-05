@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('userDisplay').innerText = currentUser.username;
                 document.getElementById('authModal').classList.add('hidden');
             } else {
-                status.innerText = "Invalid credentials! You must sign up first.";
+                status.innerText = "Invalid credentials!";
             }
         }
     };
@@ -68,8 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- ENGINE LOGIC ---
-    // Auto-fill PC Model but with no placeholder in HTML
-    pcField.value = "RTX 3060 | i7-11700K";
+    // Default hardware text removed as requested
+    pcField.value = ""; 
 
     document.getElementById('toggleSidebar').onclick = function() {
         const closed = sidebar.classList.toggle('closed');
