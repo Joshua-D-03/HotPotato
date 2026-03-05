@@ -32,69 +32,46 @@
         </div>
         <div id="loggedInNav" class="hidden">
             <span id="userDisplay" class="user-tag"></span>
-            <span class="nav-link white-hover" id="signOutBtn">LOGOUT</span>
+            <span class="nav-link orange-hover" id="logoutBtn">LOGOUT</span>
         </div>
     </nav>
 
     <div class="app-container">
         <aside class="sidebar" id="sidebar">
-            <button class="toggle-sidebar" id="toggleSidebar">▶</button>
-            <div class="sidebar-content" id="sidebarContent">
-                <h2 class="side-title">COMMAND CENTER</h2>
-                <nav class="sidebar-nav">
-                    <div class="nav-item active" data-page="lab">COMPRESSOR</div>
-                    <div class="nav-item" data-page="history">LIBRARY</div>
-                    <div class="nav-item" data-page="community">COMMUNITY HUB</div>
-                </nav>
-            </div>
+            <button class="toggle-sidebar" id="toggleSidebar">◀</button>
+            <div class="nav-item active" data-page="compressor">COMPRESSOR</div>
+            <div class="nav-item" data-page="history">VAULT</div>
+            <div class="nav-item" data-page="community">NEXUS</div>
         </aside>
 
-        <main class="main-content" id="mainContent">
-            <div id="labPage" class="content-page lab-centered">
-                <div class="potato-chamber">
-                    <div id="potato" class="electric-potato clockwise blue-aura">🥔</div>
-                </div>
+        <main class="main-content">
+            <div id="compressorPage" class="content-page">
+                <h2 class="section-title">&nbsp;&nbsp;&nbsp;COMMAND CENTER</h2>
                 
-                <h1 class="main-title">HOT<span>POTATO</span></h1>
-                <p class="main-subheading">V I D E O &nbsp; G A M E &nbsp; C O M P R E S S O R</p>
-                
-                <section class="tool-card original-engine">
-                    <div class="drop-zone" id="dropZone">
-                        <input type="file" id="fileInput" style="display:none;">
-                        <div class="box-inner">
-                            <div class="dz-icon">📦</div>
-                            <p id="fileLabel"><strong>DROP GAME FILE HERE</strong><br><span>INTO THE COMPRESSION BOX</span></p>
+                <section class="compressor-zone">
+                    <div class="potato-stage">
+                        <div id="potato" class="potato blue-aura"></div>
+                        <div id="progressContainer" class="progress-container hidden">
+                            <div class="progress-bar-bg">
+                                <div id="progressBar" class="progress-fill"></div>
+                            </div>
+                            <div id="percentText">0%</div>
                         </div>
                     </div>
 
-                    <div id="progressContainer" class="progress-wrap hidden">
-                        <div class="progress-label">ANALYZING HARDWARE & COMPRESSING... <span id="percentText">0%</span></div>
-                        <div class="progress-track">
-                            <div id="progressBar" class="progress-fill"></div>
-                        </div>
+                    <div class="drop-box" id="dropZone">
+                        <input type="file" id="fileInput" hidden>
+                        <p id="fileLabel">DROP GAME EXECUTABLE OR FOLDER HERE<br><span style="font-size: 0.8rem; color: #555;">(Simulated Analysis)</span></p>
                     </div>
 
-                    <div class="system-options-grid">
-                        <div class="field">
-                            <label>PC MODEL (SEARCH/IDENTIFY)</label>
-                            <input type="text" id="pcType" class="vanishing-placeholder" placeholder="">
+                    <div class="settings-grid">
+                        <div class="setting-card">
+                            <label>TARGET HARDWARE</label>
+                            <input type="text" id="pcType" placeholder="Manual Override...">
                         </div>
-                        <div class="field">
-                            <label>SYSTEM RAM (GB)</label>
-                            <input type="number" id="storageInput" class="transparent-input vanishing-placeholder" placeholder="16">
-                        </div>
-                        <div class="field">
-                            <label>FOCUS</label>
-                            <select id="optFocus">
-                                <option value="Balance">Balance</option>
-                                <option value="Performance">Performance</option>
-                                <option value="Quality">Quality</option>
-                            </select>
-                        </div>
-                        <div class="field">
+                        <div class="setting-card">
                             <label>COMPRESSION LEVEL</label>
                             <select id="compLevel">
-                                <option value="0.15">Standard (15%)</option>
                                 <option value="0.30">Balanced (30%)</option>
                                 <option value="0.65">Extreme (65%)</option>
                                 <option value="0.85">Potato (85%)</option>
@@ -115,7 +92,6 @@
                     <div class="nexus-header">
                         <div class="community-top-row">
                             <h2>MODS & DISCUSSIONS</h2>
-                            <input type="text" id="discussionSearch" placeholder="Search discussions...">
                         </div>
                         <button id="newPostBtn" class="btn-ignite" style="width: auto; padding: 10px 20px; font-size: 0.8rem; margin-top:10px;">NEW DISCUSSION</button>
                     </div>
@@ -139,7 +115,7 @@
                 <button id="postReplyBtn" class="btn-ignite" style="width:120px; padding:10px;">POST</button>
             </div>
             <div id="loginToReplyMsg" class="thread-reply-box" style="text-align: center; border: 1px dashed #333; padding: 20px;">
-                <p style="color: #8ba2b9;">You must be <span class="orange-hover" onclick="document.getElementById('openLogin').click()">Logged In</span> to reply to this discussion.</p>
+                <p style="color: #8ba2b9;">You must be <span class="orange-hover" onclick="document.getElementById('openSignup').click()">Logged In</span> to reply.</p>
             </div>
         </div>
     </div>
