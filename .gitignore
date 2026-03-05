@@ -1,0 +1,6 @@
+# Ignore the secrets file
+.env
+
+# Ignore system files
+.DS_Store
+node_modules/
