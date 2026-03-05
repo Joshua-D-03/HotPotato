@@ -27,6 +27,9 @@ body { background: var(--dark); color: #c7d5e0; font-family: 'Motiva Sans', sans
 .white-hover { color: var(--orange); cursor: pointer; font-weight: bold; transition: color 0.2s; }
 .white-hover:hover { color: #ffffff !important; }
 
+/* Vanishing Placeholders */
+.vanishing-placeholder:focus::placeholder { color: transparent; }
+
 /* Progress Bar */
 .progress-wrap { width: 100%; margin: 20px 0; }
 .progress-label { font-size: 0.7rem; color: var(--orange); margin-bottom: 5px; text-align: left; font-weight: bold; }
