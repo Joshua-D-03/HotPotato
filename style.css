@@ -19,7 +19,7 @@ body { background: var(--dark); color: #c7d5e0; font-family: 'Motiva Sans', sans
 .compressing-red { animation: rotate-clock 0.4s infinite linear !important; filter: drop-shadow(0 0 40px #ff0000) !important; color: #ff3333; }
 @keyframes rotate-clock { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-.main-title { font-size: 6rem; color: #fff; margin: 0; font-weight: 900; letter-spacing: -4px; }
+.main-title { font-size: 6rem; color: #fff; margin: 0; font-weight: 900; letter-spacing: -4px; padding-left: 3ch; }
 .main-title span { color: var(--orange); }
 .main-subheading { letter-spacing: 12px; color: #66c0f4; font-weight: bold; font-size: 0.8rem; margin-top: -10px; margin-bottom: 50px; }
 
@@ -68,7 +68,7 @@ input, select { background: #000; border: 1px solid #333; color: #fff; padding: 
 .delete-vault { position: absolute; top: 10px; right: 10px; background: rgba(255,0,0,0.7); border: none; color: white; cursor: pointer; padding: 5px; display: none; }
 .blank-square:hover .delete-vault { display: block; }
 
-/* Updated Modal Styles to allow clicks when hidden */
+/* FIX: Added pointer-events: none to prevent blocking clicks */
 .modal { 
     position: fixed; 
     inset: 0; 
@@ -77,21 +77,16 @@ input, select { background: #000; border: 1px solid #333; color: #fff; padding: 
     justify-content: center; 
     align-items: center; 
     z-index: 2000; 
-    pointer-events: none; /* Ignore clicks when modal is hidden */
-    opacity: 0;           /* Make it invisible */
-    transition: opacity 0.2s;
+    pointer-events: none; 
 }
 
-/* Re-enable clicks only when the modal is visible (not hidden) */
+/* Re-enable clicks when modal is shown */
 .modal:not(.hidden) {
-    pointer-events: auto; 
-    opacity: 1;
+    pointer-events: auto;
 }
 
 .modal-content { background: #1b2838; padding: 40px; border: 1px solid #2a475e; width: 350px; text-align: center; }
 .close-modal { position: absolute; top: 20px; right: 20px; color: white; cursor: pointer; font-size: 1.5rem; }
 .hidden { display: none !important; }
-
-/* Keep existing styles below */
 .top-nav { position: fixed; top: 30px; right: 40px; z-index: 1500; }
 .orange-hover { color: var(--orange); cursor: pointer; font-weight: bold; }
