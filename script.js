@@ -73,9 +73,17 @@ document.addEventListener('DOMContentLoaded', () => {
     pcField.value = ""; 
 
     document.getElementById('toggleSidebar').onclick = function() {
-        const closed = sidebar.classList.toggle('closed');
-        this.innerText = closed ? "▶" : "◀";
-    };
+    const closed = sidebar.classList.toggle('closed');
+    this.innerText = closed ? "▶" : "◀";
+
+    // This ensures the sidebar doesn't block the screen when it's hidden
+    if (closed) {
+        sidebar.style.pointerEvents = "none";
+        this.style.pointerEvents = "auto"; // Keeps the arrow button clickable
+    } else {
+        sidebar.style.pointerEvents = "auto";
+    }
+};
 
     document.querySelectorAll('.nav-item').forEach(item => {
         item.onclick = () => {
@@ -153,13 +161,22 @@ document.addEventListener('DOMContentLoaded', () => {
     renderDiscussions();
 
     // Ignition Logic
-    document.getElementById('igniteBtn').onclick = () => {
-        const file = fileInput.files[0];
-        if(!file) return alert("Drop a game file first.");
-        const ramValue = parseInt(document.getElementById('storageInput').value) || 16;
-        const pcValue = pcField.value.toLowerCase();
-        let speedBoost = (ramValue > 16) ? 1.5 : 1;
-        if(pcValue.includes("rtx") || pcValue.includes("40")) speedBoost += 0.5;
+   document.getElementById('igniteBtn').onclick = () => {
+    const file = fileInput.files[0];
+    if(!file) return alert("Drop a game file first.");
+
+    // --- NEW: STEAM GAME VALIDATION START ---
+    const allowedExtensions = /(\.exe|\.pak|\.vpk|\.bin|\.bundle|\.assets)$/i;
+    if (!allowedExtensions.exec(file.name)) {
+        alert("CRITICAL ERROR: Hot Potato only compresses Steam game data (EXE, PAK, VPK, etc.). Photos and regular files rejected.");
+        fileInput.value = ""; // Clear the bad file
+        document.getElementById('fileLabel').innerHTML = `<strong>FILE REJECTED</strong><br><span>GAME ASSETS ONLY</span>`;
+        return; // Stop the engine
+    }
+    // --- NEW: STEAM GAME VALIDATION END ---
+
+    const ramValue = parseInt(document.getElementById('storageInput').value) || 16;
+    // ... the rest of your existing code follows ...
 
         progressContainer.classList.remove('hidden');
         potato.classList.replace('blue-aura', 'compressing-red');
