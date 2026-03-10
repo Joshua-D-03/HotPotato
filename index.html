@@ -14,25 +14,24 @@
             <span class="close-modal" id="closeModal">&times;</span>
             <h2 id="modalTitle">JOIN THE PATCH</h2>
             <div id="auth-form">
-                <input type="text" id="username" placeholder="Username">
+                <input type="text" id="username" placeholder="Username" required>
                 <input type="email" id="email" placeholder="Email Address" required>
                 <input type="password" id="password" placeholder="Password" required>
-                <button id="authSubmitBtn" class="btn-ignite">CREATE ACCOUNT</button>
-                <p id="status-msg" style="font-size: 0.8rem; margin-top: 10px; color: var(--orange);"></p>
-                <p id="toggleAuthMode" style="cursor:pointer; font-size: 0.7rem; margin-top: 15px; color: #66c0f4;">Already have an account? Log In</p>
+                <button id="signup-btn" class="btn-ignite">CREATE ACCOUNT</button>
+                <p id="status-msg"></p>
             </div>
         </div>
     </div>
 
     <nav class="top-nav">
         <div id="loggedOutNav">
-            <span class="nav-link white-hover" id="openSignup">SIGN UP</span>
+            <span class="nav-link orange-hover" id="openSignup">SIGN UP</span>
             <span class="nav-separator">|</span>
-            <span class="nav-link white-hover" id="openLogin">LOG IN</span>
+            <span class="nav-link orange-hover" id="openLogin">LOG IN</span>
         </div>
         <div id="loggedInNav" class="hidden">
             <span id="userDisplay" class="user-tag"></span>
-            <span class="nav-link white-hover" id="signOutBtn">LOGOUT</span>
+            <span class="nav-link orange-hover" id="signOutBtn">LOGOUT</span>
         </div>
     </nav>
 
@@ -60,7 +59,7 @@
                 
                 <section class="tool-card original-engine">
                     <div class="drop-zone" id="dropZone">
-                        <input type="file" id="fileInput" style="display:none;" accept=".exe,.pak,.vpk,.bin,.bundle,.assets">
+                        <input type="file" id="fileInput" style="display:none;">
                         <div class="box-inner">
                             <div class="dz-icon">📦</div>
                             <p id="fileLabel"><strong>DROP GAME FILE HERE</strong><br><span>INTO THE COMPRESSION BOX</span></p>
@@ -68,7 +67,7 @@
                     </div>
 
                     <div id="progressContainer" class="progress-wrap hidden">
-                        <div class="progress-label">ANALYZING HARDWARE & COMPRESSING... <span id="percentText">0%</span></div>
+                        <div class="progress-label">IGNITING CORES... <span id="percentText">0%</span></div>
                         <div class="progress-track">
                             <div id="progressBar" class="progress-fill"></div>
                         </div>
@@ -76,12 +75,12 @@
 
                     <div class="system-options-grid">
                         <div class="field">
-                            <label>PC MODEL (SEARCH/IDENTIFY)</label>
-                            <input type="text" id="pcType" class="vanishing-placeholder" placeholder="">
+                            <label>PC MODEL (WEB ASSESSMENT)</label>
+                            <input type="text" id="pcType" placeholder="Analyzing..." readonly>
                         </div>
                         <div class="field">
-                            <label>SYSTEM RAM (GB)</label>
-                            <input type="number" id="storageInput" class="transparent-input vanishing-placeholder" placeholder="16">
+                            <label>STORAGE (GB)</label>
+                            <input type="number" id="storageInput" class="transparent-input" value="500">
                         </div>
                         <div class="field">
                             <label>FOCUS</label>
@@ -112,36 +111,21 @@
 
             <div id="communityPage" class="content-page hidden">
                 <div class="nexus-container">
-                    <div class="nexus-header">
-                        <div class="community-top-row">
-                            <h2>MODS & DISCUSSIONS</h2>
-                            <input type="text" id="discussionSearch" placeholder="Search discussions...">
-                        </div>
-                        <button id="newPostBtn" class="btn-ignite" style="width: auto; padding: 10px 20px; font-size: 0.8rem; margin-top:10px;">NEW DISCUSSION</button>
+                    <div class="nexus-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2>MODS & DISCUSSIONS</h2>
+                        <button id="newPostBtn" class="btn-ignite hidden" style="width: auto; padding: 10px 20px; font-size: 0.8rem;">NEW DISCUSSION</button>
                     </div>
                     <table class="nexus-table" id="nexusTable">
                         <thead>
-                            <tr><th>Topic</th><th>Category</th><th>Author</th><th>Replies</th></tr>
+                            <tr><th>File Name</th><th>Category</th><th>Author</th><th>Downloads</th></tr>
                         </thead>
-                        <tbody id="discussionBody"></tbody>
+                        <tbody>
+                            <tr><td><span class="nexus-blue">Low_Spec_Textures_SotE.pot</span></td><td>Optimization</td><td>PotatoMaster</td><td>4.2k</td></tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
         </main>
-    </div>
-
-    <div id="discussionModal" class="modal hidden">
-        <div class="modal-content steam-thread">
-            <span class="close-modal" id="closeThread">&times;</span>
-            <div id="threadContent"></div>
-            <div id="replySection" class="thread-reply-box hidden">
-                <textarea id="replyText" placeholder="Write a comment..."></textarea>
-                <button id="postReplyBtn" class="btn-ignite" style="width:120px; padding:10px;">POST</button>
-            </div>
-            <div id="loginToReplyMsg" class="thread-reply-box" style="text-align: center; border: 1px dashed #333; padding: 20px;">
-                <p style="color: #8ba2b9;">You must be <span class="orange-hover" onclick="document.getElementById('openLogin').click()">Logged In</span> to reply to this discussion.</p>
-            </div>
-        </div>
     </div>
 
     <script src="script.js"></script>
