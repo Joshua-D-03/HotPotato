@@ -13,77 +13,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressContainer = document.getElementById('progressContainer');
     const percentText = document.getElementById('percentText');
 
-    let currentUser = null; 
-    let isSignupMode = true;
+    // Hardware Scanner Load
+    const hardware = ["RTX 4090 | i9-14900K", "RTX 3070 | Ryzen 7", "GTX 1660 Ti | i5-11th"];
+    setTimeout(() => { pcField.value = hardware[Math.floor(Math.random()*hardware.length)]; }, 1000);
 
-    // --- AUTH LOGIC (Local persistent users) ---
-    const getUsers = () => JSON.parse(localStorage.getItem('hp_accounts')) || [];
-    
-    const handleAuth = () => {
-        const email = document.getElementById('email').value;
-        const pass = document.getElementById('password').value;
-        const user = document.getElementById('username').value;
-        const status = document.getElementById('status-msg');
-        let accounts = getUsers();
-
-        if (isSignupMode) {
-            if (accounts.find(a => a.email === email)) return status.innerText = "Email already exists!";
-            if (!user || !email || !pass) return status.innerText = "Fill all fields!";
-            
-            accounts.push({ username: user, email, password: pass });
-            localStorage.setItem('hp_accounts', JSON.stringify(accounts));
-            status.innerText = "Account Created! Please Log In.";
-            toggleAuthUI(); // Switch to login mode
-        } else {
-            const found = accounts.find(a => a.email === email && a.password === pass);
-            if (found) {
-                currentUser = found;
-                document.getElementById('loggedOutNav').classList.add('hidden');
-                document.getElementById('loggedInNav').classList.remove('hidden');
-                document.getElementById('userDisplay').innerText = currentUser.username;
-                document.getElementById('authModal').classList.add('hidden');
-            } else {
-                status.innerText = "Invalid credentials!";
-            }
-        }
-    };
-
-    const toggleAuthUI = () => {
-        isSignupMode = !isSignupMode;
-        document.getElementById('modalTitle').innerText = isSignupMode ? "JOIN THE PATCH" : "WELCOME BACK";
-        document.getElementById('username').style.display = isSignupMode ? "block" : "none";
-        document.getElementById('authSubmitBtn').innerText = isSignupMode ? "CREATE ACCOUNT" : "LOG IN";
-        document.getElementById('toggleAuthMode').innerText = isSignupMode ? "Already have an account? Log In" : "Need an account? Sign Up";
-        document.getElementById('status-msg').innerText = "";
-    };
-
-    document.getElementById('authSubmitBtn').onclick = handleAuth;
-    document.getElementById('toggleAuthMode').onclick = toggleAuthUI;
-    document.getElementById('openSignup').onclick = () => { isSignupMode = true; toggleAuthUI(); document.getElementById('authModal').classList.remove('hidden'); };
-    document.getElementById('openLogin').onclick = () => { isSignupMode = false; toggleAuthUI(); document.getElementById('authModal').classList.remove('hidden'); };
-    document.getElementById('closeModal').onclick = () => document.getElementById('authModal').classList.add('hidden');
-    document.getElementById('signOutBtn').onclick = () => {
-        currentUser = null;
-        document.getElementById('loggedInNav').classList.add('hidden');
-        document.getElementById('loggedOutNav').classList.remove('hidden');
-    };
-
-    // --- ENGINE LOGIC ---
-    // Default hardware text removed as requested
-    pcField.value = ""; 
-
+    // Sidebar & Navigation
     document.getElementById('toggleSidebar').onclick = function() {
-    const closed = sidebar.classList.toggle('closed');
-    this.innerText = closed ? "▶" : "◀";
-
-    // This ensures the sidebar doesn't block the screen when it's hidden
-    if (closed) {
-        sidebar.style.pointerEvents = "none";
-        this.style.pointerEvents = "auto"; // Keeps the arrow button clickable
-    } else {
-        sidebar.style.pointerEvents = "auto";
-    }
-};
+        const closed = sidebar.classList.toggle('closed');
+        this.innerText = closed ? "▶" : "◀";
+    };
 
     document.querySelectorAll('.nav-item').forEach(item => {
         item.onclick = () => {
@@ -95,8 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     });
 
-    // Vault logic
+    // Vault Logic with Local Storage Persistence
     let vaultItems = JSON.parse(localStorage.getItem('hp_vault')) || [];
+
     function renderVault() {
         historyGrid.innerHTML = '';
         for(let i=0; i<12; i++) {
@@ -105,108 +44,92 @@ document.addEventListener('DOMContentLoaded', () => {
             if(vaultItems[i]) {
                 div.classList.add('filled');
                 div.style.backgroundImage = `url('${vaultItems[i].img}')`;
-                div.innerHTML = `<button class="delete-vault" onclick="deleteVaultItem(${i})">×</button>`;
+                div.innerHTML = `<button class="delete-vault" onclick="deleteVaultItem(${i})">REMOVE</button>`;
             }
             historyGrid.appendChild(div);
         }
     }
+
     window.deleteVaultItem = (index) => {
         vaultItems.splice(index, 1);
         localStorage.setItem('hp_vault', JSON.stringify(vaultItems));
         renderVault();
     };
+
     renderVault();
 
-    // Community Discussions
-    let discussions = [
-        { id: 1, title: "Best settings for Elden Ring on 8GB RAM?", author: "TarnishedOne", replies: 14, content: "Has anyone tried Extreme compression on the latest patch?" },
-        { id: 2, title: "RTX 4090 Efficiency Test", author: "FrameChaser", replies: 3, content: "The tool handles 4K textures surprisingly well." }
-    ];
+    // Ignition Compression Logic
+    document.getElementById('igniteBtn').onclick = () => {
+        const file = fileInput.files[0];
+        if(!file) return alert("Please drop a game file into the box first.");
 
-    function renderDiscussions(filter = "") {
-        const body = document.getElementById('discussionBody');
-        body.innerHTML = '';
-        discussions.filter(d => d.title.toLowerCase().includes(filter.toLowerCase())).forEach(d => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td><span class="nexus-blue" onclick="openThread(${d.id})">${d.title}</span></td><td>General</td><td>${d.author}</td><td>${d.replies}</td>`;
-            body.appendChild(tr);
-        });
-    }
-
-    window.openThread = (id) => {
-        const thread = discussions.find(d => d.id === id);
-        const modal = document.getElementById('discussionModal');
-        document.getElementById('threadContent').innerHTML = `<div class="thread-header"><h2>${thread.title}</h2><small>Posted by ${thread.author}</small></div><div class="thread-op">${thread.content}</div>`;
-        if(currentUser) {
-            document.getElementById('replySection').classList.remove('hidden');
-            document.getElementById('loginToReplyMsg').classList.add('hidden');
-        } else {
-            document.getElementById('replySection').classList.add('hidden');
-            document.getElementById('loginToReplyMsg').classList.remove('hidden');
+        const fileSizeGB = file.size / (1024 * 1024 * 1024);
+        if(fileSizeGB > 50) {
+            if(!confirm(`WARNING: ${fileSizeGB.toFixed(2)}GB detected. Proceed?`)) return;
         }
-        modal.classList.remove('hidden');
-    };
 
-    document.getElementById('newPostBtn').onclick = () => {
-        if(!currentUser) return alert("Please Log In to start a new discussion.");
-        const title = prompt("Enter Discussion Title:");
-        if(title) {
-            discussions.unshift({ id: Date.now(), title, author: currentUser.username, replies: 0, content: "New discussion started." });
-            renderDiscussions();
-        }
-    };
-
-    document.getElementById('closeThread').onclick = () => document.getElementById('discussionModal').classList.add('hidden');
-    document.getElementById('discussionSearch').oninput = (e) => renderDiscussions(e.target.value);
-    renderDiscussions();
-
-    // Ignition Logic
-   document.getElementById('igniteBtn').onclick = () => {
-    const file = fileInput.files[0];
-    if(!file) return alert("Drop a game file first.");
-
-    // --- NEW: STEAM GAME VALIDATION START ---
-    const allowedExtensions = /(\.exe|\.pak|\.vpk|\.bin|\.bundle|\.assets)$/i;
-    if (!allowedExtensions.exec(file.name)) {
-        alert("CRITICAL ERROR: Hot Potato only compresses Steam game data (EXE, PAK, VPK, etc.). Photos and regular files rejected.");
-        fileInput.value = ""; // Clear the bad file
-        document.getElementById('fileLabel').innerHTML = `<strong>FILE REJECTED</strong><br><span>GAME ASSETS ONLY</span>`;
-        return; // Stop the engine
-    }
-    // --- NEW: STEAM GAME VALIDATION END ---
-
-    const ramValue = parseInt(document.getElementById('storageInput').value) || 16;
-    // ... the rest of your existing code follows ...
-
+        // Setup Progress Bar
         progressContainer.classList.remove('hidden');
         potato.classList.replace('blue-aura', 'compressing-red');
         let progress = 0;
+        
         const interval = setInterval(() => {
-            progress += (Math.random() * 10) * speedBoost;
-            if(progress >= 100) { progress = 100; clearInterval(interval); finish(file); }
+            progress += Math.random() * 15;
+            if(progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                finalizeCompression(file);
+            }
             progressBar.style.width = `${progress}%`;
             percentText.innerText = `${Math.floor(progress)}%`;
-        }, 200);
+        }, 300);
     };
 
-    function finish(file) {
-        const level = parseFloat(document.getElementById('compLevel').value);
-        const oldSize = (file.size / (1024*1024)).toFixed(2);
-        const newSize = (oldSize * (1 - level)).toFixed(2);
+    function finalizeCompression(file) {
+        const compLevel = parseFloat(document.getElementById('compLevel').value);
+        const originalSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        const newSizeMB = (originalSizeMB * (1 - compLevel)).toFixed(2);
+        const savedMB = (originalSizeMB - newSizeMB).toFixed(2);
+
         potato.classList.replace('compressing-red', 'blue-aura');
         progressContainer.classList.add('hidden');
+        progressBar.style.width = '0%';
+
+        // Create Vault Item
         if(vaultItems.length < 12) {
-            vaultItems.push({ name: file.name, img: `https://picsum.photos/seed/${file.name}/200/300` });
+            vaultItems.push({
+                name: file.name,
+                img: `https://picsum.photos/seed/${file.name}/200/300`
+            });
             localStorage.setItem('hp_vault', JSON.stringify(vaultItems));
             renderVault();
         }
-        alert(`COMPRESSION COMPLETE\nEfficiency: ${Math.floor(level*100)}%\nOriginal: ${oldSize}MB\nPOTATO: ${newSize}MB`);
+
+        alert(`COMPRESSION SUCCESS!\nOriginal: ${originalSizeMB} MB\nPotato-Mode: ${newSizeMB} MB\nYou saved ${savedMB} MB!`);
+        
+        // Return file (Simulated by triggering a dummy download of the original)
         const link = document.createElement('a');
         link.href = URL.createObjectURL(file);
-        link.download = `HP_OPTIMIZED_${file.name}`;
+        link.download = `POTATO_${file.name}`;
         link.click();
     }
 
+    // Community Toggle for Logged In Users
+    function checkLoginStatus() {
+        const user = localStorage.getItem('hp_user'); 
+        if(user) {
+            document.getElementById('newPostBtn').classList.remove('hidden');
+        }
+    }
+    checkLoginStatus();
+
     document.getElementById('dropZone').onclick = () => fileInput.click();
-    fileInput.onchange = (e) => { if(e.target.files[0]) document.getElementById('fileLabel').innerHTML = `<strong>${e.target.files[0].name}</strong><br>READY FOR POTATO-TECH`; };
+    fileInput.onchange = (e) => {
+        if(e.target.files[0]) {
+            document.getElementById('fileLabel').innerHTML = `<strong>${e.target.files[0].name}</strong><br>READY FOR IGNITION`;
+        }
+    };
+
+    document.getElementById('openSignup').onclick = () => document.getElementById('authModal').classList.remove('hidden');
+    document.getElementById('closeModal').onclick = () => document.getElementById('authModal').classList.add('hidden');
 });
