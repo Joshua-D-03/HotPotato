@@ -1,4 +1,4 @@
-:root { --orange: #da8100; --bright-orange: #ff8c00; --dark: #050505; --steam-blue: #171a21; --steam-gray: #2a475e; }
+:root { --orange: #da8100; --bright-orange: #ff8c00; --dark: #050505; --steam-blue: #171a21; }
 
 body { background: var(--dark); color: #c7d5e0; font-family: 'Motiva Sans', sans-serif; margin: 0; overflow-x: hidden; }
 
@@ -19,74 +19,45 @@ body { background: var(--dark); color: #c7d5e0; font-family: 'Motiva Sans', sans
 .compressing-red { animation: rotate-clock 0.4s infinite linear !important; filter: drop-shadow(0 0 40px #ff0000) !important; color: #ff3333; }
 @keyframes rotate-clock { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-.main-title { font-size: 6rem; color: #fff; margin: 0; font-weight: 900; letter-spacing: -4px; padding-left: 3ch; }
+/* Typography */
+.main-title { font-size: 6rem; color: #fff; margin: 0; font-weight: 900; letter-spacing: -4px; }
 .main-title span { color: var(--orange); }
 .main-subheading { letter-spacing: 12px; color: #66c0f4; font-weight: bold; font-size: 0.8rem; margin-top: -10px; margin-bottom: 50px; }
 
-/* Nav Links - White Hover */
-.white-hover { color: var(--orange); cursor: pointer; font-weight: bold; transition: color 0.2s; }
-.white-hover:hover { color: #ffffff !important; }
-
-/* Vanishing Placeholders */
-.vanishing-placeholder:focus::placeholder { color: transparent; }
-
-/* Progress Bar */
+/* Loading Bar */
 .progress-wrap { width: 100%; margin: 20px 0; }
 .progress-label { font-size: 0.7rem; color: var(--orange); margin-bottom: 5px; text-align: left; font-weight: bold; }
 .progress-track { height: 10px; background: #111; border: 1px solid #333; overflow: hidden; }
-.progress-fill { height: 100%; width: 0%; background: var(--orange); transition: width 0.1s linear; }
+.progress-fill { height: 100%; width: 0%; background: var(--orange); box-shadow: 0 0 15px var(--orange); transition: width 0.1s linear; }
 
-/* Inputs */
-.transparent-input { background: rgba(0, 0, 0, 0.2) !important; border: 1px solid rgba(255, 140, 0, 0.3) !important; }
+/* Transparent Storage Input */
+.transparent-input { background: rgba(0, 0, 0, 0.2) !important; border: 1px solid rgba(255, 140, 0, 0.3) !important; color: rgba(255, 255, 255, 0.8) !important; }
 
+/* Form Elements */
 .tool-card { width: 100%; max-width: 800px; }
-.drop-zone { border: 2px solid #222; background: #080808; padding: 50px; cursor: pointer; }
+.drop-zone { border: 2px solid #222; background: #080808; padding: 50px; cursor: pointer; transition: 0.3s; }
+.drop-zone:hover { border-color: var(--orange); }
 .box-inner { border: 1px dashed #444; padding: 30px; }
 .system-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0; }
 .field label { font-size: 0.65rem; color: #8ba2b9; display: block; margin-bottom: 8px; text-align: left; font-weight: bold; }
 input, select { background: #000; border: 1px solid #333; color: #fff; padding: 12px; width: 100%; box-sizing: border-box; }
 .btn-ignite { background: var(--orange); color: white; border: none; padding: 25px; width: 100%; font-weight: 900; cursor: pointer; font-size: 1.2rem; letter-spacing: 2px; }
 
-/* Community & Tables */
-.community-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-#discussionSearch { width: 250px; background: #111; border: 1px solid #333; padding: 8px; }
+/* Vault Grid & Posters */
+.dashed-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; width: 100%; max-width: 1100px; }
+.blank-square { aspect-ratio: 2/3; background: #080808; border: 1px dashed #222; background-size: cover; background-position: center; transition: 0.5s; position: relative; overflow: hidden; }
+.blank-square.filled { border-style: solid; border-color: #333; }
+.delete-vault { position: absolute; top: 10px; right: 10px; background: rgba(255,0,0,0.7); border: none; color: white; cursor: pointer; padding: 5px 8px; font-size: 0.7rem; display: none; }
+.blank-square:hover .delete-vault { display: block; }
+
+/* Nexus Style */
 .nexus-container { width: 100%; max-width: 1000px; background: #0a0a0a; border: 1px solid #222; padding: 30px; text-align: left; }
 .nexus-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
 .nexus-table th { text-align: left; background: #1a1a1a; padding: 15px; color: #66c0f4; font-size: 0.75rem; }
 .nexus-table td { padding: 15px; border-bottom: 1px solid #1a1a1a; }
-.nexus-blue { color: #66c0f4; font-weight: bold; cursor: pointer; text-decoration: none; }
-.nexus-blue:hover { text-decoration: underline; }
+.nexus-blue { color: #66c0f4; font-weight: bold; cursor: pointer; }
 
-.steam-thread { background: #1b2838; width: 80%; max-width: 900px; padding: 40px; border: 1px solid #2a475e; text-align: left; }
-.thread-header { border-bottom: 1px solid var(--steam-gray); padding-bottom: 20px; margin-bottom: 20px; }
-.thread-op { background: rgba(0,0,0,0.3); padding: 20px; border-left: 3px solid var(--orange); margin-bottom: 20px; }
-.thread-reply-box textarea { width: 100%; height: 100px; background: #000; color: #fff; border: 1px solid #333; padding: 10px; margin-bottom: 10px; }
-
-/* Vault */
-.dashed-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; width: 100%; max-width: 1100px; }
-.blank-square { aspect-ratio: 2/3; background: #080808; border: 1px dashed #222; background-size: cover; position: relative; }
-.delete-vault { position: absolute; top: 10px; right: 10px; background: rgba(255,0,0,0.7); border: none; color: white; cursor: pointer; padding: 5px; display: none; }
-.blank-square:hover .delete-vault { display: block; }
-
-/* FIX: Added pointer-events: none to prevent blocking clicks */
-.modal { 
-    position: fixed; 
-    inset: 0; 
-    background: rgba(0,0,0,0.9); 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    z-index: 2000; 
-    pointer-events: none; 
-}
-
-/* Re-enable clicks when modal is shown */
-.modal:not(.hidden) {
-    pointer-events: auto;
-}
-
-.modal-content { background: #1b2838; padding: 40px; border: 1px solid #2a475e; width: 350px; text-align: center; }
-.close-modal { position: absolute; top: 20px; right: 20px; color: white; cursor: pointer; font-size: 1.5rem; }
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 2000; }
 .hidden { display: none !important; }
 .top-nav { position: fixed; top: 30px; right: 40px; z-index: 1500; }
 .orange-hover { color: var(--orange); cursor: pointer; font-weight: bold; }
