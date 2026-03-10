@@ -77,18 +77,21 @@ input, select { background: #000; border: 1px solid #333; color: #fff; padding: 
     justify-content: center; 
     align-items: center; 
     z-index: 2000; 
-    pointer-events: none; /* Ignore clicks when hidden */
-    opacity: 0;           /* Fully transparent when hidden */
+    pointer-events: none; /* Ignore clicks when modal is hidden */
+    opacity: 0;           /* Make it invisible */
     transition: opacity 0.2s;
 }
 
+/* Re-enable clicks only when the modal is visible (not hidden) */
 .modal:not(.hidden) {
-    pointer-events: auto; /* Enable clicks when visible */
+    pointer-events: auto; 
     opacity: 1;
 }
 
 .modal-content { background: #1b2838; padding: 40px; border: 1px solid #2a475e; width: 350px; text-align: center; }
 .close-modal { position: absolute; top: 20px; right: 20px; color: white; cursor: pointer; font-size: 1.5rem; }
 .hidden { display: none !important; }
+
+/* Keep existing styles below */
 .top-nav { position: fixed; top: 30px; right: 40px; z-index: 1500; }
 .orange-hover { color: var(--orange); cursor: pointer; font-weight: bold; }
