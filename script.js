@@ -39,14 +39,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 document.getElementById('igniteBtn').onclick = () => {
+    const fileInput = document.getElementById('fileInput');
     const file = fileInput.files[0];
-    const compLevel = document.getElementById('compLevel').value;
-    if(!file) return alert("Please drop a game file first.");
 
-    if(!isSteamGame(file)) {
-        alert("REJECTED: This compressor only accepts Steam Video Games.");
+    // 1. Check if a file exists
+    if (!file) {
+        alert("Please select a game file first.");
         return;
     }
+
+    // 2. Validate file extension (Only allow game archives or containers)
+    // You can adjust these extensions based on what you want to support
+    const validExtensions = ['.zip', '.rar', '.7z', '.exe']; 
+    const fileName = file.name.toLowerCase();
+    
+    if (!validExtensions.some(ext => fileName.endsWith(ext))) {
+        alert("Error: That does not appear to be a valid game file. Please upload a game archive or executable.");
+        return;
+    }
+
+    // 3. If validation passes, proceed with the ignition
+    console.log("File validated. Starting sequence...");
+    // Trigger your compression animation here
+};
 
     // 1. Rotation logic: Clear old classes and add new based on level
     potato.classList.remove('rotate-25', 'rotate-50', 'rotate-100', 'rotate-200');
@@ -140,3 +155,18 @@ window.onload = () => {
         loginUser(localStorage.getItem('hp_user'));
     }
 };
+async function saveToVault(gameName, level) {
+    const user = localStorage.getItem('hp_user');
+    if (!user) return alert("Please log in to save to your Vault.");
+
+    const { data, error } = await supabaseClient
+        .from('user_vault') // Ensure you have this table in Supabase
+        .insert([{ 
+            game_name: gameName, 
+            compression_level: level,
+            user_id: user 
+        }]);
+    
+    if (error) console.error("Vault Save Error:", error);
+    else console.log("Added to Vault!");
+}
