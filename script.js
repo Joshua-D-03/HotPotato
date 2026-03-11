@@ -13,15 +13,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressContainer = document.getElementById('progressContainer');
     const percentText = document.getElementById('percentText');
 
+    // Authentication State
+    let isLoginMode = false;
+
     // Hardware Scanner Load
     const hardware = ["RTX 4090 | i9-14900K", "RTX 3070 | Ryzen 7", "GTX 1660 Ti | i5-11th"];
     setTimeout(() => { pcField.value = hardware[Math.floor(Math.random()*hardware.length)]; }, 1000);
 
     // Sidebar & Navigation
     document.getElementById('toggleSidebar').onclick = function() {
-    const closed = sidebar.classList.toggle('closed');
-    this.innerText = closed ? "▶" : "◀";
-};
+        const closed = sidebar.classList.toggle('closed');
+        this.innerText = closed ? "▶" : "◀";
+    };
 
     document.querySelectorAll('.nav-item').forEach(item => {
         item.onclick = () => {
@@ -33,9 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     });
 
-    // Vault Logic with Local Storage Persistence
+    // Vault Logic
     let vaultItems = JSON.parse(localStorage.getItem('hp_vault')) || [];
-
     function renderVault() {
         historyGrid.innerHTML = '';
         for(let i=0; i<12; i++) {
@@ -49,36 +51,36 @@ document.addEventListener('DOMContentLoaded', () => {
             historyGrid.appendChild(div);
         }
     }
-
     window.deleteVaultItem = (index) => {
         vaultItems.splice(index, 1);
         localStorage.setItem('hp_vault', JSON.stringify(vaultItems));
         renderVault();
     };
-
     renderVault();
 
-    // Ignition Compression Logic
-    document.getElementById('igniteBtn').onclick = () => {
-    const file = fileInput.files[0];
-    if (!file) return alert("Please select a file first.");
-
-    // RESTRICTION: Only allow .exe or .bin (common Steam game files)
-    const fileName = file.name.toLowerCase();
-    const isGameFile = fileName.endsWith('.exe') || fileName.endsWith('.bin') || fileName.endsWith('.dll');
-    
-    if (!isGameFile) {
-        alert("ERROR: Hot Potato only supports Steam Game Files (.exe, .bin). Photos and regular documents are not supported.");
-        return;
+    // STEAM FILE VALIDATION
+    function isSteamGame(file) {
+        const name = file.name.toLowerCase();
+        // Steam games are usually executables (.exe for Windows, .app for Mac)
+        return name.endsWith('.exe') || name.endsWith('.app') || name.includes('steam');
     }
+
+    // Compression Logic
+    document.getElementById('igniteBtn').onclick = () => {
+        const file = fileInput.files[0];
+        if(!file) return alert("Please drop a game file into the box first.");
+
+        // Check if it's a Steam Game
+        if(!isSteamGame(file)) {
+            alert("ERROR: This tool only accepts Steam Video Games (.exe or .app). Photos and regular documents are not supported.");
+            return;
+        }
 
         const fileSizeGB = file.size / (1024 * 1024 * 1024);
         if(fileSizeGB > 50) {
-            if(!confirm(`WARNING: ${fileSizeGB.toFixed(2)}GB detected. Proceed?`)) return;
+            if(!confirm(`WARNING: Large Steam library file (${fileSizeGB.toFixed(2)}GB) detected. Proceed?`)) return;
         }
-    }
 
-        // Setup Progress Bar
         progressContainer.classList.remove('hidden');
         potato.classList.replace('blue-aura', 'compressing-red');
         let progress = 0;
@@ -99,54 +101,76 @@ document.addEventListener('DOMContentLoaded', () => {
         const compLevel = parseFloat(document.getElementById('compLevel').value);
         const originalSizeMB = (file.size / (1024 * 1024)).toFixed(2);
         const newSizeMB = (originalSizeMB * (1 - compLevel)).toFixed(2);
-        const savedMB = (originalSizeMB - newSizeMB).toFixed(2);
-
         potato.classList.replace('compressing-red', 'blue-aura');
         progressContainer.classList.add('hidden');
-        progressBar.style.width = '0%';
-
-        // Create Vault Item
+        
         if(vaultItems.length < 12) {
-            vaultItems.push({
-                name: file.name,
-                img: `https://picsum.photos/seed/${file.name}/200/300`
-            });
+            vaultItems.push({ name: file.name, img: `https://picsum.photos/seed/${file.name}/200/300` });
             localStorage.setItem('hp_vault', JSON.stringify(vaultItems));
             renderVault();
         }
-
-        alert(`COMPRESSION SUCCESS!\nOriginal: ${originalSizeMB} MB\nPotato-Mode: ${newSizeMB} MB\nYou saved ${savedMB} MB!`);
-        
-        // Return file (Simulated by triggering a dummy download of the original)
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(file);
-        link.download = `POTATO_${file.name}`;
-        link.click();
+        alert(`STEAM COMPRESSION SUCCESS!\nSaved to Vault.`);
     }
 
-    // Community Toggle for Logged In Users
-    function checkLoginStatus() {
-        const user = localStorage.getItem('hp_user'); 
-        if(user) {
-            document.getElementById('newPostBtn').classList.remove('hidden');
-        }
-    }
-    checkLoginStatus();
+    // AUTH LOGIC (Logging back in)
+    const authModal = document.getElementById('authModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const authSubmitBtn = document.getElementById('auth-submit-btn');
+    const authToggleText = document.getElementById('auth-toggle-text');
 
-    document.getElementById('dropZone').onclick = () => fileInput.click();
-    fileInput.onchange = (e) => {
-        if(e.target.files[0]) {
-            document.getElementById('fileLabel').innerHTML = `<strong>${e.target.files[0].name}</strong><br>READY FOR IGNITION`;
+    function toggleAuthMode() {
+        isLoginMode = !isLoginMode;
+        modalTitle.innerText = isLoginMode ? "LOG BACK IN" : "JOIN THE PATCH";
+        authSubmitBtn.innerText = isLoginMode ? "LOGIN" : "CREATE ACCOUNT";
+        authToggleText.innerText = isLoginMode ? "Need an account? Sign Up" : "Already have an account? Log In";
+        document.getElementById('username').style.display = isLoginMode ? 'none' : 'block';
+    }
+
+    authToggleText.onclick = toggleAuthMode;
+
+    authSubmitBtn.onclick = () => {
+        const email = document.getElementById('email').value;
+        const pass = document.getElementById('password').value;
+        const user = document.getElementById('username').value;
+
+        if(!email || !pass) return alert("Fill in all fields");
+
+        if(isLoginMode) {
+            const storedUser = JSON.parse(localStorage.getItem('hp_account'));
+            if(storedUser && storedUser.email === email && storedUser.pass === pass) {
+                loginUser(storedUser.username);
+            } else {
+                alert("Invalid Credentials");
+            }
+        } else {
+            localStorage.setItem('hp_account', JSON.stringify({ email, pass, username: user }));
+            loginUser(user);
         }
     };
 
-    document.getElementById('openSignup').onclick = () => document.getElementById('authModal').classList.remove('hidden');
-    document.getElementById('closeModal').onclick = () => document.getElementById('authModal').classList.add('hidden');
+    function loginUser(name) {
+        localStorage.setItem('hp_user', name);
+        document.getElementById('userDisplay').innerText = name.toUpperCase();
+        document.getElementById('loggedInNav').classList.remove('hidden');
+        document.getElementById('loggedOutNav').classList.add('hidden');
+        document.getElementById('newPostBtn').classList.remove('hidden');
+        authModal.classList.add('hidden');
+    }
+
+    document.getElementById('signOutBtn').onclick = () => {
+        localStorage.removeItem('hp_user');
+        location.reload();
+    };
+
+    document.getElementById('openSignup').onclick = () => { isLoginMode = false; toggleAuthMode(); toggleAuthMode(); authModal.classList.remove('hidden'); };
+    document.getElementById('openLogin').onclick = () => { isLoginMode = true; toggleAuthMode(); toggleAuthMode(); authModal.classList.remove('hidden'); };
+    document.getElementById('closeModal').onclick = () => authModal.classList.add('hidden');
+
+    // Dropzone trigger
+    document.getElementById('dropZone').onclick = () => fileInput.click();
+    fileInput.onchange = (e) => {
+        if(e.target.files[0]) {
+            document.getElementById('fileLabel').innerHTML = `<strong>${e.target.files[0].name}</strong><br>STEAM FILE DETECTED`;
+        }
+    };
 });
-document.getElementById('openLogin').onclick = () => {
-    isSignupMode = false;
-    document.getElementById('modalTitle').innerText = "WELCOME BACK";
-    document.getElementById('authSubmitBtn').innerText = "LOG IN";
-    document.getElementById('username').style.display = 'none'; // Hide username for login
-    document.getElementById('authModal').classList.remove('hidden');
-};
