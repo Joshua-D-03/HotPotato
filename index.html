@@ -17,7 +17,8 @@
                 <input type="text" id="username" placeholder="Username" required>
                 <input type="email" id="email" placeholder="Email Address" required>
                 <input type="password" id="password" placeholder="Password" required>
-                <button id="signup-btn" class="btn-ignite">CREATE ACCOUNT</button>
+                <button id="auth-submit-btn" class="btn-ignite">CREATE ACCOUNT</button>
+                <p id="auth-toggle-text" style="margin-top: 15px; font-size: 0.8rem; cursor: pointer; color: #66c0f4;">Already have an account? Log In</p>
                 <p id="status-msg"></p>
             </div>
         </div>
@@ -37,9 +38,9 @@
 
     <div class="app-container">
         <aside class="sidebar closed" id="sidebar">
-    <button class="toggle-sidebar" id="toggleSidebar">▶</button>
+            <button class="toggle-sidebar" id="toggleSidebar">▶</button>
             <div class="sidebar-content" id="sidebarContent">
-                <h2 class="side-title">COMMAND CENTER</h2>
+                <h2 class="side-title">&nbsp;&nbsp;&nbsp;COMMAND CENTER</h2>
                 <nav class="sidebar-nav">
                     <div class="nav-item active" data-page="lab">COMPRESSOR</div>
                     <div class="nav-item" data-page="history">LIBRARY</div>
@@ -62,7 +63,7 @@
                         <input type="file" id="fileInput" style="display:none;">
                         <div class="box-inner">
                             <div class="dz-icon">📦</div>
-                            <p id="fileLabel"><strong>DROP GAME FILE HERE</strong><br><span>INTO THE COMPRESSION BOX</span></p>
+                            <p id="fileLabel"><strong>DROP STEAM GAME FILE HERE</strong><br><span>(Commonly .exe or .app)</span></p>
                         </div>
                     </div>
 
