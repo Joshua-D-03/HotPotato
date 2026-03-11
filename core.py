@@ -42,3 +42,24 @@ if __name__ == "__main__":
         print("Usage: core.py <folder> <level>")
     else:
         compress_game(sys.argv[1], sys.argv[2])
+# Replace the crf_map in core.py with this:
+def get_compression_settings(mode):
+    # Performance = Smaller files, lower quality
+    # Quality = Better looking, larger files
+    # Balanced = The middle ground
+    modes = {
+        "performance": {"crf": "28", "preset": "faster"},
+        "balanced": {"crf": "24", "preset": "medium"},
+        "quality": {"crf": "20", "preset": "slow"}
+    }
+    return modes.get(mode.lower(), modes["balanced"])
+
+# Inside your subprocess.run, update the arguments:
+settings = get_compression_settings(level) # level is now the mode name
+subprocess.run([
+    ffmpeg_cmd, '-y', '-i', input_path, 
+    '-vcodec', 'libx265', 
+    '-crf', settings["crf"], 
+    '-preset', settings["preset"], 
+    output_path
+], check=True)
