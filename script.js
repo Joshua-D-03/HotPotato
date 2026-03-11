@@ -19,9 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Sidebar & Navigation
     document.getElementById('toggleSidebar').onclick = function() {
-        const closed = sidebar.classList.toggle('closed');
-        this.innerText = closed ? "▶" : "◀";
-    };
+    const closed = sidebar.classList.toggle('closed');
+    this.innerText = closed ? "▶" : "◀";
+};
 
     document.querySelectorAll('.nav-item').forEach(item => {
         item.onclick = () => {
@@ -60,13 +60,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Ignition Compression Logic
     document.getElementById('igniteBtn').onclick = () => {
-        const file = fileInput.files[0];
-        if(!file) return alert("Please drop a game file into the box first.");
+    const file = fileInput.files[0];
+    if (!file) return alert("Please select a file first.");
+
+    // RESTRICTION: Only allow .exe or .bin (common Steam game files)
+    const fileName = file.name.toLowerCase();
+    const isGameFile = fileName.endsWith('.exe') || fileName.endsWith('.bin') || fileName.endsWith('.dll');
+    
+    if (!isGameFile) {
+        alert("ERROR: Hot Potato only supports Steam Game Files (.exe, .bin). Photos and regular documents are not supported.");
+        return;
+    }
 
         const fileSizeGB = file.size / (1024 * 1024 * 1024);
         if(fileSizeGB > 50) {
             if(!confirm(`WARNING: ${fileSizeGB.toFixed(2)}GB detected. Proceed?`)) return;
         }
+    }
 
         // Setup Progress Bar
         progressContainer.classList.remove('hidden');
@@ -133,3 +143,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('openSignup').onclick = () => document.getElementById('authModal').classList.remove('hidden');
     document.getElementById('closeModal').onclick = () => document.getElementById('authModal').classList.add('hidden');
 });
+document.getElementById('openLogin').onclick = () => {
+    isSignupMode = false;
+    document.getElementById('modalTitle').innerText = "WELCOME BACK";
+    document.getElementById('authSubmitBtn').innerText = "LOG IN";
+    document.getElementById('username').style.display = 'none'; // Hide username for login
+    document.getElementById('authModal').classList.remove('hidden');
+};
