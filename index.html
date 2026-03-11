@@ -50,24 +50,29 @@
         </aside>
 
         <main class="main-content" id="mainContent">
-            <div id="labPage" class="content-page lab-centered">
-                <div class="potato-chamber">
-                    <div id="potato" class="electric-potato clockwise blue-aura">🥔</div>
-
-<div id="potato" class="electric-potato blue-aura">🥔</div>
+    <div id="labPage" class="content-page">
+        <div class="potato-chamber">
+            <div id="potato" class="electric-potato blue-aura">🥔</div>
+        </div>
+        
+        <h1 class="main-title">HOT<span>POTATO</span></h1>
+        <p class="main-subheading">V I D E O &nbsp; G A M E &nbsp; C O M P R E S S O R</p>
+        
+        <section class="tool-card original-engine">
+            <div class="drop-zone" id="dropZone">
+                <input type="file" id="fileInput" style="display:none;">
+                <div class="box-inner">
+                    <div class="dz-icon">📦</div>
+                    <p id="fileLabel"><strong>DROP STEAM GAME FILE HERE</strong><br><span>(Commonly .exe or .app)</span></p>
                 </div>
-                
-                <h1 class="main-title">HOT<span>POTATO</span></h1>
-                <p class="main-subheading">V I D E O &nbsp; G A M E &nbsp; C O M P R E S S O R</p>
-                
-                <section class="tool-card original-engine">
-                    <div class="drop-zone" id="dropZone">
-                        <input type="file" id="fileInput" style="display:none;">
-                        <div class="box-inner">
-                            <div class="dz-icon">📦</div>
-                            <p id="fileLabel"><strong>DROP STEAM GAME FILE HERE</strong><br><span>(Commonly .exe or .app)</span></p>
-                        </div>
-                    </div>
+            </div>
+
+            <div id="progressContainer" class="progress-wrap hidden">
+                <div class="progress-label">IGNITING CORES... <span id="percentText">0%</span></div>
+                <div class="progress-track">
+                    <div id="progressBar" class="progress-fill"></div>
+                </div>
+            </div>
 
                     <div id="progressContainer" class="progress-wrap hidden">
                         <div class="progress-label">IGNITING CORES... <span id="percentText">0%</span></div>
