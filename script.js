@@ -48,30 +48,29 @@ document.getElementById('igniteBtn').onclick = () => {
         return;
     }
 
-    // Apply rotation based on selection
-    potato.classList.remove('clockwise', 'rotate-25', 'rotate-50', 'rotate-100', 'rotate-200');
+    // 1. Rotation logic: Clear old classes and add new based on level
+    potato.classList.remove('rotate-25', 'rotate-50', 'rotate-100', 'rotate-200');
     if (compLevel === "0.15") potato.classList.add('rotate-25');
     else if (compLevel === "0.30") potato.classList.add('rotate-50');
     else if (compLevel === "0.65") potato.classList.add('rotate-100');
     else if (compLevel === "0.85") potato.classList.add('rotate-200');
 
+    // 2. Start Compression
     progressContainer.classList.remove('hidden');
-    // ... rest of your code ...
-
-        progressContainer.classList.remove('hidden');
-        potato.classList.replace('blue-aura', 'compressing-red');
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += Math.random() * 15;
-            if(progress >= 100) {
-                progress = 100;
-                clearInterval(interval);
-                finalizeCompression(file);
-            }
-            progressBar.style.width = `${progress}%`;
-            percentText.innerText = `${Math.floor(progress)}%`;
-        }, 300);
-    };
+    potato.classList.replace('blue-aura', 'compressing-red');
+    
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += Math.random() * 15;
+        if(progress >= 100) {
+            progress = 100;
+            clearInterval(interval);
+            finalizeCompression(file);
+        }
+        progressBar.style.width = `${progress}%`;
+        percentText.innerText = `${Math.floor(progress)}%`;
+    }, 300);
+};
 
     function finalizeCompression(file) {
         potato.classList.replace('compressing-red', 'blue-aura');
