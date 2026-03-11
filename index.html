@@ -113,7 +113,23 @@
             </div>
 
             <div id="historyPage" class="content-page hidden">
-                <h2 class="section-title">VAULT</h2>
+                <h2 class="section-title">VAULT & ANALYTICS</h2>
+<div class="analytics-container" style="background: #111; padding: 20px; border: 1px solid var(--orange); margin-bottom: 20px;">
+    <h3 style="color: #66c0f4;">LAST JOB COMPARISON</h3>
+    <div class="chart-flex" style="display: flex; gap: 20px; align-items: flex-end; height: 200px; padding: 20px;">
+        <div id="barBefore" style="background: #333; width: 60px; height: 100%; position: relative;">
+            <span style="position: absolute; top: -25px; width: 100%; text-align: center;">ORIGINAL</span>
+        </div>
+        <div id="barAfter" style="background: var(--orange); width: 60px; height: 40%; position: relative;">
+            <span style="position: absolute; top: -25px; width: 100%; text-align: center;">POTATO</span>
+        </div>
+        <div class="stats-text" style="margin-left: 20px;">
+            <p>Space Saved: <span id="savePercent" class="nexus-blue">0%</span></p>
+            <p>GB Recovered: <span id="gbSaved" style="color: var(--bright-orange);">0 GB</span></p>
+        </div>
+    </div>
+</div>
+<div class="dashed-grid" id="historyGrid"></div>
                 <div class="dashed-grid" id="historyGrid"></div>
             </div>
 
