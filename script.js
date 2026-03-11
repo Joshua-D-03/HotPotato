@@ -38,15 +38,25 @@ document.addEventListener('DOMContentLoaded', () => {
         return name.endsWith('.exe') || name.endsWith('.app') || name.includes('steam');
     }
 
-    document.getElementById('igniteBtn').onclick = () => {
-        const file = fileInput.files[0];
-        if(!file) return alert("Please drop a game file first.");
+document.getElementById('igniteBtn').onclick = () => {
+    const file = fileInput.files[0];
+    const compLevel = document.getElementById('compLevel').value;
+    if(!file) return alert("Please drop a game file first.");
 
-        // Steam Validation [Request: only works with Steam games]
-        if(!isSteamGame(file)) {
-            alert("REJECTED: This compressor only accepts Steam Video Games (.exe or .app). No photos or documents allowed.");
-            return;
-        }
+    if(!isSteamGame(file)) {
+        alert("REJECTED: This compressor only accepts Steam Video Games.");
+        return;
+    }
+
+    // Apply rotation based on selection
+    potato.classList.remove('clockwise', 'rotate-25', 'rotate-50', 'rotate-100', 'rotate-200');
+    if (compLevel === "0.15") potato.classList.add('rotate-25');
+    else if (compLevel === "0.30") potato.classList.add('rotate-50');
+    else if (compLevel === "0.65") potato.classList.add('rotate-100');
+    else if (compLevel === "0.85") potato.classList.add('rotate-200');
+
+    progressContainer.classList.remove('hidden');
+    // ... rest of your code ...
 
         progressContainer.classList.remove('hidden');
         potato.classList.replace('blue-aura', 'compressing-red');
