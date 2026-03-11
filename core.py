@@ -2,6 +2,14 @@ import os
 import subprocess
 import sys
 
+ef check_dependencies():
+    # Check if ffmpeg.exe exists in the same folder
+    if not os.path.exists("ffmpeg.exe"):
+        print("ERROR: ffmpeg.exe not found!")
+        print("Please download it from https://ffmpeg.org and place it in this folder.")
+        input("Press Enter to exit...")
+        sys.exit()
+
 def compress_game(folder_path, level):
     # Mapping
     crf_map = {"0.15": "28", "0.30": "26", "0.65": "24", "0.85": "20"}
