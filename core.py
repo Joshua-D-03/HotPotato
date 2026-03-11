@@ -2,42 +2,28 @@ import os
 import subprocess
 import sys
 
-ef check_dependencies():
-    # Check if ffmpeg.exe exists in the same folder
-    if not os.path.exists("ffmpeg.exe"):
-        print("ERROR: ffmpeg.exe not found!")
-        print("Please download it from https://ffmpeg.org and place it in this folder.")
+def check_dependencies():
+    # Fix: Ensure ffmpeg.exe exists locally
+    local_ffmpeg = os.path.join(os.path.dirname(__file__), "ffmpeg.exe")
+    if not os.path.exists(local_ffmpeg):
+        print("ERROR: ffmpeg.exe not found in this folder!")
+        print("Please place ffmpeg.exe next to this script.")
         input("Press Enter to exit...")
         sys.exit()
+    return local_ffmpeg
 
-def compress_game(folder_path, level):
-    # Mapping
-    crf_map = {"0.15": "28", "0.30": "26", "0.65": "24", "0.85": "20"}
-    crf = crf_map.get(level, "24")
-settings_map = {
+def get_compression_settings(mode):
+    # Performance = Fast/Small, Quality = Slow/Large
+    modes = {
         "performance": {"crf": "28", "preset": "faster"},
-        "balanced":    {"crf": "24", "preset": "medium"},
-        "quality":     {"crf": "20", "preset": "slow"}
+        "balanced": {"crf": "24", "preset": "medium"},
+        "quality": {"crf": "20", "preset": "slow"}
     }
-    
-    # Default to balanced if something goes wrong
-    config = settings_map.get(mode.lower(), settings_map["balanced"])
+    return modes.get(mode.lower(), modes["balanced"])
 
-    # ... (Your folder walking logic remains the same) ...
-
-    # Update your subprocess.run command to use these new settings:
-    subprocess.run([
-        ffmpeg_cmd, '-y', '-i', input_path, 
-        '-vcodec', 'libx265', 
-        '-crf', config["crf"],      # Uses the CRF from our map
-        '-preset', config["preset"], # Uses the speed preset from our map
-        output_path
-    ], check=True)
-    # FIX: Point to the local ffmpeg.exe in the same folder
-    local_ffmpeg = os.path.join(os.path.dirname(__file__), "ffmpeg.exe")
-    
-    # If ffmpeg.exe isn't in the folder, try the system one
-    ffmpeg_cmd = local_ffmpeg if os.path.exists(local_ffmpeg) else "ffmpeg"
+def compress_game(folder_path, mode):
+    ffmpeg_cmd = check_dependencies()
+    config = get_compression_settings(mode)
 
     for root, _, files in os.walk(folder_path):
         for file in files:
@@ -45,19 +31,21 @@ settings_map = {
                 input_path = os.path.join(root, file)
                 output_path = os.path.join(root, f"POTATO_{file}")
                 
-                print(f"Compressing: {file}...")
+                print(f"Compressing ({mode}): {file}...")
                 try:
                     subprocess.run([
                         ffmpeg_cmd, '-y', '-i', input_path, 
-                        '-vcodec', 'libx265', '-crf', crf, 
+                        '-vcodec', 'libx265', 
+                        '-crf', config["crf"], 
+                        '-preset', config["preset"], 
                         output_path
                     ], check=True)
                 except Exception as e:
-                    print(f"Error: {e}")
+                    print(f"Error processing {file}: {e}")
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print("Usage: core.py <folder> <level>")
+        print("Usage: core.py <folder_path> <mode>")
     else:
         compress_game(sys.argv[1], sys.argv[2])
 # Replace the crf_map in core.py with this:
