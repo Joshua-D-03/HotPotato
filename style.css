@@ -10,7 +10,18 @@ body { background: var(--dark); color: #c7d5e0; font-family: 'Motiva Sans', sans
 .nav-item.active { background: linear-gradient(to right, #1b2838, #2a475e); border-left: 5px solid var(--orange); color: #fff; }
 
 .main-content { margin-left: 280px; padding: 40px; transition: 0.4s ease; display: flex; flex-direction: column; align-items: center; min-height: 100vh; justify-content: center; text-align: center; }
+
+/* Ensure content fills screen when sidebar is closed */
 .sidebar.closed ~ .main-content { margin-left: 0; }
+
+/* Typography */
+.main-title { font-size: 6rem; color: #fff; margin: 0; font-weight: 900; letter-spacing: -4px; }
+.main-title span { color: var(--orange); }
+.main-subheading { letter-spacing: 12px; color: #66c0f4; font-weight: bold; font-size: 0.8rem; margin-top: -10px; margin-bottom: 50px; }
+
+/* NAV HOVER EFFECT: Changed to White */
+.orange-hover { color: var(--orange); cursor: pointer; font-weight: bold; transition: color 0.2s ease; }
+.orange-hover:hover { color: #ffffff !important; }
 
 /* Potato States */
 .electric-potato { font-size: 120px; display: inline-block; }
@@ -18,14 +29,6 @@ body { background: var(--dark); color: #c7d5e0; font-family: 'Motiva Sans', sans
 .blue-aura { filter: drop-shadow(0 0 25px rgba(0, 242, 255, 0.7)); }
 .compressing-red { animation: rotate-clock 0.4s infinite linear !important; filter: drop-shadow(0 0 40px #ff0000) !important; color: #ff3333; }
 @keyframes rotate-clock { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-/* Typography */
-.main-title { 
-    font-size: 6rem; color: #fff; margin: 0; font-weight: 900; 
-    letter-spacing: -4px; padding-left: 3ch; /* 3 spaces to the right */
-}
-.main-title span { color: var(--orange); }
-.main-subheading { letter-spacing: 12px; color: #66c0f4; font-weight: bold; font-size: 0.8rem; margin-top: -10px; margin-bottom: 50px; }
 
 /* Loading Bar */
 .progress-wrap { width: 100%; margin: 20px 0; }
@@ -53,20 +56,15 @@ input, select { background: #000; border: 1px solid #333; color: #fff; padding: 
 .delete-vault { position: absolute; top: 10px; right: 10px; background: rgba(255,0,0,0.7); border: none; color: white; cursor: pointer; padding: 5px 8px; font-size: 0.7rem; display: none; }
 .blank-square:hover .delete-vault { display: block; }
 
-/* Nexus Style */
+/* Modal & Nexus Style */
 .nexus-container { width: 100%; max-width: 1000px; background: #0a0a0a; border: 1px solid #222; padding: 30px; text-align: left; }
 .nexus-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
 .nexus-table th { text-align: left; background: #1a1a1a; padding: 15px; color: #66c0f4; font-size: 0.75rem; }
 .nexus-table td { padding: 15px; border-bottom: 1px solid #1a1a1a; }
 .nexus-blue { color: #66c0f4; font-weight: bold; cursor: pointer; }
 
-.modal { 
-    position: fixed; inset: 0; background: rgba(0,0,0,0.9); 
-    display: flex; justify-content: center; align-items: center; 
-    z-index: 2000;
-}
-.modal.hidden { display: none !important; }
-.top-nav { 
-    position: fixed; top: 30px; right: 40px; z-index: 1500; 
-}
-.orange-hover { color: var(--orange); cursor: pointer; font-weight: bold; }
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+.modal-content { background: #111; padding: 40px; border: 1px solid var(--orange); width: 100%; max-width: 400px; position: relative; }
+.close-modal { position: absolute; top: 10px; right: 20px; color: white; font-size: 2rem; cursor: pointer; }
+.hidden { display: none !important; }
+.top-nav { position: fixed; top: 30px; right: 40px; z-index: 1500; }
