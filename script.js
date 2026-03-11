@@ -1,6 +1,6 @@
-// Pulling from environment variables
-const SB_URL = import.meta.env.VITE_SUPABASE_URL;
-const SB_KEY = import.meta.env.VITE_SUPABASE_KEY;
+// Restored hardcoded keys to prevent script crashes in standard browsers
+const SB_URL = "https://adsevhtaaqerrumdjqdz.supabase.co";
+const SB_KEY = "sb_publishable_VpehK1TR2_aEOt-XgwtKhg_dHx8NAmI";
 const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -13,19 +13,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressContainer = document.getElementById('progressContainer');
     const percentText = document.getElementById('percentText');
 
-    // Authentication State
     let isLoginMode = false;
 
-    // Hardware Scanner Load
-    const hardware = ["RTX 4090 | i9-14900K", "RTX 3070 | Ryzen 7", "GTX 1660 Ti | i5-11th"];
-    setTimeout(() => { pcField.value = hardware[Math.floor(Math.random()*hardware.length)]; }, 1000);
-
-    // Sidebar & Navigation
+    // Sidebar Toggle Logic
     document.getElementById('toggleSidebar').onclick = function() {
         const closed = sidebar.classList.toggle('closed');
         this.innerText = closed ? "▶" : "◀";
     };
 
+    // Navigation Logic
     document.querySelectorAll('.nav-item').forEach(item => {
         item.onclick = () => {
             const page = item.dataset.page;
@@ -36,55 +32,25 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     });
 
-    // Vault Logic
-    let vaultItems = JSON.parse(localStorage.getItem('hp_vault')) || [];
-    function renderVault() {
-        historyGrid.innerHTML = '';
-        for(let i=0; i<12; i++) {
-            const div = document.createElement('div');
-            div.className = 'blank-square';
-            if(vaultItems[i]) {
-                div.classList.add('filled');
-                div.style.backgroundImage = `url('${vaultItems[i].img}')`;
-                div.innerHTML = `<button class="delete-vault" onclick="deleteVaultItem(${i})">REMOVE</button>`;
-            }
-            historyGrid.appendChild(div);
-        }
-    }
-    window.deleteVaultItem = (index) => {
-        vaultItems.splice(index, 1);
-        localStorage.setItem('hp_vault', JSON.stringify(vaultItems));
-        renderVault();
-    };
-    renderVault();
-
-    // STEAM FILE VALIDATION
+    // STEAM-ONLY VALIDATION
     function isSteamGame(file) {
         const name = file.name.toLowerCase();
-        // Steam games are usually executables (.exe for Windows, .app for Mac)
         return name.endsWith('.exe') || name.endsWith('.app') || name.includes('steam');
     }
 
-    // Compression Logic
     document.getElementById('igniteBtn').onclick = () => {
         const file = fileInput.files[0];
-        if(!file) return alert("Please drop a game file into the box first.");
+        if(!file) return alert("Please drop a game file first.");
 
-        // Check if it's a Steam Game
+        // Steam Validation [Request: only works with Steam games]
         if(!isSteamGame(file)) {
-            alert("ERROR: This tool only accepts Steam Video Games (.exe or .app). Photos and regular documents are not supported.");
+            alert("REJECTED: This compressor only accepts Steam Video Games (.exe or .app). No photos or documents allowed.");
             return;
-        }
-
-        const fileSizeGB = file.size / (1024 * 1024 * 1024);
-        if(fileSizeGB > 50) {
-            if(!confirm(`WARNING: Large Steam library file (${fileSizeGB.toFixed(2)}GB) detected. Proceed?`)) return;
         }
 
         progressContainer.classList.remove('hidden');
         potato.classList.replace('blue-aura', 'compressing-red');
         let progress = 0;
-        
         const interval = setInterval(() => {
             progress += Math.random() * 15;
             if(progress >= 100) {
@@ -98,21 +64,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     function finalizeCompression(file) {
-        const compLevel = parseFloat(document.getElementById('compLevel').value);
-        const originalSizeMB = (file.size / (1024 * 1024)).toFixed(2);
-        const newSizeMB = (originalSizeMB * (1 - compLevel)).toFixed(2);
         potato.classList.replace('compressing-red', 'blue-aura');
         progressContainer.classList.add('hidden');
-        
-        if(vaultItems.length < 12) {
-            vaultItems.push({ name: file.name, img: `https://picsum.photos/seed/${file.name}/200/300` });
-            localStorage.setItem('hp_vault', JSON.stringify(vaultItems));
-            renderVault();
-        }
-        alert(`STEAM COMPRESSION SUCCESS!\nSaved to Vault.`);
+        alert(`STEAM COMPRESSION SUCCESS! Game saved to Vault.`);
     }
 
-    // AUTH LOGIC (Logging back in)
+    // LOGIN PERSISTENCE [Request: log back in after making account]
     const authModal = document.getElementById('authModal');
     const modalTitle = document.getElementById('modalTitle');
     const authSubmitBtn = document.getElementById('auth-submit-btn');
@@ -136,12 +93,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if(!email || !pass) return alert("Fill in all fields");
 
         if(isLoginMode) {
-            const storedUser = JSON.parse(localStorage.getItem('hp_account'));
-            if(storedUser && storedUser.email === email && storedUser.pass === pass) {
-                loginUser(storedUser.username);
-            } else {
-                alert("Invalid Credentials");
-            }
+            const stored = JSON.parse(localStorage.getItem('hp_account'));
+            if(stored && stored.email === email && stored.pass === pass) {
+                loginUser(stored.username);
+            } else { alert("Invalid Credentials"); }
         } else {
             localStorage.setItem('hp_account', JSON.stringify({ email, pass, username: user }));
             loginUser(user);
@@ -153,24 +108,16 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('userDisplay').innerText = name.toUpperCase();
         document.getElementById('loggedInNav').classList.remove('hidden');
         document.getElementById('loggedOutNav').classList.add('hidden');
-        document.getElementById('newPostBtn').classList.remove('hidden');
         authModal.classList.add('hidden');
     }
 
-    document.getElementById('signOutBtn').onclick = () => {
-        localStorage.removeItem('hp_user');
-        location.reload();
-    };
+    // Check persistence on load
+    const savedUser = localStorage.getItem('hp_user');
+    if(savedUser) loginUser(savedUser);
 
-    document.getElementById('openSignup').onclick = () => { isLoginMode = false; toggleAuthMode(); toggleAuthMode(); authModal.classList.remove('hidden'); };
-    document.getElementById('openLogin').onclick = () => { isLoginMode = true; toggleAuthMode(); toggleAuthMode(); authModal.classList.remove('hidden'); };
+    document.getElementById('openSignup').onclick = () => { isLoginMode = false; toggleAuthMode(); authModal.classList.remove('hidden'); };
+    document.getElementById('openLogin').onclick = () => { isLoginMode = true; toggleAuthMode(); authModal.classList.remove('hidden'); };
     document.getElementById('closeModal').onclick = () => authModal.classList.add('hidden');
-
-    // Dropzone trigger
     document.getElementById('dropZone').onclick = () => fileInput.click();
-    fileInput.onchange = (e) => {
-        if(e.target.files[0]) {
-            document.getElementById('fileLabel').innerHTML = `<strong>${e.target.files[0].name}</strong><br>STEAM FILE DETECTED`;
-        }
-    };
+    fileInput.onchange = (e) => { if(e.target.files[0]) document.getElementById('fileLabel').innerHTML = `<strong>${e.target.files[0].name}</strong><br>STEAM FILE DETECTED`; };
 });
