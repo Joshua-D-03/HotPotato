@@ -113,12 +113,17 @@ document.getElementById('igniteBtn').onclick = () => {
     };
 
     function loginUser(name) {
-        localStorage.setItem('hp_user', name);
-        document.getElementById('userDisplay').innerText = name.toUpperCase();
-        document.getElementById('loggedInNav').classList.remove('hidden');
-        document.getElementById('loggedOutNav').classList.add('hidden');
-        authModal.classList.add('hidden');
-    }
+    localStorage.setItem('hp_user', name);
+    document.getElementById('userDisplay').innerText = name.toUpperCase();
+    document.getElementById('loggedInNav').classList.remove('hidden');
+    document.getElementById('loggedOutNav').classList.add('hidden');
+    
+    // Reveal the "Start Discussion" button only when logged in
+    const newPostBtn = document.getElementById('newPostBtn');
+    if(newPostBtn) newPostBtn.classList.remove('hidden');
+    
+    authModal.classList.add('hidden');
+}
 
     // Check persistence on load
     const savedUser = localStorage.getItem('hp_user');
@@ -130,3 +135,8 @@ document.getElementById('igniteBtn').onclick = () => {
     document.getElementById('dropZone').onclick = () => fileInput.click();
     fileInput.onchange = (e) => { if(e.target.files[0]) document.getElementById('fileLabel').innerHTML = `<strong>${e.target.files[0].name}</strong><br>STEAM FILE DETECTED`; };
 });
+window.onload = () => {
+    if(localStorage.getItem('hp_user')) {
+        loginUser(localStorage.getItem('hp_user'));
+    }
+};
