@@ -21,12 +21,8 @@ body { background: var(--dark); color: #c7d5e0; font-family: 'Motiva Sans', sans
 
 /* Typography */
 .main-title { 
-    font-size: 6rem; 
-    color: #fff; 
-    margin: 0; 
-    font-weight: 900; 
-    letter-spacing: -4px; 
-    padding-left: 3ch; 
+    font-size: 6rem; color: #fff; margin: 0; font-weight: 900; 
+    letter-spacing: -4px; padding-left: 3ch; /* 3 spaces to the right */
 }
 .main-title span { color: var(--orange); }
 .main-subheading { letter-spacing: 12px; color: #66c0f4; font-weight: bold; font-size: 0.8rem; margin-top: -10px; margin-bottom: 50px; }
