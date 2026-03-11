@@ -38,28 +38,36 @@ document.addEventListener('DOMContentLoaded', () => {
         return name.endsWith('.exe') || name.endsWith('.app') || name.includes('steam');
     }
 
-document.getElementById('igniteBtn').onclick = () => {
-    const fileInput = document.getElementById('fileInput');
-    const file = fileInput.files[0];
+// Find your igniteBtn logic or add it here:
+const igniteBtn = document.getElementById('igniteBtn');
+if (igniteBtn) {
+    igniteBtn.onclick = async () => {
+        const selectedMode = document.getElementById('compLevel').value;
+        const fileLabel = document.getElementById('fileLabel').innerText;
 
-    // 1. Check if a file exists
-    if (!file) {
-        alert("Please select a game file first.");
-        return;
-    const selectedMode = document.getElementById('compLevel').value;
-    const gameLabel = document.getElementById('fileLabel').innerText;
+        // Save to Supabase
+        await saveToVault(fileLabel, selectedMode);
 
-    // 2. Save to Supabase (The Vault)
-    const user = localStorage.getItem('hp_user');
-    if (user) {
-        await supabaseClient
-            .from('user_vault')
-            .insert([{ 
-                game_name: gameLabel, 
-                compression_level: selectedMode, // Saves "performance", "balanced", etc.
-                user_id: user 
-            }]);
-    }
+        // Visual Progress Trigger
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const percentText = document.getElementById('percentText');
+
+        progressContainer.classList.remove('hidden');
+        
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += Math.random() * 10;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                alert("Task logged to Vault. Run your local .bat file to begin compression.");
+            }
+            progressBar.style.width = progress + "%";
+            percentText.innerText = Math.floor(progress) + "%";
+        }, 300);
+    };
+}
 
     // 3. Start the Visual Progress
     document.getElementById('progressContainer').classList.remove('hidden');
