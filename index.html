@@ -55,7 +55,7 @@
             <div id="potato" class="electric-potato blue-aura">🥔</div>
         </div>
         
-        <h1 class="main-title">HOT<span>POTATO</span></h1>
+       <h1 class="main-title"><span style="color: white;">HOT</span><span style="color: var(--orange);">POTATO</span></h1>
         <p class="main-subheading">V I D E O &nbsp; G A M E &nbsp; C O M P R E S S O R</p>
         
         <section class="tool-card original-engine">
@@ -117,12 +117,20 @@
                 <div class="dashed-grid" id="historyGrid"></div>
             </div>
 
-            <div id="communityPage" class="content-page hidden">
-                <div class="nexus-container">
-                    <div class="nexus-header" style="display: flex; justify-content: space-between; align-items: center;">
-                        <h2>MODS & DISCUSSIONS</h2>
-                        <button id="newPostBtn" class="btn-ignite hidden" style="width: auto; padding: 10px 20px; font-size: 0.8rem;">NEW DISCUSSION</button>
-                    </div>
+           <div id="communityPage" class="content-page hidden">
+    <div class="nexus-container">
+        <div class="nexus-header" style="display: flex; justify-content: space-between;">
+            <h2>DISCUSSION HUB</h2>
+            <button id="newPostBtn" class="btn-ignite hidden">START NEW DISCUSSION</button>
+        </div>
+        <table class="nexus-table" id="nexusTable">
+            <thead><tr><th>Topic</th><th>Author</th><th>Replies</th></tr></thead>
+            <tbody>
+                <tr><td>Need help with optimization</td><td>User123</td><td>5</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
                     <table class="nexus-table" id="nexusTable">
                         <thead>
                             <tr><th>File Name</th><th>Category</th><th>Author</th><th>Downloads</th></tr>
