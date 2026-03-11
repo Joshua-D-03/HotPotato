@@ -46,7 +46,24 @@ document.getElementById('igniteBtn').onclick = () => {
     if (!file) {
         alert("Please select a game file first.");
         return;
+    const selectedMode = document.getElementById('compLevel').value;
+    const gameLabel = document.getElementById('fileLabel').innerText;
+
+    // 2. Save to Supabase (The Vault)
+    const user = localStorage.getItem('hp_user');
+    if (user) {
+        await supabaseClient
+            .from('user_vault')
+            .insert([{ 
+                game_name: gameLabel, 
+                compression_level: selectedMode, // Saves "performance", "balanced", etc.
+                user_id: user 
+            }]);
     }
+
+    // 3. Start the Visual Progress
+    document.getElementById('progressContainer').classList.remove('hidden');
+    // ... rest of your progress bar animation ...}
 
     // 2. Validate file extension (Only allow game archives or containers)
     // You can adjust these extensions based on what you want to support
