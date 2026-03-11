@@ -170,3 +170,21 @@ async function saveToVault(gameName, level) {
     if (error) console.error("Vault Save Error:", error);
     else console.log("Added to Vault!");
 }
+function updateComparisonChart(originalSizeGB, compressedSizeGB) {
+    const barBefore = document.getElementById('barBefore');
+    const barAfter = document.getElementById('barAfter');
+    const savePercent = document.getElementById('savePercent');
+    const gbSaved = document.getElementById('gbSaved');
+
+    // Calculate percentage
+    const reduction = ((originalSizeGB - compressedSizeGB) / originalSizeGB) * 100;
+    const heightPercent = (compressedSizeGB / originalSizeGB) * 100;
+
+    // Update Visuals
+    barAfter.style.height = `${heightPercent}%`;
+    savePercent.innerText = `${reduction.toFixed(1)}%`;
+    gbSaved.innerText = `${(originalSizeGB - compressedSizeGB).toFixed(2)} GB`;
+}
+
+// Example Trigger: You can call this after the user "Ignites"
+// updateComparisonChart(60, 24); // Representing a 60GB game becoming 24GB
