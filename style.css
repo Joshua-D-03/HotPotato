@@ -64,8 +64,12 @@ input, select { background: #000; border: 1px solid #333; color: #fff; padding: 
 .nexus-table td { padding: 15px; border-bottom: 1px solid #1a1a1a; }
 .nexus-blue { color: #66c0f4; font-weight: bold; cursor: pointer; }
 
-.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 2000; }
-.hidden { display: none !important; }
+.modal { 
+    position: fixed; inset: 0; background: rgba(0,0,0,0.9); 
+    display: flex; justify-content: center; align-items: center; 
+    z-index: 2000;
+}
+.modal.hidden { display: none !important; }
 .top-nav { 
     position: fixed; 
     top: 20px; 
