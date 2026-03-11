@@ -14,7 +14,25 @@ def compress_game(folder_path, level):
     # Mapping
     crf_map = {"0.15": "28", "0.30": "26", "0.65": "24", "0.85": "20"}
     crf = crf_map.get(level, "24")
+settings_map = {
+        "performance": {"crf": "28", "preset": "faster"},
+        "balanced":    {"crf": "24", "preset": "medium"},
+        "quality":     {"crf": "20", "preset": "slow"}
+    }
+    
+    # Default to balanced if something goes wrong
+    config = settings_map.get(mode.lower(), settings_map["balanced"])
 
+    # ... (Your folder walking logic remains the same) ...
+
+    # Update your subprocess.run command to use these new settings:
+    subprocess.run([
+        ffmpeg_cmd, '-y', '-i', input_path, 
+        '-vcodec', 'libx265', 
+        '-crf', config["crf"],      # Uses the CRF from our map
+        '-preset', config["preset"], # Uses the speed preset from our map
+        output_path
+    ], check=True)
     # FIX: Point to the local ffmpeg.exe in the same folder
     local_ffmpeg = os.path.join(os.path.dirname(__file__), "ffmpeg.exe")
     
