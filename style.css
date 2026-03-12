@@ -1,70 +1,306 @@
-:root { --orange: #da8100; --bright-orange: #ff8c00; --dark: #050505; --steam-blue: #171a21; }
+:root { 
+    --orange: #da8100; 
+    --bright-orange: #ff8c00; 
+    --dark: #050505; 
+    --steam-blue: #171a21; 
+}
 
-body { background: var(--dark); color: #c7d5e0; font-family: 'Motiva Sans', sans-serif; margin: 0; overflow-x: hidden; }
-.main-title { font-size: 3rem; font-weight: 900; color: #ffffff; }
-.main-title span { color: var(--orange); }
-.main-subheading { color: #66c0f4; font-size: 0.9rem; letter-spacing: 4px; margin-bottom: 30px; }
+body { 
+    background: var(--dark); 
+    color: #c7d5e0; 
+    font-family: 'Motiva Sans', sans-serif; 
+    margin: 0; 
+    overflow-x: hidden; 
+}
+
+.main-title { 
+    font-size: 3rem; 
+    font-weight: 900; 
+    color: #ffffff; 
+}
+
+.main-title span { 
+    color: var(--orange); 
+}
+
+.main-subheading { 
+    color: #66c0f4; 
+    font-size: 0.9rem; 
+    letter-spacing: 4px; 
+    margin-bottom: 30px; 
+}
+
 /* Sidebar */
-.sidebar { width: 280px; background: var(--steam-blue); border-right: 1px solid #333; transition: 0.4s ease; position: fixed; height: 100vh; z-index: 1000; }
-.sidebar.closed { transform: translateX(-280px); }
-.toggle-sidebar { position: absolute; right: -40px; top: 20px; background: var(--steam-blue); border: 1px solid #333; color: white; padding: 10px; cursor: pointer; border-radius: 0 4px 4px 0; }
-.nav-item { padding: 40px 25px; cursor: pointer; color: #66c0f4; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; font-size: 0.8rem; }
-.nav-item.active { background: linear-gradient(to right, #1b2838, #2a475e); border-left: 5px solid var(--orange); color: #fff; }
+.sidebar { 
+    width: 280px; 
+    background: var(--steam-blue); 
+    border-right: 1px solid #333; 
+    transition: 0.4s ease; 
+    position: fixed; 
+    height: 100vh; 
+    z-index: 1000; 
+}
 
-.main-content { margin-left: 280px; padding: 40px; transition: 0.4s ease; display: flex; flex-direction: column; align-items: center; min-height: 100vh; justify-content: center; text-align: center; }
-.sidebar.closed ~ .main-content { margin-left: 0; }
+.sidebar.closed { 
+    transform: translateX(-280px); 
+}
+
+.toggle-sidebar { 
+    position: absolute; 
+    right: -40px; 
+    top: 20px; 
+    background: var(--steam-blue); 
+    border: 1px solid #333; 
+    color: white; 
+    padding: 10px; 
+    cursor: pointer; 
+    border-radius: 0 4px 4px 0; 
+}
+
+.nav-item { 
+    padding: 40px 25px; 
+    cursor: pointer; 
+    color: #66c0f4; 
+    font-weight: bold; 
+    letter-spacing: 2px; 
+    text-transform: uppercase; 
+    font-size: 0.8rem; 
+}
+
+.nav-item.active { 
+    background: linear-gradient(to right, #1b2838, #2a475e); 
+    border-left: 5px solid var(--orange); 
+    color: #fff; 
+}
+
+.main-content { 
+    margin-left: 280px; 
+    padding: 40px; 
+    transition: 0.4s ease; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    min-height: 100vh; 
+    justify-content: center; 
+    text-align: center; 
+}
+
+.sidebar.closed ~ .main-content { 
+    margin-left: 0; 
+}
 
 /* NAV HOVER EFFECT: White when hovering */
-.orange-hover { color: var(--orange); cursor: pointer; font-weight: bold; transition: color 0.2s ease; }
-.orange-hover:hover { color: #ffffff !important; }
+.orange-hover { 
+    color: var(--orange); 
+    cursor: pointer; 
+    font-weight: bold; 
+    transition: color 0.2s ease; 
+}
+
+.orange-hover:hover { 
+    color: #ffffff !important; 
+}
 
 /* Potato & Compression UI */
-.electric-potato { font-size: 120px; display: inline-block; }
-.clockwise { animation: rotate-clock 10s infinite linear; }
-.blue-aura { filter: drop-shadow(0 0 25px rgba(0, 242, 255, 0.7)); }
-.compressing-red { animation: rotate-clock 0.4s infinite linear !important; filter: drop-shadow(0 0 40px #ff0000) !important; color: #ff3333; }
-@keyframes rotate-clock { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-.progress-wrap { width: 100%; margin: 20px 0; }
-.progress-label { font-size: 0.7rem; color: var(--orange); margin-bottom: 5px; text-align: left; font-weight: bold; }
-.progress-track { height: 10px; background: #111; border: 1px solid #333; overflow: hidden; }
-.progress-fill { height: 100%; width: 0%; background: var(--orange); box-shadow: 0 0 15px var(--orange); transition: width 0.1s linear; }
-
-.transparent-input { background: rgba(0, 0, 0, 0.2) !important; border: 1px solid rgba(255, 140, 0, 0.3) !important; color: rgba(255, 255, 255, 0.8) !important; }
-.tool-card { width: 100%; max-width: 800px; }
-.drop-zone { border: 2px solid #222; background: #080808; padding: 50px; cursor: pointer; transition: 0.3s; }
-.drop-zone:hover { border-color: var(--orange); }
-.box-inner { border: 1px dashed #444; padding: 30px; }
-.system-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0; }
-.field label { font-size: 0.65rem; color: #8ba2b9; display: block; margin-bottom: 8px; text-align: left; font-weight: bold; }
-input, select { background: #000; border: 1px solid #333; color: #fff; padding: 12px; width: 100%; box-sizing: border-box; }
-.btn-ignite { background: var(--orange); color: white; border: none; padding: 25px; width: 100%; font-weight: 900; cursor: pointer; font-size: 1.2rem; letter-spacing: 2px; }
-
-/* Vault & Modal */
-.dashed-grid { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
-    gap: 20px; 
-    padding: 20px; 
+.electric-potato { 
+    font-size: 120px; 
+    display: inline-block; 
 }
-.blank-square { 
-    aspect-ratio: 2/3; 
-    border: 2px dashed #333; 
-    background: #0d0d0d; 
+
+.clockwise { 
+    animation: rotate-clock 10s infinite linear; 
+}
+
+.blue-aura { 
+    filter: drop-shadow(0 0 25px rgba(0, 242, 255, 0.7)); 
+}
+
+.compressing-red { 
+    animation: rotate-clock 0.4s infinite linear !important; 
+    filter: drop-shadow(0 0 40px #ff0000) !important; 
+    color: #ff3333; 
+}
+
+@keyframes rotate-clock { 
+    from { transform: rotate(0deg); } 
+    to { transform: rotate(360deg); } 
+}
+
+.progress-wrap { 
+    width: 100%; 
+    margin: 20px 0; 
+}
+
+.progress-label { 
+    font-size: 0.7rem; 
+    color: var(--orange); 
+    margin-bottom: 5px; 
+    text-align: left; 
+    font-weight: bold; 
+}
+
+.progress-track { 
+    height: 10px; 
+    background: #111; 
+    border: 1px solid #333; 
+    overflow: hidden; 
+}
+
+.progress-fill { 
+    height: 100%; 
+    width: 0%; 
+    background: var(--orange); 
+    box-shadow: 0 0 15px var(--orange); 
+    transition: width 0.1s linear; 
+}
+
+.transparent-input { 
+    background: rgba(0, 0, 0, 0.2) !important; 
+    border: 1px solid rgba(255, 140, 0, 0.3) !important; 
+    color: rgba(255, 255, 255, 0.8) !important; 
+}
+
+.tool-card { 
+    width: 100%; 
+    max-width: 800px; 
+}
+
+.drop-zone { 
+    border: 2px solid #222; 
+    background: #080808; 
+    padding: 50px; 
+    cursor: pointer; 
     transition: 0.3s; 
 }
+
+.drop-zone:hover { 
+    border-color: var(--orange); 
+}
+
+.box-inner { 
+    border: 1px dashed #444; 
+    padding: 30px; 
+}
+
+.system-options-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 20px; 
+    margin: 30px 0; 
+}
+
+.field label { 
+    font-size: 0.65rem; 
+    color: #8ba2b9; 
+    display: block; 
+    margin-bottom: 8px; 
+    text-align: left; 
+    font-weight: bold; 
+}
+
+input, select { 
+    background: #000; 
+    border: 1px solid #333; 
+    color: #fff; 
+    padding: 12px; 
+    width: 100%; 
+    box-sizing: border-box; 
+}
+
+.btn-ignite { 
+    background: var(--orange); 
+    color: white; 
+    border: none; 
+    padding: 25px; 
+    width: 100%; 
+    font-weight: 900; 
+    cursor: pointer; 
+    font-size: 1.2rem; 
+    letter-spacing: 2px; 
+}
+
+/* Vault & Modal */
+.dashed-grid {
+   display: grid;
+   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+   gap: 20px;
+   padding: 20px;
+}
+
+.blank-square {
+   aspect-ratio: 2/3;
+   border: 2px dashed #333;
+   background: #0d0d0d;
+   transition: 0.3s;
+}
+
 .blank-square:hover { border-color: var(--orange); }
 .blank-square.filled { border-style: solid; border-color: #333; }
-.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 2000; }
-.modal-content { background: #111; padding: 40px; border: 1px solid var(--orange); width: 100%; max-width: 400px; position: relative; }
-.close-modal { position: absolute; top: 10px; right: 20px; color: white; font-size: 2rem; cursor: pointer; }
-.hidden { display: none !important; }
-.top-nav { position: fixed; top: 30px; right: 40px; z-index: 1500; }
+
+.modal { 
+    position: fixed; 
+    inset: 0; 
+    background: rgba(0,0,0,0.9); 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    z-index: 2000; 
+}
+
+.modal-content { 
+    background: #111; 
+    padding: 40px; 
+    border: 1px solid var(--orange); 
+    width: 100%; 
+    max-width: 400px; 
+    position: relative; 
+}
+
+.close-modal { 
+    position: absolute; 
+    top: 10px; 
+    right: 20px; 
+    color: white; 
+    font-size: 2rem; 
+    cursor: pointer; 
+}
+
+.top-nav { 
+    position: fixed; 
+    top: 30px; 
+    right: 40px; 
+    z-index: 1500; 
+}
 
 .rotate-25 { animation: rotate-clock 40s infinite linear; }
 .rotate-50 { animation: rotate-clock 20s infinite linear; }
 .rotate-100 { animation: rotate-clock 10s infinite linear; }
 .rotate-200 { animation: rotate-clock 5s infinite linear; }
-.potato-chamber { display: flex; justify-content: center; margin-bottom: 20px; }
-.nexus-container { background: #1b2838; padding: 20px; border: 1px solid #45505e; }
-.nexus-table th { background: #2a475e; color: #ffffff; }
+
+.potato-chamber { 
+    display: flex; 
+    justify-content: center; 
+    margin-bottom: 20px; 
+}
+
+.nexus-container { 
+    background: #1b2838; 
+    padding: 20px; 
+    border: 1px solid #45505e; 
+}
+
+.nexus-table th { 
+    background: #2a475e; 
+    color: #ffffff; 
+}
+
+/* FIXED HIDDEN CLASS
+   This ensures that any element with 'hidden' is completely removed 
+   from view and cannot be clicked or block other elements.
+*/
+.hidden { 
+    display: none !important; 
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
