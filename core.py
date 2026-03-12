@@ -55,7 +55,16 @@ if __name__ == "__main__":
         print("Usage: core.py <folder_path> <mode>")
     else:
         compress_game(sys.argv[1], sys.argv[2])
-# Replace the crf_map in core.py with this:
+# Mapping percentages to CRF values (Higher CRF = More Compression)
+    # Standard (15% reduction) -> CRF 20
+    # Potato (85% reduction)   -> CRF 35
+    level_map = {
+        "standard": "20",
+        "balance":  "24",
+        "extreme":  "30",
+        "potato":   "35"
+    }
+    crf = level_map.get(level.lower(), "24")
 def get_compression_settings(mode):
     # Performance = Smaller files, lower quality
     # Quality = Better looking, larger files
