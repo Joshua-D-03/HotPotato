@@ -90,6 +90,34 @@ document.addEventListener('DOMContentLoaded', () => {
             progressBar.style.width = progress + "%";
             percentText.innerText = Math.floor(progress) + "%";
         }, 300);
+    const igniteBtn = document.getElementById('igniteBtn');
+const compressionLevel = document.getElementById('compressionLevel');
+const potatoImg = document.getElementById('potato');
+
+igniteBtn.onclick = () => {
+    const level = compressionLevel.value;
+
+    // 1. Turn aura red
+    potatoImg.classList.add('compressing');
+
+    // 2. Remove any old spin classes first
+    potatoImg.classList.remove('spin-standard', 'spin-balance', 'spin-extreme', 'spin-potato');
+
+    // 3. Apply the specific speed class
+    potatoImg.classList.add(`spin-${level}`);
+
+    // --- SIMULATION: In a real app, you'd wait for the Python script to finish ---
+    console.log(`Starting ${level} compression...`);
+    
+    // For demo purposes, we stop it after 5 seconds
+    setTimeout(() => {
+        stopCompressionEffect();
+    }, 5000);
+};
+
+function stopCompressionEffect() {
+    potatoImg.classList.remove('compressing', 'spin-standard', 'spin-balance', 'spin-extreme', 'spin-potato');
+}
     };
 
     // Auth Mode Toggling
