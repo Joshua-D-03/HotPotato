@@ -24,10 +24,14 @@ def get_compression_settings(mode):
 def compress_game(folder_path, mode):
     ffmpeg_cmd = check_dependencies()
     config = get_compression_settings(mode)
+    
+    # Explicitly defined supported formats
+    SUPPORTED_FORMATS = ('.mp4', '.avi', '.mkv', '.wmv')
 
     for root, _, files in os.walk(folder_path):
         for file in files:
-            if file.lower().endswith(('.mp4', '.avi', '.mkv', '.wmv')):
+            # Strictly check for video extensions
+            if file.lower().endswith(SUPPORTED_FORMATS):
                 input_path = os.path.join(root, file)
                 output_path = os.path.join(root, f"POTATO_{file}")
                 
@@ -42,6 +46,9 @@ def compress_game(folder_path, mode):
                     ], check=True)
                 except Exception as e:
                     print(f"Error processing {file}: {e}")
+            else:
+                # Optional: log skipped non-video files
+                print(f"Skipping non-video file: {file}")
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
