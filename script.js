@@ -52,8 +52,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Ignite Logic (Compression Simulation)
     document.getElementById('igniteBtn').onclick = function() {
-        const file = fileInput.files[0];
-        if(!file) return alert("Please select a game folder/file first!");
+        const file = e.target.files[0];
+    if (file) {
+        const allowedExtensions = ['.mp4', '.avi', '.mkv', '.wmv'];
+        const fileName = file.name.toLowerCase();
+        const isValid = allowedExtensions.some(ext => fileName.endsWith(ext));
+
+        if (isValid) {
+            document.getElementById('fileLabel').innerHTML = `<strong>${file.name}</strong><br>VIDEO GAME FILE DETECTED`;
+        } else {
+            alert("Invalid file type. Please select a video game file (.mp4, .avi, .mkv, .wmv).");
+            fileInput.value = ""; // Clear the selection
+            document.getElementById('fileLabel').innerHTML = `DROP GAME HERE`;
+        }
+    };
 
         this.disabled = true;
         this.innerText = "COMPRESSING...";
