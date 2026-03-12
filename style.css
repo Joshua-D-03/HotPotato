@@ -303,4 +303,21 @@ input, select {
     visibility: hidden !important;
     pointer-events: none !important;
 }
+/* The "Electrified" states */
+#potato { transition: filter 0.5s ease, transform 0.3s ease; }
 
+/* Turn the blue aura red when active */
+#potato.compressing {
+    filter: drop-shadow(0 0 30px #ff0000) hue-rotate(280deg) !important;
+}
+
+/* Speed Levels for the Spin */
+.spin-standard { animation: rotate-clock 4s infinite linear; }   /* 25% */
+.spin-balance  { animation: rotate-clock 2s infinite linear; }   /* 50% */
+.spin-extreme  { animation: rotate-clock 1s infinite linear; }   /* 100% */
+.spin-potato   { animation: rotate-clock 0.5s infinite linear; } /* 200% */
+
+@keyframes rotate-clock {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
