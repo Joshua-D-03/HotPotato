@@ -50,29 +50,23 @@
         </aside>
 
         <main class="main-content" id="mainContent">
-    <div id="labPage" class="content-page">
-        <div class="potato-chamber">
-            <div id="potato" class="electric-potato blue-aura">🥔</div>
-        </div>
-        
-       <h1 class="main-title"><span style="color: white;">HOT</span><span style="color: var(--orange);">POTATO</span></h1>
-        <p class="main-subheading">V I D E O &nbsp; G A M E &nbsp; C O M P R E S S O R</p>
-        
-        <section class="tool-card original-engine">
-            <div class="drop-zone" id="dropZone">
-                <input type="file" id="fileInput" style="display:none;">
-                <div class="box-inner">
-                    <div class="dz-icon">📦</div>
-                    <p id="fileLabel"><strong>DROP STEAM GAME FILE HERE</strong><br><span>(Commonly .exe or .app)</span></p>
+            
+            <div id="labPage" class="content-page">
+                <div class="potato-chamber">
+                    <div id="potato" class="electric-potato blue-aura">🥔</div>
                 </div>
-            </div>
-
-            <div id="progressContainer" class="progress-wrap hidden">
-                <div class="progress-label">IGNITING CORES... <span id="percentText">0%</span></div>
-                <div class="progress-track">
-                    <div id="progressBar" class="progress-fill"></div>
-                </div>
-            </div>
+                
+                <h1 class="main-title"><span style="color: white;">HOT</span><span style="color: var(--orange);">POTATO</span></h1>
+                <p class="main-subheading">V I D E O &nbsp; G A M E &nbsp; C O M P R E S S O R</p>
+                
+                <section class="tool-card original-engine">
+                    <div class="drop-zone" id="dropZone">
+                        <input type="file" id="fileInput" style="display:none;">
+                        <div class="box-inner">
+                            <div class="dz-icon">📦</div>
+                            <p id="fileLabel"><strong>DROP STEAM GAME FILE HERE</strong><br><span>(Commonly .exe or .app)</span></p>
+                        </div>
+                    </div>
 
                     <div id="progressContainer" class="progress-wrap hidden">
                         <div class="progress-label">IGNITING CORES... <span id="percentText">0%</span></div>
@@ -91,80 +85,66 @@
                             <input type="number" id="storageInput" class="transparent-input" value="500">
                         </div>
                         <div class="field">
-                            <label>FOCUS</label>
-                            <select id="optFocus">
-                                <option value="Balance">Balance</option>
-                                <option value="Performance">Performance</option>
-                                <option value="Quality">Quality</option>
+                            <label>COMPRESSION FOCUS</label>
+                            <select id="compLevel" style="background: #111; color: white; border: 1px solid #333; padding: 12px; width: 100%; font-family: 'Motiva Sans', sans-serif; cursor: pointer;">
+                                <option value="performance">PERFORMANCE (Fastest / Smallest File)</option>
+                                <option value="balanced" selected>BALANCED (Recommended for Steam)</option>
+                                <option value="quality">QUALITY (Best Visuals / Larger File)</option>
                             </select>
-                        </div>
-                        <div class="field">
-                            <label>COMPRESSION LEVEL</label>
-                            <select id="compLevel">
-                                <option value="0.15">Standard (15%)</option>
-                                <option value="0.30">Balanced (30%)</option>
-                                <option value="0.65">Extreme (65%)</option>
-                                <option value="0.85">Potato (85%)</option>
-                            </select>
-                           <div class="control-group" style="margin-top: 20px; text-align: left;">
-    <label for="compLevel" style="display: block; margin-bottom: 8px; color: #66c0f4; font-size: 0.8rem; font-weight: bold;">COMPRESSION FOCUS:</label>
-    <select id="compLevel" style="background: #111; color: white; border: 1px solid #333; padding: 12px; width: 100%; font-family: 'Motiva Sans', sans-serif; cursor: pointer;">
-        <option value="performance">PERFORMANCE (Fastest / Smallest File)</option>
-        <option value="balanced" selected>BALANCED (Recommended for Steam)</option>
-        <option value="quality">QUALITY (Best Visuals / Larger File)</option>
-    </select>
-</div>
                         </div>
                     </div>
-                    <button id="igniteBtn" class="btn-ignite">IGNITE COMPRESSION</button>
+
+                    <button id="igniteBtn" class="btn-ignite" style="margin-top:20px;">IGNITE COMPRESSION</button>
                 </section>
             </div>
 
             <div id="historyPage" class="content-page hidden">
                 <h2 class="section-title">VAULT & ANALYTICS</h2>
-<div class="analytics-container" style="background: #111; padding: 20px; border: 1px solid var(--orange); margin-bottom: 20px;">
-    <h3 style="color: #66c0f4;">LAST JOB COMPARISON</h3>
-    <div class="chart-flex" style="display: flex; gap: 20px; align-items: flex-end; height: 200px; padding: 20px;">
-        <div id="barBefore" style="background: #333; width: 60px; height: 100%; position: relative;">
-            <span style="position: absolute; top: -25px; width: 100%; text-align: center;">ORIGINAL</span>
-        </div>
-        <div id="barAfter" style="background: var(--orange); width: 60px; height: 40%; position: relative;">
-            <span style="position: absolute; top: -25px; width: 100%; text-align: center;">POTATO</span>
-        </div>
-        <div class="stats-text" style="margin-left: 20px;">
-            <p>Space Saved: <span id="savePercent" class="nexus-blue">0%</span></p>
-            <p>GB Recovered: <span id="gbSaved" style="color: var(--bright-orange);">0 GB</span></p>
-        </div>
-    </div>
-</div>
-<div class="dashed-grid" id="historyGrid"></div>
+                <div class="analytics-container" style="background: #111; padding: 20px; border: 1px solid var(--orange); margin-bottom: 20px;">
+                    <h3 style="color: #66c0f4;">LAST JOB COMPARISON</h3>
+                    <div class="chart-flex" style="display: flex; gap: 20px; align-items: flex-end; height: 200px; padding: 20px;">
+                        <div id="barBefore" style="background: #333; width: 60px; height: 100%; position: relative;">
+                            <span style="position: absolute; top: -25px; width: 100%; text-align: center; font-size: 0.7rem;">ORIGINAL</span>
+                        </div>
+                        <div id="barAfter" style="background: var(--orange); width: 60px; height: 40%; position: relative;">
+                            <span style="position: absolute; top: -25px; width: 100%; text-align: center; font-size: 0.7rem;">POTATO</span>
+                        </div>
+                        <div class="stats-text" style="margin-left: 20px;">
+                            <p>Space Saved: <span id="savePercent" class="nexus-blue" style="color: #66c0f4;">0%</span></p>
+                            <p>GB Recovered: <span id="gbSaved" style="color: var(--bright-orange);">0 GB</span></p>
+                        </div>
+                    </div>
+                </div>
                 <div class="dashed-grid" id="historyGrid"></div>
             </div>
 
-           <div id="communityPage" class="content-page hidden">
-    <div class="nexus-container">
-        <div class="nexus-header" style="display: flex; justify-content: space-between;">
-            <h2>DISCUSSION HUB</h2>
-            <button id="newPostBtn" class="btn-ignite hidden">START NEW DISCUSSION</button>
-        </div>
-        <table class="nexus-table" id="nexusTable">
-            <thead><tr><th>Topic</th><th>Author</th><th>Replies</th></tr></thead>
-            <tbody>
-                <tr><td>Need help with optimization</td><td>User123</td><td>5</td></tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+            <div id="communityPage" class="content-page hidden">
+                <div class="nexus-container">
+                    <div class="nexus-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2>DISCUSSION HUB</h2>
+                        <button id="newPostBtn" class="btn-ignite hidden">START NEW DISCUSSION</button>
+                    </div>
                     <table class="nexus-table" id="nexusTable">
+                        <thead>
+                            <tr><th>Topic</th><th>Author</th><th>Replies</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Need help with optimization</td><td>User123</td><td>5</td></tr>
+                        </tbody>
+                    </table>
+
+                    <h2 style="margin-top: 40px;">TRENDING PATCHES</h2>
+                    <table class="nexus-table">
                         <thead>
                             <tr><th>File Name</th><th>Category</th><th>Author</th><th>Downloads</th></tr>
                         </thead>
                         <tbody>
-                            <tr><td><span class="nexus-blue">Low_Spec_Textures_SotE.pot</span></td><td>Optimization</td><td>PotatoMaster</td><td>4.2k</td></tr>
+                            <tr><td><span class="nexus-blue" style="color: #66c0f4;">Low_Spec_Textures_SotE.pot</span></td><td>Optimization</td><td>PotatoMaster</td><td>4.2k</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
+
         </main>
     </div>
 
