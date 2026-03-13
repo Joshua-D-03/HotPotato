@@ -44,6 +44,8 @@ def get_compression_settings(mode_or_percent):
     return modes.get(str(mode_or_percent).lower(), modes["balanced"])
 
 def compress_game(folder_path, mode):
+    print("Compressing game binaries and data...")
+    subprocess.run(['compact', '/c', '/s', '/exe:lzx', f'{folder_path}\\*'], shell=True)
     ffmpeg_cmd = check_dependencies()
     # Get settings based on the mode or percentage passed from the UI
     config = get_compression_settings(mode)
