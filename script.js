@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const percentText = document.getElementById('percentText');
     const authModal = document.getElementById('authModal');
     const { ipcRenderer } = require('electron');
+    const remoteMain = require('@electron/remote/main');
+        remoteMain.initialize();
     
     let isLoginMode = false;
 
