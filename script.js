@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressContainer = document.getElementById('progressContainer');
     const percentText = document.getElementById('percentText');
     const authModal = document.getElementById('authModal');
-
+    const { ipcRenderer } = require('electron');
+    
     let isLoginMode = false;
 
     // --- INTEGRATED FIXES START ---
@@ -106,8 +107,18 @@ igniteBtn.onclick = () => {
     // 3. Apply the specific speed class
     potatoImg.classList.add(`spin-${level}`);
 
-    // --- SIMULATION: In a real app, you'd wait for the Python script to finish ---
-    console.log(`Starting ${level} compression...`);
+   function finish(file) {
+    const level = document.getElementById('compLevel').value;
+    const mode = "Quality"; 
+
+    // Tell the Backend to start compressing
+    // Ensure window.selectedFolderPath is set by your folder-picker logic
+    ipcRenderer.send('compress-game', { 
+        folderPath: window.selectedFolderPath, 
+        mode: mode, 
+        level: level 
+    });
+}
     
     // For demo purposes, we stop it after 5 seconds
     setTimeout(() => {
@@ -182,7 +193,6 @@ function stopCompressionEffect() {
     document.getElementById('openLogin').onclick = () => { isLoginMode = true; toggleAuthMode(); authModal.classList.remove('hidden'); };
     document.getElementById('dropZone').onclick = () => fileInput.click();
     fileInput.onchange = (e) => { if(e.target.files[0]) document.getElementById('fileLabel').innerHTML = `<strong>${e.target.files[0].name}</strong><br>STEAM FILE DETECTED`; };
-});
 
 window.onload = () => {
     if(localStorage.getItem('hp_user')) {
@@ -221,3 +231,21 @@ function updateComparisonChart(originalSizeGB, compressedSizeGB) {
     savePercent.innerText = `${reduction.toFixed(1)}%`;
     gbSaved.innerText = `${(originalSizeGB - compressedSizeGB).toFixed(2)} GB`;
 }
+ipcRenderer.on('compression-result', (event, response) => {
+    if (response.status === 'success') {
+        alert("Real compression applied successfully!");
+    } else {
+        alert("Error: " + response.message);
+    }
+});
+// This function should be triggered by your "Select Folder" button
+async function selectGameFolder() {
+    const { dialog } = require('@electron/remote');
+    const result = await dialog.showOpenDialog({ properties: ['openDirectory'] });
+    
+    if (!result.canceled) {
+        window.selectedFolderPath = result.filePaths[0];
+        console.log("Folder selected:", window.selectedFolderPath);
+    }
+}
+    });
