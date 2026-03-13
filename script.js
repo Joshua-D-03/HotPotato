@@ -56,8 +56,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const targetPage = document.getElementById(`${page}Page`);
             if (targetPage) targetPage.classList.remove('hidden');
             
-            // If switching to community page, load discussions
+            // Handle page-specific loading
             if (page === 'community') loadDiscussions();
+            if (page === 'library') loadLibrary(); // Added: Load library when entering page
             
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             item.classList.add('active');
@@ -94,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     stopCompressionEffect();
                     this.disabled = false;
                     this.innerText = "IGNITE COMPRESSION";
-                    finish(); // Trigger Supabase Sync and Electron Command
+                    finish(); // Trigger Fused Supabase Sync and Electron Command
                 }, 1000);
             }
             progressBar.style.width = progress + "%";
@@ -145,7 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- FILE SELECTION LOGIC ---
     document.getElementById('dropZone').onclick = () => {
-        // Use Electron bridge if available, otherwise fallback to input
         if (window.api && window.api.selectFolder) {
             selectGameFolder();
         } else {
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const isValid = allowedExtensions.some(ext => fileName.endsWith(ext));
 
             if (isValid) {
-                window.selectedFolderPath = file.name; // Simulating path for web
+                window.selectedFolderPath = file.name;
                 document.getElementById('fileLabel').innerHTML = `<strong>${file.name}</strong><br>STEAM FILE DETECTED`;
             } else {
                 alert("Invalid file type.");
@@ -171,7 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Initialize logic
     const savedUser = localStorage.getItem('hp_user');
     if(savedUser) loginUser(savedUser);
 
@@ -196,9 +195,9 @@ function loginUser(email) {
     if(newPostBtn) newPostBtn.classList.remove('hidden');
     
     document.getElementById('authModal').classList.add('hidden');
+    loadLibrary(); // Check for existing games on login
 }
 
-// --- FUSED COMPRESSION LEVEL LOGIC ---
 function setLevel(percent, name) {
     selectedReduction = percent;
     document.getElementById('comparison-view').classList.remove('hidden');
@@ -207,17 +206,17 @@ function setLevel(percent, name) {
     document.getElementById('oldSize').innerText = currentGameSize;
     document.getElementById('newSize').innerText = newSize;
     
-    // Visual bar update
     document.getElementById('newBar').style.width = (100 - percent) + "%";
 }
 
 // --- FUSED FINISH & SUPABASE SYNC ---
 async function finish() {
-    const gameName = window.selectedFolderPath || "Unknown Game";
+    // Attempt to parse folder name from path, fallback to "Unknown Game"
+    const gameName = window.selectedFolderPath ? window.selectedFolderPath.split(/[\\/]/).pop() : "Unknown Game";
+    const mode = document.getElementById('compMode')?.value || 'balanced';
     const finalSize = (currentGameSize * (1 - selectedReduction/100)).toFixed(2);
-    const mode = document.getElementById('compLevel')?.value || 'balanced';
 
-    // 1. Send to Electron Backend
+    // 1. Trigger the Electron Bridge (Calls core.py)
     if (window.api && window.api.sendCompress) {
         window.api.sendCompress({ 
             folderPath: window.selectedFolderPath, 
@@ -232,22 +231,51 @@ async function finish() {
         const { error } = await supabaseClient
             .from('user_vault')
             .insert([{ 
+                user_id: user,
                 game_name: gameName, 
                 original_size: currentGameSize, 
-                compressed_size: finalSize,
+                compressed_size: parseFloat(finalSize),
                 level: selectedReduction + "%",
-                user_id: user
+                mode: mode
             }]);
         
-        if (!error) console.log("Saved to Vault!");
+        if (!error) {
+            console.log("Saved to Vault!");
+            loadLibrary(); // Refresh library view automatically
+        } else {
+            console.error("Vault Save Error:", error);
+        }
     }
 
     // 3. Update the Analytics Visuals
     updateComparisonChart(currentGameSize, finalSize);
-    alert("GAME OPTIMIZED & SAVED TO VAULT!");
+    alert("Compression Started! Data logged to your Library.");
 }
 
-// --- ANALYTICS VISUALIZER ---
+// --- LIBRARY LOADER ---
+async function loadLibrary() {
+    const user = localStorage.getItem('hp_user');
+    if (!user) return;
+
+    const { data, error } = await supabaseClient
+        .from('user_vault')
+        .select('*')
+        .eq('user_id', user)
+        .order('created_at', { ascending: false });
+
+    const container = document.getElementById('libraryGrid');
+    if (container && data) {
+        container.innerHTML = data.map(game => `
+            <div class="library-card">
+                <h4>${game.game_name}</h4>
+                <p>Mode: ${game.mode || 'N/A'}</p>
+                <p>Saved: ${(game.original_size - game.compressed_size).toFixed(2)} GB</p>
+                <div class="status-tag">COMPRESSED</div>
+            </div>
+        `).join('');
+    }
+}
+
 function updateComparisonChart(originalSizeGB, compressedSizeGB) {
     const barAfter = document.getElementById('barAfter');
     const savePercent = document.getElementById('savePercent');
@@ -291,7 +319,6 @@ async function selectGameFolder() {
     }
 }
 
-// Listen for results from the Electron main process
 if (window.api && window.api.onCompressResult) {
     window.api.onCompressResult((response) => {
         if (response.status === 'success') {
