@@ -242,8 +242,11 @@ ipcRenderer.on('compression-result', (event, response) => {
 });
 // This function should be triggered by your "Select Folder" button
 async function selectGameFolder() {
-    const { dialog } = require('@electron/remote');
-    const result = await dialog.showOpenDialog({ properties: ['openDirectory'] });
+    const path = await window.electronAPI.selectFolder();
+    if (path) {
+        window.selectedFolderPath = path;
+    }
+}
     
     if (!result.canceled) {
         window.selectedFolderPath = result.filePaths[0];
