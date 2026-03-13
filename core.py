@@ -2,6 +2,19 @@ import os
 import subprocess
 import sys
 
+# Mapping the UI percentages to FFmpeg CRF values
+# Lower CRF = Better Quality, Higher CRF = More Compression
+level_map = {
+    "15": "20",  # Standard
+    "30": "24",  # Balanced
+    "65": "30",  # Extreme
+    "85": "38",  # Potato (High compression)
+    "standard": "20",
+    "balance": "24",
+    "extreme": "30",
+    "potato": "35"
+}
+
 def check_dependencies():
     # Fix: Ensure ffmpeg.exe exists locally
     local_ffmpeg = os.path.join(os.path.dirname(__file__), "ffmpeg.exe")
@@ -12,17 +25,27 @@ def check_dependencies():
         sys.exit()
     return local_ffmpeg
 
-def get_compression_settings(mode):
-    # Performance = Fast/Small, Quality = Slow/Large
+def get_compression_settings(mode_or_percent):
+    # Performance = Smaller files, lower quality
+    # Quality = Better looking, larger files
+    # Balanced = The middle ground
     modes = {
         "performance": {"crf": "28", "preset": "faster"},
         "balanced": {"crf": "24", "preset": "medium"},
         "quality": {"crf": "20", "preset": "slow"}
     }
-    return modes.get(mode.lower(), modes["balanced"])
+    
+    # Check if the input is one of the percentage keys (15, 30, etc) or descriptive keys
+    if str(mode_or_percent).lower() in level_map:
+        crf_value = level_map.get(str(mode_or_percent).lower())
+        return {"crf": crf_value, "preset": "faster"}
+    
+    # Otherwise, fall back to the original mode names
+    return modes.get(str(mode_or_percent).lower(), modes["balanced"])
 
 def compress_game(folder_path, mode):
     ffmpeg_cmd = check_dependencies()
+    # Get settings based on the mode or percentage passed from the UI
     config = get_compression_settings(mode)
     
     # Explicitly defined supported formats
@@ -37,6 +60,7 @@ def compress_game(folder_path, mode):
                 
                 print(f"Compressing ({mode}): {file}...")
                 try:
+                    # Fused subprocess call using dynamic config
                     subprocess.run([
                         ffmpeg_cmd, '-y', '-i', input_path, 
                         '-vcodec', 'libx265', 
@@ -54,34 +78,5 @@ if __name__ == "__main__":
     if len(sys.argv) < 3:
         print("Usage: core.py <folder_path> <mode>")
     else:
+        # sys.argv[2] can now be "balanced" OR "85"
         compress_game(sys.argv[1], sys.argv[2])
-# Mapping percentages to CRF values (Higher CRF = More Compression)
-    # Standard (15% reduction) -> CRF 20
-    # Potato (85% reduction)   -> CRF 35
-    level_map = {
-        "standard": "20",
-        "balance":  "24",
-        "extreme":  "30",
-        "potato":   "35"
-    }
-    crf = level_map.get(level.lower(), "24")
-def get_compression_settings(mode):
-    # Performance = Smaller files, lower quality
-    # Quality = Better looking, larger files
-    # Balanced = The middle ground
-    modes = {
-        "performance": {"crf": "28", "preset": "faster"},
-        "balanced": {"crf": "24", "preset": "medium"},
-        "quality": {"crf": "20", "preset": "slow"}
-    }
-    return modes.get(mode.lower(), modes["balanced"])
-
-# Inside your subprocess.run, update the arguments:
-settings = get_compression_settings(level) # level is now the mode name
-subprocess.run([
-    ffmpeg_cmd, '-y', '-i', input_path, 
-    '-vcodec', 'libx265', 
-    '-crf', settings["crf"], 
-    '-preset', settings["preset"], 
-    output_path
-], check=True)
