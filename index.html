@@ -43,7 +43,8 @@
                 <h2 class="side-title">&nbsp;&nbsp;&nbsp;COMMAND CENTER</h2>
                 <nav class="sidebar-nav">
                     <div class="nav-item active" data-page="lab">COMPRESSOR</div>
-                    <div class="nav-item" data-page="library">LIBRARY</div> <div class="nav-item" data-page="history">ANALYTICS</div>
+                    <div class="nav-item" data-page="library">LIBRARY</div> 
+                    <div class="nav-item" data-page="history">ANALYTICS</div>
                     <div class="nav-item" data-page="community">COMMUNITY HUB</div>
                 </nav>
             </div>
@@ -85,9 +86,17 @@
                             <input type="number" id="storageInput" class="transparent-input" value="500">
                         </div>
                         
-                        <div class="control-panel" style="grid-column: span 2; margin-top: 20px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 4px;">
-                            <h3 style="font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 15px;">SELECT INTENSITY</h3>
-                            <div class="compression-options" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <div class="control-panel settings-panel" style="grid-column: span 2; margin-top: 20px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 4px;">
+                            
+                            <h3 style="font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 5px;">COMPRESSION STRATEGY</h3>
+                            <select id="compMode" class="steam-input" style="width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: white; margin-bottom: 20px;">
+                                <option value="performance">Performance (Fastest, Lower Quality)</option>
+                                <option value="balanced" selected>Balanced (Recommended)</option>
+                                <option value="quality">Quality (Slowest, Best Visuals)</option>
+                            </select>
+
+                            <h3 style="font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 15px;">INTENSITY LEVEL</h3>
+                            <div class="level-buttons compression-options" style="display: flex; gap: 10px; margin-bottom: 20px;">
                                 <button class="level-btn" onclick="setLevel(15, 'Standard')" style="flex: 1; padding: 10px; background: #222; border: 1px solid #444; color: white; cursor: pointer;">15%</button>
                                 <button class="level-btn" onclick="setLevel(30, 'Balanced')" style="flex: 1; padding: 10px; background: #222; border: 1px solid #444; color: white; cursor: pointer;">30%</button>
                                 <button class="level-btn" onclick="setLevel(65, 'Extreme')" style="flex: 1; padding: 10px; background: #222; border: 1px solid #444; color: white; cursor: pointer;">65%</button>
@@ -97,29 +106,19 @@
                             <div id="comparison-view" class="hidden">
                                 <div class="bar-container">
                                     <p style="font-size: 0.7rem; margin: 5px 0;">Original: <span id="oldSize">0</span> GB</p>
-                                    <div id="oldBar" style="width: 100%; background: #444; height: 12px; margin-bottom: 10px;"></div>
-                                    <p style="font-size: 0.7rem; margin: 5px 0;">Target: <span id="newSize">0</span> GB</p>
-                                    <div id="newBar" style="width: 100%; background: #da8100; height: 12px; transition: width 0.5s;"></div>
+                                    <div id="oldBar" class="bar-bg" style="width: 100%; background: #444; height: 12px; margin-bottom: 10px;"></div>
+                                    
+                                    <p style="font-size: 0.7rem; margin: 5px 0;">Estimated Target: <span id="newSize">0</span> GB</p>
+                                    <div class="bar-bg" style="width: 100%; background: #222; height: 12px;">
+                                        <div id="newBar" class="bar-fill" style="width: 100%; background: #da8100; height: 12px; transition: width 0.5s;"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="config-item hidden">
-                            <label>COMPRESSION FOCUS</label>
-                            <select id="compLevel">
-                                <option value="performance">PERFORMANCE</option>
-                                <option value="balanced" selected>BALANCED</option>
-                                <option value="quality">QUALITY</option>
-                            </select>
-                        </div>
-                        <div class="config-item hidden">
-                            <label>COMPRESSION LEVEL</label>
-                            <select id="compressionLevel">
-                                <option value="standard">Standard Mode (15%)</option>
-                                <option value="balance" selected>Balance Mode (30%)</option>
-                                <option value="extreme">Extreme Mode (65%)</option>
-                                <option value="potato">Potato Mode (85%)</option>
-                            </select>
+                            <select id="compLevel"><option value="balanced">BALANCED</option></select>
+                            <select id="compressionLevel"><option value="balance">Balance Mode</option></select>
                         </div>
                     </div>
 
@@ -129,7 +128,7 @@
 
             <div id="libraryPage" class="content-page hidden">
                 <h2 class="section-title">YOUR STEAM VAULT</h2>
-                <div id="libraryGrid" class="steam-grid">
+                <div id="libraryGrid" class="library-container steam-grid">
                     </div>
             </div>
 
