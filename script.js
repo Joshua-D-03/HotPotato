@@ -1,9 +1,27 @@
-// Restored hardcoded keys to prevent script crashes in standard browsers
+// --- Supabase Setup ---
 const SB_URL = "https://adsevhtaaqerrumdjqdz.supabase.co";
 const SB_KEY = "sb_publishable_VpehK1TR2_aEOt-XgwtKhg_dHx8NAmI";
 const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
+// --- Global Variables for Sizing & Comparison ---
+let selectedReduction = 0;
+let currentGameSize = 50; // Mock size in GB for visual comparison
+
+// FUSED: Sizing & Bar Logic (Global so HTML can see it)
+function setLevel(percent, name) {
+    selectedReduction = percent;
+    document.getElementById('comparison-view').classList.remove('hidden');
+    
+    const newSize = (currentGameSize * (1 - percent/100)).toFixed(2);
+    document.getElementById('oldSize').innerText = currentGameSize;
+    document.getElementById('newSize').innerText = newSize;
+    
+    // Visual bar update
+    document.getElementById('newBar').style.width = (100 - percent) + "%";
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    // --- UI Variables ---
     const potato = document.getElementById('potato');
     const pcField = document.getElementById('pcType');
     const historyGrid = document.getElementById('historyGrid');
@@ -12,15 +30,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressContainer = document.getElementById('progressContainer');
     const percentText = document.getElementById('percentText');
     const authModal = document.getElementById('authModal');
-   const { ipcRenderer } = require('electron');
-const remoteMain = require('@electron/remote/main');
-remoteMain.initialize();
+    
+    // Electron Remote Init
+    const { ipcRenderer } = require('electron');
+    const remoteMain = require('@electron/remote/main');
+    remoteMain.initialize();
     
     let isLoginMode = false;
 
-    // --- INTEGRATED FIXES START ---
-
-    // Sidebar Logic (Adjusted)
+    // --- SIDEBAR & MODAL FIXES ---
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('toggleSidebar');
     if (toggleBtn) {
@@ -30,7 +48,6 @@ remoteMain.initialize();
         };
     }
 
-    // Modal Closing Logic (Fixes the "Stuck" screen)
     const closeModal = document.getElementById('closeModal');
     if (closeModal) {
         closeModal.onclick = () => {
@@ -38,7 +55,7 @@ remoteMain.initialize();
         };
     }
 
-    // Navigation Fix
+    // Navigation Logic
     document.querySelectorAll('.nav-item').forEach(item => {
         item.onclick = () => {
             const page = item.dataset.page;
@@ -51,29 +68,34 @@ remoteMain.initialize();
         };
     });
 
-    // --- INTEGRATED FIXES END ---
-
-    // Ignite Logic (Compression Simulation)
+    // --- IGNITE & COMPRESSION LOGIC ---
     document.getElementById('igniteBtn').onclick = function() {
-        const file = e.target.files[0];
-    if (file) {
-        const allowedExtensions = ['.mp4', '.avi', '.mkv', '.wmv'];
-        const fileName = file.name.toLowerCase();
-        const isValid = allowedExtensions.some(ext => fileName.endsWith(ext));
+        // Validation check from original code
+        const file = fileInput.files[0];
+        if (file) {
+            const allowedExtensions = ['.mp4', '.avi', '.mkv', '.wmv'];
+            const fileName = file.name.toLowerCase();
+            const isValid = allowedExtensions.some(ext => fileName.endsWith(ext));
 
-        if (isValid) {
-            document.getElementById('fileLabel').innerHTML = `<strong>${file.name}</strong><br>VIDEO GAME FILE DETECTED`;
-        } else {
-            alert("Invalid file type. Please select a video game file (.mp4, .avi, .mkv, .wmv).");
-            fileInput.value = ""; // Clear the selection
-            document.getElementById('fileLabel').innerHTML = `DROP GAME HERE`;
+            if (!isValid) {
+                alert("Invalid file type. Please select a video game file (.mp4, .avi, .mkv, .wmv).");
+                fileInput.value = ""; 
+                document.getElementById('fileLabel').innerHTML = `DROP GAME HERE`;
+                return;
+            }
         }
-    };
 
+        // Animation & Progress
         this.disabled = true;
         this.innerText = "COMPRESSING...";
         potato.classList.add('ignite-animation');
+        potato.classList.add('compressing'); // Turn aura red
         progressContainer.classList.remove('hidden');
+
+        // Apply specific spin speed based on selection
+        const levelVal = document.getElementById('compressionLevel') ? document.getElementById('compressionLevel').value : 'standard';
+        potato.classList.remove('spin-standard', 'spin-balance', 'spin-extreme', 'spin-potato');
+        potato.classList.add(`spin-${levelVal}`);
 
         let progress = 0;
         const interval = setInterval(() => {
@@ -85,50 +107,30 @@ remoteMain.initialize();
                     alert("GAME OPTIMIZED!");
                     this.disabled = false;
                     this.innerText = "IGNITE COMPRESSION";
-                    potato.classList.remove('ignite-animation');
-                    saveToVault(file.name, pcField.value);
-                    updateComparisonChart(100, 40); // Simulated 60% saving
+                    stopCompressionEffect();
+                    
+                    // Final Logic Fused: Save data and run bridge
+                    finish(); 
+                    updateComparisonChart(100, 40); 
                 }, 1000);
             }
             progressBar.style.width = progress + "%";
             percentText.innerText = Math.floor(progress) + "%";
         }, 300);
-    const igniteBtn = document.getElementById('igniteBtn');
-const compressionLevel = document.getElementById('compressionLevel');
-const potatoImg = document.getElementById('potato');
 
-igniteBtn.onclick = () => {
-    const level = compressionLevel.value;
+        // Backend Bridge Call
+        window.api.sendCompress({ 
+            folderPath: window.selectedFolderPath, 
+            mode: document.getElementById('compLevel') ? document.getElementById('compLevel').value : 'balanced', 
+            level: selectedReduction || levelVal
+        });
+    };
 
-    // 1. Turn aura red
-    potatoImg.classList.add('compressing');
+    function stopCompressionEffect() {
+        potato.classList.remove('ignite-animation', 'compressing', 'spin-standard', 'spin-balance', 'spin-extreme', 'spin-potato');
+    }
 
-    // 2. Remove any old spin classes first
-    potatoImg.classList.remove('spin-standard', 'spin-balance', 'spin-extreme', 'spin-potato');
-
-    // 3. Apply the specific speed class
-    potatoImg.classList.add(`spin-${level}`);
-
-    // Tell the Backend to start compressing
-    // Ensure window.selectedFolderPath is set by your folder-picker logic
-    ipcRenderer.send('compress-game', { 
-        folderPath: window.selectedFolderPath, 
-        mode: mode, 
-        level: level 
-    });
-}
-    
-    // For demo purposes, we stop it after 5 seconds
-    setTimeout(() => {
-        stopCompressionEffect();
-    }, 5000);
-};
-
-function stopCompressionEffect() {
-    potatoImg.classList.remove('compressing', 'spin-standard', 'spin-balance', 'spin-extreme', 'spin-potato');
-}
-
-    // Auth Mode Toggling
+    // --- AUTHENTICATION LOGIC ---
     function toggleAuthMode() {
         const title = document.getElementById('modalTitle');
         const submitBtn = document.getElementById('auth-submit-btn');
@@ -153,7 +155,6 @@ function stopCompressionEffect() {
         toggleAuthMode();
     };
 
-    // Form Submission
     document.getElementById('auth-submit-btn').onclick = async () => {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
@@ -182,112 +183,91 @@ function stopCompressionEffect() {
         authModal.classList.add('hidden');
     }
 
+    // Event Bindings
+    document.getElementById('openSignup').onclick = () => { isLoginMode = false; toggleAuthMode(); authModal.classList.remove('hidden'); };
+    document.getElementById('openLogin').onclick = () => { isLoginMode = true; toggleAuthMode(); authModal.classList.remove('hidden'); };
+    document.getElementById('dropZone').onclick = () => fileInput.click();
+    
+    fileInput.onchange = (e) => { 
+        if(e.target.files[0]) {
+            document.getElementById('fileLabel').innerHTML = `<strong>${e.target.files[0].name}</strong><br>STEAM FILE DETECTED`;
+        }
+    };
+
+    // --- DATA & VAULT FUNCTIONS ---
+    async function saveToVault(gameName, level) {
+        const user = localStorage.getItem('hp_user');
+        if (!user) return;
+
+        const { data, error } = await supabaseClient
+            .from('user_vault')
+            .insert([{ 
+                game_name: gameName, 
+                compression_level: level,
+                user_id: user 
+            }]);
+        
+        if (error) console.error("Vault Save Error:", error);
+        else console.log("Added to Vault!");
+    }
+
+    function updateComparisonChart(originalSizeGB, compressedSizeGB) {
+        const barAfter = document.getElementById('barAfter');
+        const savePercent = document.getElementById('savePercent');
+        const gbSaved = document.getElementById('gbSaved');
+
+        const reduction = ((originalSizeGB - compressedSizeGB) / originalSizeGB) * 100;
+        const heightPercent = (compressedSizeGB / originalSizeGB) * 100;
+
+        barAfter.style.height = `${heightPercent}%`;
+        savePercent.innerText = `${reduction.toFixed(1)}%`;
+        gbSaved.innerText = `${(originalSizeGB - compressedSizeGB).toFixed(2)} GB`;
+    }
+
+    // --- ELECTRON BRIDGE FUNCTIONS ---
+    async function selectGameFolder() {
+        const path = await window.api.selectFolder();
+        if (path) {
+            window.selectedFolderPath = path;
+            alert("Folder Selected: " + path);
+        }
+    }
+
+    // FUSED: Enhanced finish function for Supabase Sync
+    async function finish() {
+        const gameName = fileInput.files[0] ? fileInput.files[0].name : "Unknown Game";
+        const finalSize = (currentGameSize * (1 - selectedReduction/100)).toFixed(2);
+
+        window.api.sendCompress({ 
+            folderPath: window.selectedFolderPath, 
+            level: selectedReduction 
+        });
+
+        const user = localStorage.getItem('hp_user');
+        if (user) {
+            const { error } = await supabaseClient
+                .from('user_vault')
+                .insert([{ 
+                    game_name: gameName, 
+                    original_size: currentGameSize, 
+                    compressed_size: finalSize,
+                    level: selectedReduction + "%"
+                }]);
+            if (!error) alert("Saved to your Steam Vault!");
+        }
+    }
+
+    // Bridge Result Listeners
+    window.api.onCompressResult((response) => {
+        if (response.status === 'success') {
+            alert("Success! Game compressed.");
+        } else {
+            alert("Compression Failed: " + response.message);
+        }
+    });
+
     // Check persistence on load
     const savedUser = localStorage.getItem('hp_user');
     if(savedUser) loginUser(savedUser);
 
-    document.getElementById('openSignup').onclick = () => { isLoginMode = false; toggleAuthMode(); authModal.classList.remove('hidden'); };
-    document.getElementById('openLogin').onclick = () => { isLoginMode = true; toggleAuthMode(); authModal.classList.remove('hidden'); };
-    document.getElementById('dropZone').onclick = () => fileInput.click();
-    fileInput.onchange = (e) => { if(e.target.files[0]) document.getElementById('fileLabel').innerHTML = `<strong>${e.target.files[0].name}</strong><br>STEAM FILE DETECTED`; };
-
-window.onload = () => {
-    if(localStorage.getItem('hp_user')) {
-        loginUser(localStorage.getItem('hp_user'));
-    }
-};
-
-async function saveToVault(gameName, level) {
-    const user = localStorage.getItem('hp_user');
-    if (!user) return; // Silent return as per requested logic
-
-    const { data, error } = await supabaseClient
-        .from('user_vault')
-        .insert([{ 
-            game_name: gameName, 
-            compression_level: level,
-            user_id: user 
-        }]);
-    
-    if (error) console.error("Vault Save Error:", error);
-    else console.log("Added to Vault!");
-}
-
-function updateComparisonChart(originalSizeGB, compressedSizeGB) {
-    const barBefore = document.getElementById('barBefore');
-    const barAfter = document.getElementById('barAfter');
-    const savePercent = document.getElementById('savePercent');
-    const gbSaved = document.getElementById('gbSaved');
-
-    // Calculate percentage
-    const reduction = ((originalSizeGB - compressedSizeGB) / originalSizeGB) * 100;
-    const heightPercent = (compressedSizeGB / originalSizeGB) * 100;
-
-    // Update Visuals
-    barAfter.style.height = `${heightPercent}%`;
-    savePercent.innerText = `${reduction.toFixed(1)}%`;
-    gbSaved.innerText = `${(originalSizeGB - compressedSizeGB).toFixed(2)} GB`;
-}
-ipcRenderer.on('compression-result', (event, response) => {
-    if (response.status === 'success') {
-        alert("Real compression applied successfully!");
-    } else {
-        alert("Error: " + response.message);
-    }
-});
-// This function should be triggered by your "Select Folder" button
-// REPLACE your old ipcRenderer calls with these:
-
-async function selectGameFolder() {
-    const path = await window.api.selectFolder();
-    if (path) {
-        window.selectedFolderPath = path;
-        console.log("Folder selected:", path);
-    }
-}
-
-function finish(file) {
-    const level = document.getElementById('compLevel').value;
-    const mode = document.getElementById('compMode').value; 
-    
-    if (!window.selectedFolderPath) {
-        alert("Please select a game folder first!");
-        return;
-    }
-
-    // Use the bridge
-    window.api.sendCompress({ 
-        folderPath: window.selectedFolderPath, 
-        mode: mode, 
-        level: level 
-    });
-}
-
-// Receive the result
-window.api.onCompressResult((response) => {
-    alert("Compression status: " + response.status);
-});
-    
-    if (!result.canceled) {
-        window.selectedFolderPath = result.filePaths[0];
-        console.log("Folder selected:", window.selectedFolderPath);
-    }
-// --- NEW ELECTRON BRIDGE FUNCTIONS ---
-
-async function selectGameFolder() {
-    const path = await window.api.selectFolder();
-    if (path) {
-        window.selectedFolderPath = path;
-        alert("Folder Selected: " + path);
-    }
-}
-
-// Receive result
-window.api.onCompressResult((response) => {
-    if (response.status === 'success') {
-        alert("Success! Game compressed.");
-    } else {
-        alert("Compression Failed: " + response.message);
-    }
-});
-}
+}); // End DOMContentLoaded
