@@ -10,3 +10,9 @@ function createWindow() {
     });
     win.loadFile('index.html');
 }
+const { ipcMain, dialog } = require('electron');
+
+ipcMain.handle('dialog:openFolder', async () => {
+    const result = await dialog.showOpenDialog({ properties: ['openDirectory'] });
+    return result.filePaths[0];
+});
