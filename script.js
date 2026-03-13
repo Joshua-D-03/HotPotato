@@ -109,10 +109,6 @@ igniteBtn.onclick = () => {
     // 3. Apply the specific speed class
     potatoImg.classList.add(`spin-${level}`);
 
-   function finish(file) {
-    const level = document.getElementById('compLevel').value;
-    const mode = "Quality"; 
-
     // Tell the Backend to start compressing
     // Ensure window.selectedFolderPath is set by your folder-picker logic
     ipcRenderer.send('compress-game', { 
@@ -131,7 +127,6 @@ igniteBtn.onclick = () => {
 function stopCompressionEffect() {
     potatoImg.classList.remove('compressing', 'spin-standard', 'spin-balance', 'spin-extreme', 'spin-potato');
 }
-    };
 
     // Auth Mode Toggling
     function toggleAuthMode() {
@@ -241,12 +236,29 @@ ipcRenderer.on('compression-result', (event, response) => {
     }
 });
 // This function should be triggered by your "Select Folder" button
+// REPLACE your old ipcRenderer calls with these:
+
 async function selectGameFolder() {
-    const path = await window.electronAPI.selectFolder();
+    const path = await window.api.selectFolder();
     if (path) {
         window.selectedFolderPath = path;
+        console.log("Folder selected:", path);
     }
 }
+
+function finish(file) {
+    const level = document.getElementById('compLevel').value;
+    window.api.sendCompress({ 
+        folderPath: window.selectedFolderPath, 
+        level: level 
+    const mode = "Quality";
+    });
+}
+
+// Receive the result
+window.api.onCompressResult((response) => {
+    alert("Compression status: " + response.status);
+});
     
     if (!result.canceled) {
         window.selectedFolderPath = result.filePaths[0];
@@ -254,3 +266,4 @@ async function selectGameFolder() {
     }
 }
     });
+        };
