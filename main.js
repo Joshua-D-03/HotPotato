@@ -1,7 +1,7 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 
-function createWindow() {
+function createWindow(remoteMain.enable(win.webContents);) {
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
