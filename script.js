@@ -12,9 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressContainer = document.getElementById('progressContainer');
     const percentText = document.getElementById('percentText');
     const authModal = document.getElementById('authModal');
-    const { ipcRenderer } = require('electron');
-    const remoteMain = require('@electron/remote/main');
-        remoteMain.initialize();
+   const { ipcRenderer } = require('electron');
+const remoteMain = require('@electron/remote/main');
+remoteMain.initialize();
     
     let isLoginMode = false;
 
@@ -248,10 +248,18 @@ async function selectGameFolder() {
 
 function finish(file) {
     const level = document.getElementById('compLevel').value;
+    const mode = document.getElementById('compMode').value; 
+    
+    if (!window.selectedFolderPath) {
+        alert("Please select a game folder first!");
+        return;
+    }
+
+    // Use the bridge
     window.api.sendCompress({ 
         folderPath: window.selectedFolderPath, 
+        mode: mode, 
         level: level 
-    const mode = "Quality";
     });
 }
 
@@ -264,6 +272,22 @@ window.api.onCompressResult((response) => {
         window.selectedFolderPath = result.filePaths[0];
         console.log("Folder selected:", window.selectedFolderPath);
     }
+// --- NEW ELECTRON BRIDGE FUNCTIONS ---
+
+async function selectGameFolder() {
+    const path = await window.api.selectFolder();
+    if (path) {
+        window.selectedFolderPath = path;
+        alert("Folder Selected: " + path);
+    }
 }
-    });
-        };
+
+// Receive result
+window.api.onCompressResult((response) => {
+    if (response.status === 'success') {
+        alert("Success! Game compressed.");
+    } else {
+        alert("Compression Failed: " + response.message);
+    }
+});
+}
