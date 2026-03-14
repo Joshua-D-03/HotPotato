@@ -2,83 +2,61 @@ import os
 import subprocess
 import sys
 
-# Mapping the UI percentages to FFmpeg CRF values
-# Lower CRF = Better Quality, Higher CRF = More Compression
+# Mapping the UI Intensity/Levels to Windows Compact Algorithms
+# XPRESS4K = Fastest/Lightest (Standard)
+# LZX = Slowest/Strongest (Potato)
 level_map = {
-    "15": "20",  # Standard
-    "30": "24",  # Balanced
-    "65": "30",  # Extreme
-    "85": "38",  # Potato (High compression)
-    "standard": "20",
-    "balance": "24",
-    "extreme": "30",
-    "potato": "35"
+    "15": "XPRESS4K",   # Standard
+    "30": "XPRESS8K",   # Balanced
+    "65": "XPRESS16K",  # Extreme
+    "85": "LZX",        # Potato
+    "standard": "XPRESS4K",
+    "balance": "XPRESS8K",
+    "extreme": "XPRESS16K",
+    "potato": "LZX"
 }
 
-def check_dependencies():
-    # Fix: Ensure ffmpeg.exe exists locally
-    local_ffmpeg = os.path.join(os.path.dirname(__file__), "ffmpeg.exe")
-    if not os.path.exists(local_ffmpeg):
-        print("ERROR: ffmpeg.exe not found in this folder!")
-        print("Please place ffmpeg.exe next to this script.")
-        input("Press Enter to exit...")
-        sys.exit()
-    return local_ffmpeg
+def get_algorithm(mode_or_percent):
+    """
+    Translates the UI selection into a Windows-recognized 
+    compression algorithm.
+    """
+    key = str(mode_or_percent).lower()
+    # Default to LZX if the key isn't found
+    return level_map.get(key, "LZX")
 
-def get_compression_settings(mode_or_percent):
-    # Performance = Smaller files, lower quality
-    # Quality = Better looking, larger files
-    # Balanced = The middle ground
-    modes = {
-        "performance": {"crf": "28", "preset": "faster"},
-        "balanced": {"crf": "24", "preset": "medium"},
-        "quality": {"crf": "20", "preset": "slow"}
-    }
+def compress_game(folder_path, intensity_level):
+    """
+    Runs the Windows CompactOS engine on the entire game directory.
+    This replaces the video-only compression.
+    """
+    algorithm = get_algorithm(intensity_level)
     
-    # Check if the input is one of the percentage keys (15, 30, etc) or descriptive keys
-    if str(mode_or_percent).lower() in level_map:
-        crf_value = level_map.get(str(mode_or_percent).lower())
-        return {"crf": crf_value, "preset": "faster"}
+    print(f"--- HOT POTATO ENGINE START ---")
+    print(f"Targeting Game: {folder_path}")
+    print(f"Intensity Level: {intensity_level} (Algorithm: {algorithm})")
     
-    # Otherwise, fall back to the original mode names
-    return modes.get(str(mode_or_percent).lower(), modes["balanced"])
-
-def compress_game(folder_path, mode):
-    print("Compressing game binaries and data...")
-    subprocess.run(['compact', '/c', '/s', '/exe:lzx', f'{folder_path}\\*'], shell=True)
-    ffmpeg_cmd = check_dependencies()
-    # Get settings based on the mode or percentage passed from the UI
-    config = get_compression_settings(mode)
+    # We use the Windows 'compact' tool on the WHOLE folder.
+    # /C = Compress
+    # /S = Include subdirectories
+    # /EXE = Specific algorithm for executables and game data
+    # /I = Ignore errors (useful if a file is open)
+    # /F = Force compression on all files
+    command = f'compact /C /S /EXE:{algorithm} /I /F "{folder_path}\\*"'
     
-    # Explicitly defined supported formats
-    SUPPORTED_FORMATS = ('.mp4', '.avi', '.mkv', '.wmv')
-
-    for root, _, files in os.walk(folder_path):
-        for file in files:
-            # Strictly check for video extensions
-            if file.lower().endswith(SUPPORTED_FORMATS):
-                input_path = os.path.join(root, file)
-                output_path = os.path.join(root, f"POTATO_{file}")
-                
-                print(f"Compressing ({mode}): {file}...")
-                try:
-                    # Fused subprocess call using dynamic config
-                    subprocess.run([
-                        ffmpeg_cmd, '-y', '-i', input_path, 
-                        '-vcodec', 'libx265', 
-                        '-crf', config["crf"], 
-                        '-preset', config["preset"], 
-                        output_path
-                    ], check=True)
-                except Exception as e:
-                    print(f"Error processing {file}: {e}")
-            else:
-                # Optional: log skipped non-video files
-                print(f"Skipping non-video file: {file}")
+    try:
+        print(f"Executing {algorithm} System Compression... Please wait.")
+        # Execute the system command
+        subprocess.run(command, shell=True, check=True)
+        print(f"\nSUCCESS: The Steam game at {folder_path} has been optimized.")
+    except Exception as e:
+        print(f"\nFATAL ERROR during compression: {e}")
 
 if __name__ == "__main__":
+    # Expecting: python core.py "C:\Path\To\Game" "85"
     if len(sys.argv) < 3:
-        print("Usage: core.py <folder_path> <mode>")
+        print("Usage: core.py <folder_path> <intensity_level>")
     else:
-        # sys.argv[2] can now be "balanced" OR "85"
-        compress_game(sys.argv[1], sys.argv[2])
+        folder = sys.argv[1]
+        level = sys.argv[2]
+        compress_game(folder, level)
