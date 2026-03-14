@@ -1,4 +1,6 @@
 // --- Supabase Setup ---
+// In a professional production build, these would be injected via a build tool.
+// For now, we are using the variables you provided.
 const SB_URL = "https://adsevhtaaqerrumdjqdz.supabase.co";
 const SB_KEY = "sb_publishable_VpehK1TR2_aEOt-XgwtKhg_dHx8NAmI";
 const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
@@ -58,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Handle page-specific loading
             if (page === 'community') loadDiscussions();
-            if (page === 'library') loadLibrary(); // Added: Load library when entering page
+            if (page === 'library') loadLibrary(); 
             
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             item.classList.add('active');
@@ -66,42 +68,50 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- IGNITE LOGIC (Fused Animation + Backend Bridge) ---
-    document.getElementById('igniteBtn').onclick = function() {
-        if (!window.selectedFolderPath) {
-            alert("Please select a game folder/file first!");
-            return;
-        }
-
-        // Start Visual Effects
-        this.disabled = true;
-        this.innerText = "COMPRESSING...";
-        potato.classList.add('ignite-animation');
-        potato.classList.add('compressing'); // Add red aura
-        progressContainer.classList.remove('hidden');
-
-        // Apply rotation speed based on level
-        const levelVal = document.getElementById('compressionLevel')?.value || 'balance';
-        potato.classList.remove('spin-standard', 'spin-balance', 'spin-extreme', 'spin-potato');
-        potato.classList.add(`spin-${levelVal}`);
-
-        // Progress Bar Simulation
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += Math.random() * 15;
-            if(progress >= 100) {
-                progress = 100;
-                clearInterval(interval);
-                setTimeout(() => {
-                    stopCompressionEffect();
-                    this.disabled = false;
-                    this.innerText = "IGNITE COMPRESSION";
-                    finish(); // Trigger Fused Supabase Sync and Electron Command
-                }, 1000);
+    const igniteBtn = document.getElementById('igniteBtn');
+    if (igniteBtn) {
+        igniteBtn.onclick = function() {
+            if (!window.selectedFolderPath) {
+                alert("Please select a Steam game folder first!");
+                return;
             }
-            progressBar.style.width = progress + "%";
-            percentText.innerText = Math.floor(progress) + "%";
-        }, 300);
-    };
+
+            // Start Visual Effects
+            this.disabled = true;
+            this.innerText = "COMPRESSING...";
+            potato.classList.add('ignite-animation');
+            potato.classList.add('compressing'); 
+            progressContainer.classList.remove('hidden');
+
+            // Apply rotation speed based on level
+            // Note: Ensure your HTML select id is 'compLevel'
+            const levelVal = document.getElementById('compLevel')?.value || '30'; 
+            potato.classList.remove('rotate-25', 'rotate-50', 'rotate-100', 'rotate-200');
+            
+            if (levelVal === "15") potato.classList.add('rotate-25');
+            else if (levelVal === "30") potato.classList.add('rotate-50');
+            else if (levelVal === "65") potato.classList.add('rotate-100');
+            else if (levelVal === "85") potato.classList.add('rotate-200');
+
+            // Progress Bar Simulation
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if(progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        stopCompressionEffect();
+                        this.disabled = false;
+                        this.innerText = "IGNITE COMPRESSION";
+                        finish(); // Trigger Fused Supabase Sync and Electron Command
+                    }, 1000);
+                }
+                progressBar.style.width = progress + "%";
+                percentText.innerText = Math.floor(progress) + "%";
+            }, 300);
+        };
+    }
 
     // --- AUTH LOGIC ---
     function toggleAuthMode() {
@@ -123,66 +133,70 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    document.getElementById('auth-toggle-text').onclick = () => {
-        isLoginMode = !isLoginMode;
-        toggleAuthMode();
-    };
+    const authToggle = document.getElementById('auth-toggle-text');
+    if (authToggle) {
+        authToggle.onclick = () => {
+            isLoginMode = !isLoginMode;
+            toggleAuthMode();
+        };
+    }
 
-    document.getElementById('auth-submit-btn').onclick = async () => {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const status = document.getElementById('status-msg');
+    const authSubmit = document.getElementById('auth-submit-btn');
+    if (authSubmit) {
+        authSubmit.onclick = async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const status = document.getElementById('status-msg');
 
-        if(isLoginMode) {
-            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-            if(error) status.innerText = error.message;
-            else loginUser(data.user.email);
-        } else {
-            const { data, error } = await supabaseClient.auth.signUp({ email, password });
-            if(error) status.innerText = error.message;
-            else status.innerText = "Check your email for the confirmation link!";
-        }
-    };
+            if(isLoginMode) {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if(error) status.innerText = error.message;
+                else loginUser(data.user.email);
+            } else {
+                const { data, error } = await supabaseClient.auth.signUp({ email, password });
+                if(error) status.innerText = error.message;
+                else status.innerText = "Check your email for the confirmation link!";
+            }
+        };
+    }
 
     // --- FILE SELECTION LOGIC ---
-    document.getElementById('dropZone').onclick = () => {
-        if (window.api && window.api.selectFolder) {
-            selectGameFolder();
-        } else {
-            fileInput.click();
-        }
-    };
-
-    fileInput.onchange = (e) => { 
-        const file = e.target.files[0];
-        if (file) {
-            const allowedExtensions = ['.mp4', '.avi', '.mkv', '.wmv', '.acf'];
-            const fileName = file.name.toLowerCase();
-            const isValid = allowedExtensions.some(ext => fileName.endsWith(ext));
-
-            if (isValid) {
-                window.selectedFolderPath = file.name;
-                document.getElementById('fileLabel').innerHTML = `<strong>${file.name}</strong><br>STEAM FILE DETECTED`;
+    const dropZone = document.getElementById('dropZone');
+    if (dropZone) {
+        dropZone.onclick = () => {
+            if (window.api && window.api.selectFolder) {
+                selectGameFolder();
             } else {
-                alert("Invalid file type.");
-                fileInput.value = "";
-                document.getElementById('fileLabel').innerHTML = `DROP GAME HERE`;
+                fileInput.click();
             }
-        }
-    };
+        };
+    }
+
+    if (fileInput) {
+        fileInput.onchange = (e) => { 
+            const file = e.target.files[0];
+            if (file) {
+                window.selectedFolderPath = file.name;
+                document.getElementById('fileLabel').innerHTML = `<strong>${file.name}</strong><br>READY FOR IGNITION`;
+            }
+        };
+    }
 
     const savedUser = localStorage.getItem('hp_user');
     if(savedUser) loginUser(savedUser);
 
-    document.getElementById('openSignup').onclick = () => { isLoginMode = false; toggleAuthMode(); authModal.classList.remove('hidden'); };
-    document.getElementById('openLogin').onclick = () => { isLoginMode = true; toggleAuthMode(); authModal.classList.remove('hidden'); };
+    const openSignup = document.getElementById('openSignup');
+    if (openSignup) openSignup.onclick = () => { isLoginMode = false; toggleAuthMode(); authModal.classList.remove('hidden'); };
+    
+    const openLogin = document.getElementById('openLogin');
+    if (openLogin) openLogin.onclick = () => { isLoginMode = true; toggleAuthMode(); authModal.classList.remove('hidden'); };
 });
 
 // --- HELPER FUNCTIONS ---
 
 function stopCompressionEffect() {
     const potatoImg = document.getElementById('potato');
-    potatoImg.classList.remove('ignite-animation', 'compressing', 'spin-standard', 'spin-balance', 'spin-extreme', 'spin-potato');
+    potatoImg.classList.remove('ignite-animation', 'compressing', 'rotate-25', 'rotate-50', 'rotate-100', 'rotate-200');
 }
 
 function loginUser(email) {
@@ -195,37 +209,37 @@ function loginUser(email) {
     if(newPostBtn) newPostBtn.classList.remove('hidden');
     
     document.getElementById('authModal').classList.add('hidden');
-    loadLibrary(); // Check for existing games on login
+    loadLibrary(); 
 }
 
 function setLevel(percent, name) {
     selectedReduction = percent;
-    document.getElementById('comparison-view').classList.remove('hidden');
+    const comparisonView = document.getElementById('comparison-view');
+    if (comparisonView) comparisonView.classList.remove('hidden');
     
     const newSize = (currentGameSize * (1 - percent/100)).toFixed(2);
     document.getElementById('oldSize').innerText = currentGameSize;
     document.getElementById('newSize').innerText = newSize;
     
-    document.getElementById('newBar').style.width = (100 - percent) + "%";
+    const newBar = document.getElementById('newBar');
+    if (newBar) newBar.style.width = (100 - percent) + "%";
 }
 
 // --- FUSED FINISH & SUPABASE SYNC ---
 async function finish() {
-    // Attempt to parse folder name from path, fallback to "Unknown Game"
     const gameName = window.selectedFolderPath ? window.selectedFolderPath.split(/[\\/]/).pop() : "Unknown Game";
-    const mode = document.getElementById('compMode')?.value || 'balanced';
-    const finalSize = (currentGameSize * (1 - selectedReduction/100)).toFixed(2);
+    const levelVal = document.getElementById('compLevel')?.value || '30';
+    const finalSize = (currentGameSize * (1 - parseInt(levelVal)/100)).toFixed(2);
 
     // 1. Trigger the Electron Bridge (Calls core.py)
     if (window.api && window.api.sendCompress) {
         window.api.sendCompress({ 
             folderPath: window.selectedFolderPath, 
-            mode: mode, 
-            level: selectedReduction 
+            mode: levelVal // Passes '15', '30', '85' etc to python
         });
     }
 
-    // 2. Save to Supabase (Vault & Analytics)
+    // 2. Save to Supabase
     const user = localStorage.getItem('hp_user');
     if (user) {
         const { error } = await supabaseClient
@@ -235,21 +249,18 @@ async function finish() {
                 game_name: gameName, 
                 original_size: currentGameSize, 
                 compressed_size: parseFloat(finalSize),
-                level: selectedReduction + "%",
-                mode: mode
+                level: levelVal + "%"
             }]);
         
         if (!error) {
             console.log("Saved to Vault!");
-            loadLibrary(); // Refresh library view automatically
-        } else {
-            console.error("Vault Save Error:", error);
+            loadLibrary(); 
         }
     }
 
-    // 3. Update the Analytics Visuals
+    // 3. Update Visuals
     updateComparisonChart(currentGameSize, finalSize);
-    alert("Compression Started! Data logged to your Library.");
+    alert("Ignition successful! " + gameName + " is being compressed.");
 }
 
 // --- LIBRARY LOADER ---
@@ -268,9 +279,9 @@ async function loadLibrary() {
         container.innerHTML = data.map(game => `
             <div class="library-card">
                 <h4>${game.game_name}</h4>
-                <p>Mode: ${game.mode || 'N/A'}</p>
+                <p>Reduction: ${game.level || 'N/A'}</p>
                 <p>Saved: ${(game.original_size - game.compressed_size).toFixed(2)} GB</p>
-                <div class="status-tag">COMPRESSED</div>
+                <div class="status-tag">OPTIMIZED</div>
             </div>
         `).join('');
     }
@@ -322,9 +333,9 @@ async function selectGameFolder() {
 if (window.api && window.api.onCompressResult) {
     window.api.onCompressResult((response) => {
         if (response.status === 'success') {
-            alert("Success! Real-time compression completed.");
+            console.log("Backend Success Signal Received");
         } else {
-            alert("Compression Failed: " + response.message);
+            alert("Backend Error: " + response.message);
         }
     });
 }
