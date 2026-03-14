@@ -7,32 +7,52 @@ function createWindow() {
         width: 1200,
         height: 800,
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js'), // Point to your bridge
-            contextIsolation: true, // Keep this true for security
+            preload: path.join(__dirname, 'preload.js'), // Bridge for secure communication
+            contextIsolation: true,
             nodeIntegration: false      
         }
     });
     win.loadFile('index.html');
 }
 
-// Handle folder selection dialog
+// 1. Handle the Folder Selection Dialog
 ipcMain.handle('dialog:openFolder', async () => {
     const result = await dialog.showOpenDialog({ properties: ['openDirectory'] });
-    return result.filePaths[0];
+    return result.filePaths[0]; // Returns the path to script.js
 });
 
-// Handle compression process execution
+// 2. Handle the Compression Command
 ipcMain.on('compress-game', (event, data) => {
-    // Run your Python script from Node
-    // Note: Ensure core.py is in the same directory as main.js
-    exec(`python core.py "${data.folderPath}" ${data.mode}`, (err, stdout, stderr) => {
-        if (err) {
-            event.reply('compression-result', { status: 'error', message: err.message });
+    // Construct the command to run core.py
+    // It passes the Folder Path and the Mode (Intensity) as arguments
+    const pythonCommand = `python core.py "${data.folderPath}" "${data.mode}"`;
+    
+    console.log("Executing:", pythonCommand);
+
+    exec(pythonCommand, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Execution Error: ${error.message}`);
+            // Send the error back to the website UI
+            event.reply('compression-result', { 
+                status: 'error', 
+                message: error.message 
+            });
         } else {
-            event.reply('compression-result', { status: 'success', message: 'Compression complete!' });
+            console.log(`Python Output: ${stdout}`);
+            // Send the success message back to the website UI
+            event.reply('compression-result', { 
+                status: 'success', 
+                message: 'Full Game Compressed!' 
+            });
         }
     });
 });
 
+// Start the app
 app.whenReady().then(createWindow);
-}
+
+// Standard Electron behavior for closing windows
+app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') app.quit();
+});
+
