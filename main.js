@@ -25,7 +25,8 @@ ipcMain.handle('dialog:openFolder', async () => {
 ipcMain.on('compress-game', (event, data) => {
     // Construct the command to run core.py
     // It passes the Folder Path and the Mode (Intensity) as arguments
-    const pythonCommand = `python core.py "${data.folderPath}" "${data.mode}"`;
+    const exePath = path.join(__dirname, 'core.exe');
+const pythonCommand = `"${exePath}" "${data.folderPath}" "${data.mode}"`;
     
     console.log("Executing:", pythonCommand);
 
@@ -55,4 +56,5 @@ app.whenReady().then(createWindow);
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
 });
+
 
