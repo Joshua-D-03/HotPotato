@@ -23,30 +23,24 @@ ipcMain.handle('dialog:openFolder', async () => {
 
 // 2. Handle the Compression Command
 ipcMain.on('compress-game', (event, data) => {
-    // Construct the command to run core.py
-    // It passes the Folder Path and the Mode (Intensity) as arguments
+    // We point directly to the exe we just created
     const exePath = path.join(__dirname, 'core.exe');
-const pythonCommand = `"${exePath}" "${data.folderPath}" "${data.mode}"`;
     
-    console.log("Executing:", pythonCommand);
+    // We run the exe directly instead of calling 'python'
+    const runCommand = `"${exePath}" "${data.folderPath}" "${data.mode}"`;
+    
+    console.log("Hot Potato Engine Ignited:", runCommand);
 
-    exec(pythonCommand, (error, stdout, stderr) => {
+    exec(runCommand, (error, stdout, stderr) => {
         if (error) {
-            console.error(`Execution Error: ${error.message}`);
-            // Send the error back to the website UI
-            event.reply('compression-result', { 
-                status: 'error', 
-                message: error.message 
-            });
+            console.error(`Engine Error: ${error.message}`);
+            event.reply('compression-result', { status: 'error', message: error.message });
         } else {
-            console.log(`Python Output: ${stdout}`);
-            // Send the success message back to the website UI
-            event.reply('compression-result', { 
-                status: 'success', 
-                message: 'Full Game Compressed!' 
-            });
+            console.log(`Engine Output: ${stdout}`);
+            event.reply('compression-result', { status: 'success', message: 'Optimization Complete!' });
         }
     });
+});
 });
 
 // Start the app
