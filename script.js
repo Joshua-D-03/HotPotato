@@ -1,6 +1,3 @@
-// --- Supabase Setup ---
-// In a professional production build, these would be injected via a build tool.
-// For now, we are using the variables you provided.
 const SB_URL = "https://adsevhtaaqerrumdjqdz.supabase.co";
 const SB_KEY = "sb_publishable_VpehK1TR2_aEOt-XgwtKhg_dHx8NAmI";
 const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
