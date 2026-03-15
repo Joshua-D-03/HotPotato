@@ -327,12 +327,23 @@ async function selectGameFolder() {
     }
 }
 
-if (window.api && window.api.onCompressResult) {
-    window.api.onCompressResult((response) => {
-        if (response.status === 'success') {
-            console.log("Backend Success Signal Received");
-        } else {
-            alert("Backend Error: " + response.message);
-        }
-    });
-}
+// --- NEW COMPRESSION HANDLERS ---
+document.getElementById('btnIgnite').addEventListener('click', () => {
+    // Collect the data from your UI
+    const data = {
+        folderPath: window.selectedFolderPath, // You set this in your folder selection
+        mode: document.getElementById('pcType').value // Get the intensity level
+    };
+    
+    // Send it to the main process via the bridge we defined in preload.js
+    window.api.sendCompress(data);
+});
+
+// Listen for the result to show in the UI
+window.api.onCompressResult((response) => {
+    if (response.status === 'success') {
+        alert("Compression complete!");
+    } else {
+        alert("Error: " + response.message);
+    }
+});
