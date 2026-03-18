@@ -26,6 +26,9 @@
 
     <nav class="top-nav">
         <div id="loggedOutNav">
+            <a href="hot-potato.Setup.1.0.0.exe" class="nav-download-btn" title="Download for Windows">
+                <img src="https://img.icons8.com/color/20/000000/windows-10.png" alt="Download">
+            </a>
             <span class="nav-link orange-hover" id="openSignup">SIGN UP</span>
             <span class="nav-separator">|</span>
             <span class="nav-link orange-hover" id="openLogin">LOG IN</span>
@@ -36,20 +39,6 @@
         </div>
     </nav>
 
-    <section class="hero-section">
-        <div class="hero-content">
-            <h1 class="main-title">HOT <span>POTATO</span></h1>
-            <p class="hero-description">
-                The Ultimate Game compressor. Shrink your library, keep your performance.
-            </p>
-            <a href="YOUR_GITHUB_RELEASE_URL_HERE" class="btn-download-main" id="downloadBtn">
-                <img src="https://img.icons8.com/color/48/000000/windows-10.png" alt="Windows Icon"/>
-                DOWNLOAD FOR WINDOWS
-            </a>
-            <p class="version-tag">Version 1.0.0 (Alpha) - Includes Hot Potato Engine</p>
-        </div>
-    </section>
-
     <div class="app-container">
         <aside class="sidebar closed" id="sidebar">
             <button class="toggle-sidebar" id="toggleSidebar">▶</button>
@@ -58,7 +47,6 @@
                 <nav class="sidebar-nav">
                     <div class="nav-item active" data-page="lab">COMPRESSOR</div>
                     <div class="nav-item" data-page="library">LIBRARY</div> 
-                    <div class="nav-item" data-page="history">ANALYTICS</div>
                     <div class="nav-item" data-page="community">COMMUNITY HUB</div>
                 </nav>
             </div>
@@ -76,10 +64,8 @@
                 
                 <section class="tool-card original-engine">
                     <div class="drop-zone" id="dropZone">
-                        <input type="file" id="fileInput" class="hidden" accept=".acf">
                         <div class="box-inner">
-                            <div class="dz-icon">📦</div>
-                            <p id="fileLabel">DROP GAME HERE<br><small>(Supported: .mp4, .avi, .mkv, .wmv)</small></p>
+                            <div class="dz-icon">📁</div> <p id="fileLabel">SELECT GAME<br><small>(Ready for Hot Potato Compression)</small></p>
                         </div>
                     </div>
 
@@ -91,17 +77,8 @@
                     </div>
 
                     <div class="system-options-grid">
-                        <div class="field">
-                            <label>PC MODEL (WEB ASSESSMENT)</label>
-                            <input type="text" id="pcType" placeholder="Analyzing..." readonly>
-                        </div>
-                        <div class="field">
-                            <label>STORAGE (GB)</label>
-                            <input type="number" id="storageInput" class="transparent-input" value="500">
-                        </div>
-                        
                         <div class="control-panel settings-panel" style="grid-column: span 2; margin-top: 20px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 4px;">
-                            
+    
                             <h3 style="font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 5px;">COMPRESSION STRATEGY</h3>
                             <select id="compMode" class="steam-input" style="width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: white; margin-bottom: 20px;">
                                 <option value="performance">Performance (Fastest, Lower Quality)</option>
@@ -110,13 +87,13 @@
                             </select>
 
                             <h3 style="font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 15px;">INTENSITY LEVEL</h3>
-                            <div class="level-buttons compression-options" style="display: flex; gap: 10px; margin-bottom: 20px;">
-                                <button class="level-btn" onclick="setLevel(15, 'Standard')" style="flex: 1; padding: 10px; background: #222; border: 1px solid #444; color: white; cursor: pointer;">15%</button>
-                                <button class="level-btn" onclick="setLevel(30, 'Balanced')" style="flex: 1; padding: 10px; background: #222; border: 1px solid #444; color: white; cursor: pointer;">30%</button>
-                                <button class="level-btn" onclick="setLevel(65, 'Extreme')" style="flex: 1; padding: 10px; background: #222; border: 1px solid #444; color: white; cursor: pointer;">65%</button>
-                                <button class="level-btn" onclick="setLevel(85, 'Potato')" style="flex: 1; padding: 10px; background: #222; border: 1px solid #444; color: white; cursor: pointer;">85%</button>
+                            <div class="level-buttons" id="intensityGroup" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                                <button class="level-btn" data-value="15">15%</button>
+                                <button class="level-btn" data-value="30">30%</button>
+                                <button class="level-btn" data-value="65">65%</button>
+                                <button class="level-btn" data-value="85">85%</button>
                             </div>
-                            
+    
                             <div id="comparison-view" class="hidden">
                                 <div class="bar-container">
                                     <p style="font-size: 0.7rem; margin: 5px 0;">Original: <span id="oldSize">0</span> GB</p>
@@ -129,11 +106,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        <div class="config-item hidden">
-                            <select id="compLevel"><option value="balanced">BALANCED</option></select>
-                            <select id="compressionLevel"><option value="balance">Balance Mode</option></select>
-                        </div>
                     </div>
 
                     <button id="btnIgnite" class="btn-ignite" style="margin-top:20px;">IGNITE COMPRESSION</button>
@@ -141,55 +113,41 @@
             </div>
 
             <div id="libraryPage" class="content-page hidden">
-                <h2 class="section-title">YOUR STEAM VAULT</h2>
-                <div id="libraryGrid" class="library-container steam-grid">
-                    </div>
+                <div class="page-header">
+                    <h2 class="section-title">COMPRESSED ARCHIVE</h2>
+                    <input type="text" id="librarySearch" placeholder="Search your compressed games..." class="steam-input search-bar">
+                </div>
+                <div id="libraryGrid" class="game-grid"></div>
             </div>
 
-            <div id="historyPage" class="content-page hidden">
-                <h2 class="section-title">VAULT & ANALYTICS</h2>
-                <div class="analytics-container" style="background: #111; padding: 20px; border: 1px solid var(--orange); margin-bottom: 20px;">
-                    <h3 style="color: #66c0f4;">LAST JOB COMPARISON</h3>
-                    <div class="chart-flex" style="display: flex; gap: 20px; align-items: flex-end; height: 200px; padding: 20px;">
-                        <div id="barBefore" style="background: #333; width: 60px; height: 100%; position: relative;">
-                            <span style="position: absolute; top: -25px; width: 100%; text-align: center; font-size: 0.7rem;">ORIGINAL</span>
-                        </div>
-                        <div id="barAfter" style="background: var(--orange); width: 60px; height: 40%; position: relative;">
-                            <span style="position: absolute; top: -25px; width: 100%; text-align: center; font-size: 0.7rem;">POTATO</span>
-                        </div>
-                        <div class="stats-text" style="margin-left: 20px;">
-                            <p>Space Saved: <span id="savePercent" class="nexus-blue" style="color: #66c0f4;">0%</span></p>
-                            <p>GB Recovered: <span id="gbSaved" style="color: var(--bright-orange);">0 GB</span></p>
-                        </div>
+            <div id="gameDetailPage" class="content-page hidden detail-view">
+                <button id="backToLibrary" class="btn-back">← BACK TO VAULT</button>
+                <div id="detailContent" class="detail-container">
                     </div>
-                </div>
-                <div class="dashed-grid" id="historyGrid"></div>
             </div>
 
             <div id="communityPage" class="content-page hidden">
-                <div class="nexus-container">
-                    <div class="nexus-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h2>DISCUSSION HUB</h2>
-                        <button id="newPostBtn" class="btn-ignite hidden">START NEW DISCUSSION</button>
+                <div class="page-header">
+                    <h2 class="section-title">COMMUNITY DISCUSSIONS</h2>
+                    <div class="header-actions">
+                        <input type="text" id="communitySearch" placeholder="Search discussions..." class="steam-input search-bar">
+                        <button id="newPostBtn" class="btn-ignite">NEW DISCUSSION</button>
                     </div>
-                    <table class="nexus-table" id="nexusTable">
-                        <thead>
-                            <tr><th>Topic</th><th>Author</th><th>Replies</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>Need help with optimization</td><td>User123</td><td>5</td></tr>
-                        </tbody>
-                    </table>
+                </div>
+                
+                <div id="discussionList" class="forum-container">
+                    </div>
 
-                    <h2 style="margin-top: 40px;">TRENDING PATCHES</h2>
-                    <table class="nexus-table">
-                        <thead>
-                            <tr><th>File Name</th><th>Category</th><th>Author</th><th>Downloads</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr><td><span class="nexus-blue" style="color: #66c0f4;">Low_Spec_Textures_SotE.pot</span></td><td>Optimization</td><td>PotatoMaster</td><td>4.2k</td></tr>
-                        </tbody>
-                    </table>
+                <div id="postModal" class="modal hidden">
+                    <div class="modal-content">
+                        <h3>START A CONVERSATION</h3>
+                        <input type="text" id="postTitle" placeholder="Thread Title" class="steam-input">
+                        <textarea id="postBody" placeholder="What's on your mind?" class="steam-input"></textarea>
+                        <div class="modal-actions">
+                            <button id="cancelPost" class="btn-secondary">CANCEL</button>
+                            <button id="submitPost" class="btn-ignite">PUBLISH</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -199,3 +157,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+
