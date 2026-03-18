@@ -109,6 +109,19 @@ body {
     font-size: 0.8rem; 
 }
 
+/* Style for the new small download button */
+.nav-download-btn {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 15px;
+    vertical-align: middle;
+    transition: transform 0.2s;
+}
+
+.nav-download-btn:hover {
+    transform: scale(1.1);
+}
+
 .nav-item.active { 
     background: linear-gradient(to right, #1b2838, #2a475e); 
     border-left: 5px solid var(--orange); 
@@ -131,7 +144,7 @@ body {
     margin-left: 0; 
 }
 
-/* NAV HOVER EFFECT: White when hovering */
+/* NAV HOVER EFFECT */
 .orange-hover { 
     color: var(--orange); 
     cursor: pointer; 
@@ -149,13 +162,13 @@ body {
     display: inline-block; 
 }
 
-.clockwise { 
-    animation: rotate-clock 10s infinite linear; 
+/* Animations */
+@keyframes rotate-clock {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
-.blue-aura { 
-    filter: drop-shadow(0 0 25px rgba(0, 242, 255, 0.7)); 
-}
+.blue-aura { filter: drop-shadow(0 0 25px rgba(0, 242, 255, 0.7)); }
 
 .compressing-red { 
     animation: rotate-clock 0.4s infinite linear !important; 
@@ -163,15 +176,7 @@ body {
     color: #ff3333; 
 }
 
-@keyframes rotate-clock { 
-    from { transform: rotate(0deg); } 
-    to { transform: rotate(360deg); } 
-}
-
-.progress-wrap { 
-    width: 100%; 
-    margin: 20px 0; 
-}
+.progress-wrap { width: 100%; margin: 20px 0; }
 
 .progress-label { 
     font-size: 0.7rem; 
@@ -196,16 +201,7 @@ body {
     transition: width 0.1s linear; 
 }
 
-.transparent-input { 
-    background: rgba(0, 0, 0, 0.2) !important; 
-    border: 1px solid rgba(255, 140, 0, 0.3) !important; 
-    color: rgba(255, 255, 255, 0.8) !important; 
-}
-
-.tool-card { 
-    width: 100%; 
-    max-width: 800px; 
-}
+.tool-card { width: 100%; max-width: 800px; }
 
 .drop-zone { 
     border: 2px solid #222; 
@@ -215,38 +211,40 @@ body {
     transition: 0.3s; 
 }
 
-.drop-zone:hover { 
-    border-color: var(--orange); 
-}
+.drop-zone:hover { border-color: var(--orange); }
 
-.box-inner { 
-    border: 1px dashed #444; 
-    padding: 30px; 
-}
+.box-inner { border: 1px dashed #444; padding: 30px; }
 
 .system-options-grid { 
     display: grid; 
-    grid-template-columns: 1fr 1fr; 
+    grid-template-columns: 1fr; 
     gap: 20px; 
     margin: 30px 0; 
 }
 
-.field label { 
-    font-size: 0.65rem; 
-    color: #8ba2b9; 
-    display: block; 
-    margin-bottom: 8px; 
-    text-align: left; 
-    font-weight: bold; 
-}
-
-input, select { 
+input, select, textarea { 
     background: #000; 
     border: 1px solid #333; 
     color: #fff; 
     padding: 12px; 
     width: 100%; 
     box-sizing: border-box; 
+}
+
+/* New Intensity Level Button Styles */
+.level-btn {
+    flex: 1;
+    padding: 10px;
+    background: #222;
+    border: 1px solid #444;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.level-btn.active {
+    background: var(--orange);
+    border-color: white;
 }
 
 .btn-ignite { 
@@ -262,23 +260,6 @@ input, select {
 }
 
 /* Vault & Modal */
-.dashed-grid {
-   display: grid;
-   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-   gap: 20px;
-   padding: 20px;
-}
-
-.blank-square {
-   aspect-ratio: 2/3;
-   border: 2px dashed #333;
-   background: #0d0d0d;
-   transition: 0.3s;
-}
-
-.blank-square:hover { border-color: var(--orange); }
-.blank-square.filled { border-style: solid; border-color: #333; }
-
 .modal { 
     position: fixed; 
     inset: 0; 
@@ -314,52 +295,97 @@ input, select {
     z-index: 1500; 
 }
 
-.rotate-25 { animation: rotate-clock 40s infinite linear; }
-.rotate-50 { animation: rotate-clock 20s infinite linear; }
-.rotate-100 { animation: rotate-clock 10s infinite linear; }
-.rotate-200 { animation: rotate-clock 5s infinite linear; }
-
 .potato-chamber { 
     display: flex; 
     justify-content: center; 
     margin-bottom: 20px; 
 }
 
-.nexus-container { 
-    background: #1b2838; 
-    padding: 20px; 
-    border: 1px solid #45505e; 
-}
-
-.nexus-table th { 
-    background: #2a475e; 
-    color: #ffffff; 
-}
-
-/* FIXED HIDDEN CLASS
-   This ensures that any element with 'hidden' is completely removed 
-   from view and cannot be clicked or block other elements.
-*/
 .hidden { 
     display: none !important; 
     visibility: hidden !important;
     pointer-events: none !important;
 }
-/* The "Electrified" states */
+
+/* Potato States & Speeds */
 #potato { transition: filter 0.5s ease, transform 0.3s ease; }
 
-/* Turn the blue aura red when active */
 #potato.compressing {
     filter: drop-shadow(0 0 30px #ff0000) hue-rotate(280deg) !important;
 }
 
-/* Speed Levels for the Spin */
-.spin-standard { animation: rotate-clock 4s infinite linear; }   /* 25% */
-.spin-balance  { animation: rotate-clock 2s infinite linear; }   /* 50% */
-.spin-extreme  { animation: rotate-clock 1s infinite linear; }   /* 100% */
-.spin-potato   { animation: rotate-clock 0.5s infinite linear; } /* 200% */
+.spin-standard { animation: rotate-clock 4s infinite linear; } 
+.spin-balance  { animation: rotate-clock 2s infinite linear; } 
+.spin-extreme  { animation: rotate-clock 1s infinite linear; } 
+.spin-potato   { animation: rotate-clock 0.5s infinite linear; }
 
-@keyframes rotate-clock {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+/* FIX: Ensure the main content can receive clicks */
+.main-content {
+    position: relative;
+    z-index: 1; 
+    pointer-events: auto;
+}
+
+/* FIX: Ensure buttons are clickable */
+button, .nav-item, .level-btn {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+/* Library Grid */
+/* The container that holds the cards */
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+/* The individual items in the grid */
+.game-card {
+    background: #000;
+    border: 2px dashed #444; /* Dashed border requirement */
+    aspect-ratio: 1/1.4;
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+.game-card:hover {
+    border-color: var(--orange);
+    transform: scale(1.05);
+}
+
+.game-poster {
+    width: 100%;
+    height: 80%;
+    object-fit: cover;
+    background: #111;
+}
+
+.game-card h4 {
+    font-size: 0.8rem;
+    padding: 10px;
+    text-align: center;
+    color: #ccc;
+}
+
+/* Forum Layout */
+.forum-container {
+    background: rgba(0,0,0,0.5);
+    border-radius: 4px;
+    margin-top: 20px;
+}
+
+.forum-row {
+    display: grid;
+    grid-template-columns: 1fr 150px 100px;
+    padding: 15px;
+    border-bottom: 1px solid #333;
+    transition: background 0.2s;
+}
+
+.forum-row:hover {
+    background: rgba(255,255,255,0.05);
 }
