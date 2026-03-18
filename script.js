@@ -2,23 +2,25 @@ const SB_URL = "https://adsevhtaaqerrumdjqdz.supabase.co";
 const SB_KEY = "sb_publishable_VpehK1TR2_aEOt-XgwtKhg_dHx8NAmI";
 const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
-// --- Global Variables for Compression Math ---
+// --- Global Variables ---
 let selectedReduction = 0;
-let currentGameSize = 50; // Mock size in GB for visual comparison
+let currentGameSize = 50; 
+let isLoginMode = false;
 window.selectedFolderPath = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- UI References ---
     const potato = document.getElementById('potato');
-    const pcField = document.getElementById('pcType');
-    const historyGrid = document.getElementById('historyGrid');
-    const fileInput = document.getElementById('fileInput');
-    const progressBar = document.getElementById('progressBar');
     const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.getElementById('progressBar');
     const percentText = document.getElementById('percentText');
     const authModal = document.getElementById('authModal');
     
-    // Electron Remote Initialization (if running in Electron)
+    // Auth Modal Elements
+    const openSignup = document.getElementById('openSignup');
+    const openLogin = document.getElementById('openLogin');
+    const closeModal = document.getElementById('closeModal');
+
+    // Electron Remote Initialization
     try {
         const { ipcRenderer } = require('electron');
         const remoteMain = require('@electron/remote/main');
@@ -27,9 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Running in Web Mode (Electron modules not loaded)");
     }
 
-    let isLoginMode = false;
-
-    // --- INTEGRATED SIDEBAR LOGIC ---
+    // --- SIDEBAR ---
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('toggleSidebar');
     if (toggleBtn) {
@@ -39,15 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // --- MODAL CLOSING LOGIC ---
-    const closeModal = document.getElementById('closeModal');
-    if (closeModal) {
-        closeModal.onclick = () => {
-            authModal.classList.add('hidden');
-        };
-    }
-
-    // --- NAVIGATION LOGIC ---
+    // --- NAVIGATION ---
     document.querySelectorAll('.nav-item').forEach(item => {
         item.onclick = () => {
             const page = item.dataset.page;
@@ -55,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const targetPage = document.getElementById(`${page}Page`);
             if (targetPage) targetPage.classList.remove('hidden');
             
-            // Handle page-specific loading
             if (page === 'community') loadDiscussions();
             if (page === 'library') loadLibrary(); 
             
@@ -64,33 +55,56 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     });
 
-    // --- IGNITE LOGIC (Fused Animation + Backend Bridge) ---
-    const igniteBtn = document.getElementById('igniteBtn');
+    // --- LIBRARY SEARCH ---
+    const librarySearch = document.getElementById('librarySearch');
+    if (librarySearch) {
+        librarySearch.oninput = (e) => loadLibrary(e.target.value.toLowerCase());
+    }
+
+    // --- COMMUNITY SEARCH ---
+    const communitySearch = document.getElementById('communitySearch');
+    if (communitySearch) {
+        communitySearch.oninput = (e) => loadDiscussions(e.target.value.toLowerCase());
+    }
+
+    // --- AUTH MODAL LOGIC ---
+    const showAuth = (isLogin) => {
+        isLoginMode = isLogin;
+        toggleAuthMode();
+        authModal.classList.remove('hidden');
+    };
+
+    if (openSignup) openSignup.onclick = () => showAuth(false);
+    if (openLogin) openLogin.onclick = () => showAuth(true);
+    if (closeModal) closeModal.onclick = () => authModal.classList.add('hidden');
+
+    // --- INTENSITY BUTTON LOGIC ---
+    document.querySelectorAll('.level-btn').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            setLevel(parseInt(btn.getAttribute('data-value')));
+        };
+    });
+
+    // --- IGNITE COMPRESSION ---
+    const igniteBtn = document.getElementById('btnIgnite');
     if (igniteBtn) {
         igniteBtn.onclick = function() {
             if (!window.selectedFolderPath) {
                 alert("Please select a Steam game folder first!");
                 return;
             }
+            if (selectedReduction === 0) {
+                alert("Please select an intensity level!");
+                return;
+            }
 
-            // Start Visual Effects
             this.disabled = true;
             this.innerText = "COMPRESSING...";
-            potato.classList.add('ignite-animation');
-            potato.classList.add('compressing'); 
+            potato.classList.add('compressing');
             progressContainer.classList.remove('hidden');
 
-            // Apply rotation speed based on level
-            // Note: Ensure your HTML select id is 'compLevel'
-            const levelVal = document.getElementById('compLevel')?.value || '30'; 
-            potato.classList.remove('rotate-25', 'rotate-50', 'rotate-100', 'rotate-200');
-            
-            if (levelVal === "15") potato.classList.add('rotate-25');
-            else if (levelVal === "30") potato.classList.add('rotate-50');
-            else if (levelVal === "65") potato.classList.add('rotate-100');
-            else if (levelVal === "85") potato.classList.add('rotate-200');
-
-            // Progress Bar Simulation
             let progress = 0;
             const interval = setInterval(() => {
                 progress += Math.random() * 15;
@@ -101,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         stopCompressionEffect();
                         this.disabled = false;
                         this.innerText = "IGNITE COMPRESSION";
-                        finish(); // Trigger Fused Supabase Sync and Electron Command
+                        finish(); 
                     }, 1000);
                 }
                 progressBar.style.width = progress + "%";
@@ -110,33 +124,9 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // --- AUTH LOGIC ---
-    function toggleAuthMode() {
-        const title = document.getElementById('modalTitle');
-        const submitBtn = document.getElementById('auth-submit-btn');
-        const toggleText = document.getElementById('auth-toggle-text');
-        const userField = document.getElementById('username');
-
-        if(isLoginMode) {
-            title.innerText = "WELCOME BACK";
-            submitBtn.innerText = "LOG IN";
-            toggleText.innerText = "Need an account? Sign Up";
-            userField.style.display = "none";
-        } else {
-            title.innerText = "JOIN THE PATCH";
-            submitBtn.innerText = "CREATE ACCOUNT";
-            toggleText.innerText = "Already have an account? Log In";
-            userField.style.display = "block";
-        }
-    }
-
+    // --- AUTH UI ---
     const authToggle = document.getElementById('auth-toggle-text');
-    if (authToggle) {
-        authToggle.onclick = () => {
-            isLoginMode = !isLoginMode;
-            toggleAuthMode();
-        };
-    }
+    if (authToggle) authToggle.onclick = () => { isLoginMode = !isLoginMode; toggleAuthMode(); };
 
     const authSubmit = document.getElementById('auth-submit-btn');
     if (authSubmit) {
@@ -152,48 +142,62 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 const { data, error } = await supabaseClient.auth.signUp({ email, password });
                 if(error) status.innerText = error.message;
-                else status.innerText = "Check your email for the confirmation link!";
+                else status.innerText = "Check your email!";
             }
         };
     }
 
-    // --- FILE SELECTION LOGIC ---
-    const dropZone = document.getElementById('dropZone');
-    if (dropZone) {
-        dropZone.onclick = () => {
-            if (window.api && window.api.selectFolder) {
-                selectGameFolder();
-            } else {
-                fileInput.click();
-            }
-        };
-    }
-
-    if (fileInput) {
-        fileInput.onchange = (e) => { 
-            const file = e.target.files[0];
-            if (file) {
-                window.selectedFolderPath = file.name;
-                document.getElementById('fileLabel').innerHTML = `<strong>${file.name}</strong><br>READY FOR IGNITION`;
-            }
-        };
-    }
-
-    const savedUser = localStorage.getItem('hp_user');
-    if(savedUser) loginUser(savedUser);
-
-    const openSignup = document.getElementById('openSignup');
-    if (openSignup) openSignup.onclick = () => { isLoginMode = false; toggleAuthMode(); authModal.classList.remove('hidden'); };
+    // --- COMMUNITY POSTING ---
+    const postBtn = document.getElementById('newPostBtn');
+    if (postBtn) postBtn.onclick = () => document.getElementById('postModal').classList.remove('hidden');
     
-    const openLogin = document.getElementById('openLogin');
-    if (openLogin) openLogin.onclick = () => { isLoginMode = true; toggleAuthMode(); authModal.classList.remove('hidden'); };
+    const cancelPost = document.getElementById('cancelPost');
+    if (cancelPost) cancelPost.onclick = () => document.getElementById('postModal').classList.add('hidden');
+
+    const submitPost = document.getElementById('submitPost');
+    if (submitPost) submitPost.onclick = async () => {
+        const user = localStorage.getItem('hp_user');
+        if (!user) return alert("You must be logged in to post!");
+        const title = document.getElementById('postTitle').value;
+        const body = document.getElementById('postBody').value;
+        const { error } = await supabaseClient.from('discussions').insert([{ title, content: body, author: user.split('@')[0], created_at: new Date() }]);
+        if (!error) {
+            document.getElementById('postModal').classList.add('hidden');
+            loadDiscussions();
+        }
+    };
+
+    const dropZone = document.getElementById('dropZone');
+    if (dropZone) dropZone.onclick = selectGameFolder;
+
+    const backBtn = document.getElementById('backToLibrary');
+    if (backBtn) backBtn.onclick = () => {
+        document.querySelectorAll('.content-page').forEach(p => p.classList.add('hidden'));
+        document.getElementById('libraryPage').classList.remove('hidden');
+        document.getElementById('sidebar').classList.remove('hidden');
+    };
 });
 
 // --- HELPER FUNCTIONS ---
+function toggleAuthMode() {
+    const modalTitle = document.getElementById('modalTitle');
+    const submitBtn = document.getElementById('auth-submit-btn');
+    const toggleText = document.getElementById('auth-toggle-text');
+
+    if (isLoginMode) {
+        modalTitle.innerText = "WELCOME BACK"; 
+        submitBtn.innerText = "LOG IN";
+        toggleText.innerText = "Need an account? Sign Up";
+    } else {
+        modalTitle.innerText = "JOIN THE PATCH";
+        submitBtn.innerText = "CREATE ACCOUNT";
+        toggleText.innerText = "Already have an account? Log In";
+    }
+}
 
 function stopCompressionEffect() {
     const potatoImg = document.getElementById('potato');
-    potatoImg.classList.remove('ignite-animation', 'compressing', 'rotate-25', 'rotate-50', 'rotate-100', 'rotate-200');
+    potatoImg.classList.remove('compressing');
 }
 
 function loginUser(email) {
@@ -201,15 +205,11 @@ function loginUser(email) {
     document.getElementById('loggedOutNav').classList.add('hidden');
     document.getElementById('loggedInNav').classList.remove('hidden');
     document.getElementById('userDisplay').innerText = email.split('@')[0].toUpperCase();
-    
-    const newPostBtn = document.getElementById('newPostBtn');
-    if(newPostBtn) newPostBtn.classList.remove('hidden');
-    
     document.getElementById('authModal').classList.add('hidden');
-    loadLibrary(); 
+    loadLibrary();
 }
 
-function setLevel(percent, name) {
+function setLevel(percent) {
     selectedReduction = percent;
     const comparisonView = document.getElementById('comparison-view');
     if (comparisonView) comparisonView.classList.remove('hidden');
@@ -217,133 +217,94 @@ function setLevel(percent, name) {
     const newSize = (currentGameSize * (1 - percent/100)).toFixed(2);
     document.getElementById('oldSize').innerText = currentGameSize;
     document.getElementById('newSize').innerText = newSize;
-    
-    const newBar = document.getElementById('newBar');
-    if (newBar) newBar.style.width = (100 - percent) + "%";
+    document.getElementById('newBar').style.width = (100 - percent) + "%";
 }
 
-// --- FUSED FINISH & SUPABASE SYNC ---
-async function finish() {
-    const gameName = window.selectedFolderPath ? window.selectedFolderPath.split(/[\\/]/).pop() : "Unknown Game";
-    const levelVal = document.getElementById('compLevel')?.value || '30';
-    const finalSize = (currentGameSize * (1 - parseInt(levelVal)/100)).toFixed(2);
+// --- WORKFLOW ---
+async function selectGameFolder() {
+    if (window.api && window.api.selectFolder) {
+        const path = await window.api.selectFolder();
+        if (path) {
+            window.selectedFolderPath = path;
+            document.getElementById('fileLabel').innerHTML = `<strong>Folder Selected:</strong><br>${path}`;
+        }
+    } else {
+        alert("Electron API not found.");
+    }
+}
 
-    // 1. Trigger the Electron Bridge (Calls core.py)
+async function finish() {
+    if (!window.selectedFolderPath) return;
+    const gameName = window.selectedFolderPath.split(/[\\/]/).pop();
+    const strategy = document.getElementById('compMode').value;
+    const finalSize = (currentGameSize * (1 - selectedReduction/100)).toFixed(2);
+
     if (window.api && window.api.sendCompress) {
-        window.api.sendCompress({ 
-            folderPath: window.selectedFolderPath, 
-            mode: levelVal // Passes '15', '30', '85' etc to python
-        });
+        const algoMap = { '15': 'XPRESS4K', '30': 'XPRESS8K', '65': 'XPRESS16K', '85': 'LZX' };
+        window.api.sendCompress({ folderPath: window.selectedFolderPath, algorithm: algoMap[selectedReduction], strategy: strategy });
     }
 
-    // 2. Save to Supabase
     const user = localStorage.getItem('hp_user');
     if (user) {
-        const { error } = await supabaseClient
-            .from('user_vault')
-            .insert([{ 
-                user_id: user,
-                game_name: gameName, 
-                original_size: currentGameSize, 
-                compressed_size: parseFloat(finalSize),
-                level: levelVal + "%"
-            }]);
-        
-        if (!error) {
-            console.log("Saved to Vault!");
-            loadLibrary(); 
-        }
+        await supabaseClient.from('user_vault').insert([{ user_id: user, game_name: gameName, original_size: currentGameSize, compressed_size: parseFloat(finalSize), level: selectedReduction + "%", strategy: strategy }]);
+        loadLibrary();
     }
-
-    // 3. Update Visuals
     updateComparisonChart(currentGameSize, finalSize);
-    alert("Ignition successful! " + gameName + " is being compressed.");
 }
 
-// --- LIBRARY LOADER ---
-async function loadLibrary() {
+async function loadLibrary(filter = "") {
     const user = localStorage.getItem('hp_user');
     if (!user) return;
-
-    const { data, error } = await supabaseClient
-        .from('user_vault')
-        .select('*')
-        .eq('user_id', user)
-        .order('created_at', { ascending: false });
-
+    
+    const { data } = await supabaseClient.from('user_vault').select('*').eq('user_id', user);
     const container = document.getElementById('libraryGrid');
+    
     if (container && data) {
-        container.innerHTML = data.map(game => `
-            <div class="library-card">
-                <h4>${game.game_name}</h4>
-                <p>Reduction: ${game.level || 'N/A'}</p>
-                <p>Saved: ${(game.original_size - game.compressed_size).toFixed(2)} GB</p>
-                <div class="status-tag">OPTIMIZED</div>
+        const filtered = data.filter(g => g.game_name.toLowerCase().includes(filter));
+        
+        // Ensure class is 'game-card' to match your CSS grid rules
+        container.innerHTML = filtered.map(game => `
+            <div class="game-card" onclick="openGameDetail(${JSON.stringify(game).replace(/"/g, '&quot;')})">
+                <div class="game-poster"></div>
+                <h4>${game.game_name.toUpperCase()}</h4>
+                <p style="font-size: 0.6rem; color: #666;">SAVED: ${(game.original_size - game.compressed_size).toFixed(2)} GB</p>
+            </div>
+        `).join('');
+    }
+}
+
+function openGameDetail(game) {
+    document.querySelectorAll('.content-page').forEach(p => p.classList.add('hidden'));
+    document.getElementById('sidebar').classList.add('hidden');
+    document.getElementById('gameDetailPage').classList.remove('hidden');
+    document.getElementById('detailContent').innerHTML = `
+        <h1>${game.game_name}</h1>
+        <p>Strategy: ${game.strategy.toUpperCase()} | Intensity: ${game.level}</p>
+        <h2>Original: ${game.original_size}GB → Potato: ${game.compressed_size}GB</h2>
+    `;
+}
+
+async function loadDiscussions(filter = "") {
+    const { data } = await supabaseClient.from('discussions').select('*').order('created_at', { ascending: false });
+    const container = document.getElementById('discussionList');
+    if (container && data) {
+        const filtered = data.filter(p => p.title.toLowerCase().includes(filter));
+        container.innerHTML = filtered.map(post => `
+            <div class="forum-row">
+                <div class="thread-info"><strong>${post.title}</strong><br>By ${post.author}</div>
+                <div class="thread-date">${new Date(post.created_at).toLocaleDateString()}</div>
             </div>
         `).join('');
     }
 }
 
 function updateComparisonChart(originalSizeGB, compressedSizeGB) {
-    const barAfter = document.getElementById('barAfter');
-    const savePercent = document.getElementById('savePercent');
-    const gbSaved = document.getElementById('gbSaved');
-
     const reduction = ((originalSizeGB - compressedSizeGB) / originalSizeGB) * 100;
-    const heightPercent = (compressedSizeGB / originalSizeGB) * 100;
-
-    if(barAfter) barAfter.style.height = `${heightPercent}%`;
-    if(savePercent) savePercent.innerText = `${reduction.toFixed(1)}%`;
-    if(gbSaved) gbSaved.innerText = `${(originalSizeGB - compressedSizeGB).toFixed(2)} GB`;
+    document.getElementById('savePercent').innerText = `${reduction.toFixed(1)}%`;
 }
 
-// --- COMMUNITY HUB LOGIC ---
-async function loadDiscussions() {
-    const { data, error } = await supabaseClient
-        .from('discussions')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-    const tbody = document.querySelector('#nexusTable tbody');
-    if (tbody && data) {
-        tbody.innerHTML = data.map(post => `
-            <tr>
-                <td class="nexus-blue">${post.title}</td>
-                <td>${post.author}</td>
-                <td>${post.replies_count}</td>
-            </tr>
-        `).join('');
-    }
+if (window.api && window.api.onCompressResult) {
+    window.api.onCompressResult((response) => {
+        alert(response.status === 'success' ? "Compression complete!" : "Error: " + response.message);
+    });
 }
-
-// --- ELECTRON BRIDGE FUNCTIONS ---
-async function selectGameFolder() {
-    if (window.api && window.api.selectFolder) {
-        const path = await window.api.selectFolder();
-        if (path) {
-            window.selectedFolderPath = path;
-            document.getElementById('fileLabel').innerHTML = `<strong>Folder Selected</strong><br>${path}`;
-        }
-    }
-}
-
-// --- NEW COMPRESSION HANDLERS ---
-document.getElementById('btnIgnite').addEventListener('click', () => {
-    // Collect the data from your UI
-    const data = {
-        folderPath: window.selectedFolderPath, // You set this in your folder selection
-        mode: document.getElementById('pcType').value // Get the intensity level
-    };
-    
-    // Send it to the main process via the bridge we defined in preload.js
-    window.api.sendCompress(data);
-});
-
-// Listen for the result to show in the UI
-window.api.onCompressResult((response) => {
-    if (response.status === 'success') {
-        alert("Compression complete!");
-    } else {
-        alert("Error: " + response.message);
-    }
-});
