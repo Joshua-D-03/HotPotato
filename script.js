@@ -126,25 +126,61 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- AUTH UI ---
     const authToggle = document.getElementById('auth-toggle-text');
-    if (authToggle) authToggle.onclick = () => { isLoginMode = !isLoginMode; toggleAuthMode(); };
+    if (authToggle) authToggle.onclick = () => { 
+        isLoginMode = !isLoginMode; 
+        toggleAuthMode(); 
+    };
 
     const authSubmit = document.getElementById('auth-submit-btn');
     if (authSubmit) {
         authSubmit.onclick = async () => {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const status = document.getElementById('status-msg');
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const status = document.getElementById('status-msg');
 
-            if(isLoginMode) {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if(error) status.innerText = error.message;
-                else loginUser(data.user.email);
-            } else {
-                const { data, error } = await supabaseClient.auth.signUp({ email, password });
-                if(error) status.innerText = error.message;
-                else status.innerText = "Check your email!";
-            }
-        };
+    if (isLoginMode) {
+        // 1. Log in via Supabase Auth
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) {
+            status.innerText = error.message;
+        } else {
+            loginUser(data.user);
+        }
+    } else {
+        // 2. Sign Up Logic
+        const username = document.getElementById('username').value;
+        if (!username) { status.innerText = "Please enter a username."; return; }
+
+        // Step A: Create the user in Supabase Auth (This triggers the email)
+        const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: { data: { username: username } }
+        });
+
+        if (authError) {
+            status.innerText = authError.message;
+            return;
+        }
+
+        // Step B: Manual save to your 'profiles' table (as seen in your screenshot)
+        // Note: Supabase Auth saves the password internally, but this adds it to your visible table too.
+        const { error: profileError } = await supabaseClient.from('profiles').insert([{
+            id: authData.user.id,
+            email_address: email,
+            password: password, // Saving the password to your custom column
+            username: username,
+            created_at: new Date()
+        }]);
+
+        if (profileError) {
+            console.error("Profile Save Error:", profileError);
+            status.innerText = "Auth account created, but profile table failed.";
+        } else {
+            status.innerText = "Account created! Check your email.";
+        }
+    }
+};
     }
 
     // --- COMMUNITY POSTING ---
@@ -155,17 +191,35 @@ document.addEventListener('DOMContentLoaded', () => {
     if (cancelPost) cancelPost.onclick = () => document.getElementById('postModal').classList.add('hidden');
 
     const submitPost = document.getElementById('submitPost');
-    if (submitPost) submitPost.onclick = async () => {
-        const user = localStorage.getItem('hp_user');
-        if (!user) return alert("You must be logged in to post!");
-        const title = document.getElementById('postTitle').value;
-        const body = document.getElementById('postBody').value;
-        const { error } = await supabaseClient.from('discussions').insert([{ title, content: body, author: user.split('@')[0], created_at: new Date() }]);
-        if (!error) {
-            document.getElementById('postModal').classList.add('hidden');
-            loadDiscussions();
-        }
-    };
+    if (submitPost) {
+        submitPost.onclick = async () => {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (!user) return alert("You must be logged in to post!");
+
+            const title = document.getElementById('postTitle').value;
+            const body = document.getElementById('postBody').value;
+
+            if (!title.trim() || !body.trim()) return alert("Please enter both a title and content.");
+
+            const { error } = await supabaseClient.from('discussions').insert([{
+                author_id: user.id,
+                author_name: user.user_metadata.username || user.email.split('@')[0],
+                title: title,
+                content: body,
+                replies_count: 0,
+                created_at: new Date()
+            }]);
+
+            if (!error) {
+                document.getElementById('postTitle').value = "";
+                document.getElementById('postBody').value = "";
+                document.getElementById('postModal').classList.add('hidden');
+                loadDiscussions(); 
+            } else {
+                alert("Failed to publish: " + error.message);
+            }
+        };
+    }
 
     const dropZone = document.getElementById('dropZone');
     if (dropZone) dropZone.onclick = selectGameFolder;
@@ -200,11 +254,13 @@ function stopCompressionEffect() {
     potatoImg.classList.remove('compressing');
 }
 
-function loginUser(email) {
-    localStorage.setItem('hp_user', email);
+function loginUser(user) {
+    localStorage.setItem('hp_user_id', user.id);
     document.getElementById('loggedOutNav').classList.add('hidden');
     document.getElementById('loggedInNav').classList.remove('hidden');
-    document.getElementById('userDisplay').innerText = email.split('@')[0].toUpperCase();
+    
+    const displayName = user.user_metadata.username || user.email.split('@')[0];
+    document.getElementById('userDisplay').innerText = displayName.toUpperCase();
     document.getElementById('authModal').classList.add('hidden');
     loadLibrary();
 }
@@ -244,25 +300,34 @@ async function finish() {
         window.api.sendCompress({ folderPath: window.selectedFolderPath, algorithm: algoMap[selectedReduction], strategy: strategy });
     }
 
-    const user = localStorage.getItem('hp_user');
+    const { data: { user } } = await supabaseClient.auth.getUser();
+
     if (user) {
-        await supabaseClient.from('user_vault').insert([{ user_id: user, game_name: gameName, original_size: currentGameSize, compressed_size: parseFloat(finalSize), level: selectedReduction + "%", strategy: strategy }]);
+        const { error } = await supabaseClient.from('user_vault').insert([{
+            user_id: user.id,
+            game_name: gameName,
+            original_size: currentGameSize,
+            compressed_size: parseFloat(finalSize),
+            intensity_level: selectedReduction + "%",
+            compression_strategy: strategy,
+            created_at: new Date()
+        }]);
+        
+        if (error) console.error("Vault Error:", error);
         loadLibrary();
     }
-    updateComparisonChart(currentGameSize, finalSize);
 }
 
 async function loadLibrary(filter = "") {
-    const user = localStorage.getItem('hp_user');
+    const { data: { user } } = await supabaseClient.auth.getUser();
     if (!user) return;
     
-    const { data } = await supabaseClient.from('user_vault').select('*').eq('user_id', user);
+    const { data } = await supabaseClient.from('user_vault').select('*').eq('user_id', user.id);
     const container = document.getElementById('libraryGrid');
     
     if (container && data) {
         const filtered = data.filter(g => g.game_name.toLowerCase().includes(filter));
         
-        // Ensure class is 'game-card' to match your CSS grid rules
         container.innerHTML = filtered.map(game => `
             <div class="game-card" onclick="openGameDetail(${JSON.stringify(game).replace(/"/g, '&quot;')})">
                 <div class="game-poster"></div>
@@ -279,8 +344,9 @@ function openGameDetail(game) {
     document.getElementById('gameDetailPage').classList.remove('hidden');
     document.getElementById('detailContent').innerHTML = `
         <h1>${game.game_name}</h1>
-        <p>Strategy: ${game.strategy.toUpperCase()} | Intensity: ${game.level}</p>
+        <p>Strategy: ${game.compression_strategy ? game.compression_strategy.toUpperCase() : 'N/A'} | Intensity: ${game.intensity_level}</p>
         <h2>Original: ${game.original_size}GB → Potato: ${game.compressed_size}GB</h2>
+        <p>Compressed on: ${new Date(game.created_at).toLocaleDateString()}</p>
     `;
 }
 
@@ -291,7 +357,11 @@ async function loadDiscussions(filter = "") {
         const filtered = data.filter(p => p.title.toLowerCase().includes(filter));
         container.innerHTML = filtered.map(post => `
             <div class="forum-row">
-                <div class="thread-info"><strong>${post.title}</strong><br>By ${post.author}</div>
+                <div class="thread-info">
+                    <strong>${post.title}</strong><br>
+                    <span style="font-size: 0.8rem; color: #888;">By ${post.author_name || 'Anonymous'}</span>
+                </div>
+                <div class="thread-replies">${post.replies_count || 0} replies</div>
                 <div class="thread-date">${new Date(post.created_at).toLocaleDateString()}</div>
             </div>
         `).join('');
@@ -300,7 +370,8 @@ async function loadDiscussions(filter = "") {
 
 function updateComparisonChart(originalSizeGB, compressedSizeGB) {
     const reduction = ((originalSizeGB - compressedSizeGB) / originalSizeGB) * 100;
-    document.getElementById('savePercent').innerText = `${reduction.toFixed(1)}%`;
+    const saveDisplay = document.getElementById('savePercent');
+    if (saveDisplay) saveDisplay.innerText = `${reduction.toFixed(1)}%`;
 }
 
 if (window.api && window.api.onCompressResult) {
